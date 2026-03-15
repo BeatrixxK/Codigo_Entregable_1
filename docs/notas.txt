@@ -1,0 +1,310 @@
+6. Diseñar MainForm
+
+La guía pide navegación básica a:
+
+Usuarios
+
+Productos
+
+Menús
+
+Nutrición
+
+Estadísticas
+
+En el diseñador
+
+Abre MainForm.cs [Design].
+
+Arrastra desde la Toolbox:
+
+1 Label
+
+5 Button
+
+Propiedades recomendadas
+Form
+
+Name: MainForm
+
+Text: Dragon Nutrex - Menú Principal
+
+StartPosition: CenterScreen
+
+Label
+
+Name: lblTitulo
+
+Text: Dragon Nutrex
+
+puedes ponerle fuente más grande
+
+Botones
+
+btnUsuarios → Text = Usuarios
+
+btnProductos → Text = Productos
+
+btnMenus → Text = Menús
+
+btnNutricion → Text = Nutrición
+
+btnEstadisticas → Text = Estadísticas
+
+Ponlos uno debajo del otro para que se vea ordenado.
+
+7. Crear los forms vacíos de cada módulo
+
+La guía pide crear placeholders vacíos para cada módulo.
+
+En la carpeta Views, crea estos formularios:
+
+RegistroUsuarioForm.cs
+
+UsuarioListForm.cs
+
+ProductoForm.cs
+
+ProductoListForm.cs
+
+MenuForm.cs
+
+MenuListForm.cs
+
+NutricionForm.cs
+
+EstadisticasForm.cs
+
+Cómo crearlos
+
+Para cada uno:
+
+clic derecho en Views
+
+Add > Windows Form
+
+escribes el nombre
+
+Add
+
+8. Personalizar cada form vacío
+
+Abre cada formulario y cambia al menos esto en propiedades:
+
+RegistroUsuarioForm
+
+Text: Registro de Usuario
+
+UsuarioListForm
+
+Text: Lista de Usuarios
+
+ProductoForm
+
+Text: Gestión de Productos
+
+ProductoListForm
+
+Text: Lista de Productos
+
+MenuForm
+
+Text: Gestión de Menús
+
+MenuListForm
+
+Text: Lista de Menús
+
+NutricionForm
+
+Text: Información Nutricional
+
+EstadisticasForm
+
+Text: Estadísticas
+
+Con eso ya no quedan como forms genéricos.
+
+9. Programar la navegación en MainForm
+
+Ahora vamos a conectar los botones para abrir los formularios.
+
+Abre MainForm.cs y usa este código:
+
+using System;
+using System.Windows.Forms;
+
+namespace DragonNutrex.Views
+{
+    public partial class MainForm : Form
+    {
+        public MainForm()
+        {
+            InitializeComponent();
+        }
+
+        private void btnUsuarios_Click(object sender, EventArgs e)
+        {
+            RegistroUsuarioForm form = new RegistroUsuarioForm();
+            form.ShowDialog();
+        }
+
+        private void btnProductos_Click(object sender, EventArgs e)
+        {
+            ProductoForm form = new ProductoForm();
+            form.ShowDialog();
+        }
+
+        private void btnMenus_Click(object sender, EventArgs e)
+        {
+            MenuForm form = new MenuForm();
+            form.ShowDialog();
+        }
+
+        private void btnNutricion_Click(object sender, EventArgs e)
+        {
+            NutricionForm form = new NutricionForm();
+            form.ShowDialog();
+        }
+
+        private void btnEstadisticas_Click(object sender, EventArgs e)
+        {
+            EstadisticasForm form = new EstadisticasForm();
+            form.ShowDialog();
+        }
+    }
+}
+10. Conectar los eventos Click
+
+Para que esos métodos funcionen, los botones deben tener enlazado su evento Click.
+
+Forma más fácil
+
+En el diseñador de MainForm:
+
+haz doble clic sobre btnUsuarios
+
+Visual Studio crea automáticamente btnUsuarios_Click
+
+Haz lo mismo con:
+
+btnProductos
+
+btnMenus
+
+btnNutricion
+
+btnEstadisticas
+
+Después reemplazas el contenido por el código que te puse arriba.
+
+11. Si quieres también abrir listas desde el menú principal
+
+La guía solo pide navegación básica a módulos, así que con abrir el form principal de cada módulo ya cumple.
+
+Pero si quieres dejarlo más completo, podrías luego agregar botones extra como:
+
+Lista Usuarios
+
+Lista Productos
+
+Lista Menús
+
+Por ahora no es obligatorio para TEC 2.
+
+12. Código mínimo para cada form vacío
+
+No hace falta meter lógica todavía. Solo verifica que cada form tenga su constructor.
+
+Ejemplo para RegistroUsuarioForm.cs:
+
+using System.Windows.Forms;
+
+namespace DragonNutrex.Views
+{
+    public partial class RegistroUsuarioForm : Form
+    {
+        public RegistroUsuarioForm()
+        {
+            InitializeComponent();
+        }
+    }
+}
+
+Haz algo parecido para los demás.
+
+13. Probar que abra y cierre sin errores
+
+La guía pide explícitamente esta prueba.
+
+Cómo probar
+
+Ejecuta el proyecto con F5
+
+Debe abrir MainForm
+
+Haz clic en cada botón:
+
+Usuarios
+
+Productos
+
+Menús
+
+Nutrición
+
+Estadísticas
+
+Cada uno debe abrir su ventana
+
+Ciérrala con la X
+
+La app principal debe seguir funcionando
+
+Si todos abren y cierran sin errores, TEC 2 está cumplido.
+
+14. Cómo debería verse tu estructura después de TEC 2
+DragonNutrex
+│
+├── Controllers
+├── Models
+├── Repositories
+├── Services
+├── Utils
+├── Views
+│   ├── MainForm.cs
+│   ├── RegistroUsuarioForm.cs
+│   ├── UsuarioListForm.cs
+│   ├── ProductoForm.cs
+│   ├── ProductoListForm.cs
+│   ├── MenuForm.cs
+│   ├── MenuListForm.cs
+│   ├── NutricionForm.cs
+│   └── EstadisticasForm.cs
+│
+└── Program.cs
+15. Errores comunes que te pueden salir
+1. The name 'InitializeComponent' does not exist
+
+Eso pasa si el form no fue creado como Windows Form sino como clase normal.
+Solución: vuelve a crearlo con Add > Windows Form.
+
+2. No encuentra el form en MainForm
+
+Revisa que todos estén en el namespace correcto:
+
+namespace DragonNutrex.Views
+3. El botón no hace nada
+
+El evento Click no está conectado.
+Haz doble clic en el botón o revisa en propiedades el ícono de rayo.
+
+4. Program.cs no abre MainForm
+
+Revisa que diga:
+
+Application.Run(new Views.MainForm());
+
+o que arriba tengas el using DragonNutrex.Views; y pongas:
+
+Application.Run(new MainForm());
