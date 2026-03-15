@@ -1,3 +1,8 @@
+/*✔ Create
+✔ Update
+✔ Delete
+✔ GetAll
+✔ GetById*/
 namespace DragonNutrex.App.Interfaces;
 
 public interface IRepository<T>

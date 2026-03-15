@@ -1,4 +1,6 @@
-/* Leer datos de JSON ---- Ejemplo: guardar la lista de usuarios.*/
+/* Leer datos de JSON ---- Ejemplo: guardar la lista de usuarios.
+✔ lectura JSON
+✔ escritura JSON */
 
 using System.Text.Json;
 

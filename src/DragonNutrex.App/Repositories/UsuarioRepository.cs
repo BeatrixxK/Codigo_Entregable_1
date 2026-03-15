@@ -19,7 +19,8 @@ GetAll()
 lista usuarios
 GetById()
 busca usuario
- */
+
+GuARDA en Data/usuarios.json */
 
 
 using DragonNutrex.App.Interfaces;

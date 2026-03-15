@@ -13,6 +13,9 @@ ObtenerUsuarios()
 lista usuarios
 ObtenerUsuario()
 busca usuario
+
+✔ validaciones
+✔ conexión con repositorio
 */
 
     using DragonNutrex.App.Interfaces;
