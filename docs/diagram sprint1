@@ -22,7 +22,7 @@ DragonNutrex.App
 │   └── MenuRepository.cs
 │
 ├── Interfaces
-│   └── IRepository.cs
+│   └── IRepository.cs  
 │
 ├── Utils
 │   └── FileStorage.cs
