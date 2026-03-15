@@ -1,4 +1,6 @@
-﻿using DragonNutrex.App.Controllers;
+﻿/* archivo donde empieza a ejecutarse la aplicación.*/
+
+using DragonNutrex.App.Controllers;
 using DragonNutrex.App.Models;
 using DragonNutrex.App.Repositories;
 using DragonNutrex.App.Services;

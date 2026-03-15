@@ -1,0 +1,47 @@
+DragonNutrex.App
+│
+├── Controllers
+│   ├── UsuarioController.cs
+│   ├── ProductoController.cs
+│   └── MenuController.cs
+│
+├── Models
+│   ├── Usuario.cs
+│   ├── Producto.cs
+│   ├── Menu.cs
+│   └── RegistroComida.cs
+│
+├── Services
+│   ├── UsuarioService.cs
+│   ├── ProductoService.cs
+│   └── MenuService.cs
+│
+├── Repositories
+│   ├── UsuarioRepository.cs
+│   ├── ProductoRepository.cs
+│   └── MenuRepository.cs
+│
+├── Interfaces
+│   └── IRepository.cs
+│
+├── Utils
+│   └── FileStorage.cs
+│
+├── Data
+│   └── usuarios.json
+│
+└── Program.cs
+
+Flujo 03.15.26
+
+Program.cs
+   ↓
+UsuarioController
+   ↓
+UsuarioService
+   ↓
+UsuarioRepository
+   ↓
+FileStorage
+   ↓
+usuarios.json
