@@ -32,7 +32,6 @@ public static class FileStorage
         };
 
         var json = JsonSerializer.Serialize(data, options);
-
         File.WriteAllText(path, json);
     }
 }
