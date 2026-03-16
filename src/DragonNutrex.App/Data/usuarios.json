@@ -9,17 +9,8 @@
     "TipoDieta": "Balanceada"
   },
   {
-    "Id": "ad96c776-1e43-4b85-8eb1-5d9cfb3caba0",
-    "Nombre": "Roberto Gonzalez",
-    "Peso": 95,
-    "Altura": 200,
-    "Actividad": "Basketball",
-    "Objetivo": "Resistencia",
-    "TipoDieta": "Carnivora"
-  },
-  {
     "Id": "15c8c285-e394-4953-ae96-b5d862f7a843",
-    "Nombre": "jose rojas",
+    "Nombre": "Jose Rojas",
     "Peso": 180,
     "Altura": 210,
     "Actividad": "correr",
@@ -34,5 +25,14 @@
     "Actividad": "Nadar",
     "Objetivo": "Perder peso",
     "TipoDieta": "Carnivora"
+  },
+  {
+    "Id": "8940c8cc-6fbb-4167-ae8a-31f571f87916",
+    "Nombre": "Jose Perez",
+    "Peso": 100,
+    "Altura": 175,
+    "Actividad": "ciclismo",
+    "Objetivo": "resistencia",
+    "TipoDieta": "Raw"
   }
 ]
