@@ -1,27 +1,135 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:avaloniaControls="clr-namespace:Avalonia.Controls;assembly=Avalonia.Controls.DataGrid"
+        mc:Ignorable="d"
         x:Class="DragonNutrex.UI.MainWindow"
-        Width="800"
-        Height="520"
+        Width="1000"
+        Height="650"
         Title="DragonNutrex">
+
+    <Window.Styles>
+        <Style Selector="DataGridRow:selected">
+            <Setter Property="Background" Value="#2D6CDF"/>
+            <Setter Property="Foreground" Value="White"/>
+        </Style>
+
+        <Style Selector="DataGridCell">
+            <Setter Property="Padding" Value="8,6"/>
+        </Style>
+
+        <Style Selector="DataGridColumnHeader">
+            <Setter Property="FontWeight" Value="SemiBold"/>
+        </Style>
+    </Window.Styles>
 
     <StackPanel Margin="20" Spacing="10">
 
         <TextBlock Text="Registro de Usuario" FontSize="24"/>
 
-        <TextBox x:Name="NombreTextBox" Watermark="Nombre"/>
-        <TextBox x:Name="PesoTextBox" Watermark="Peso"/>
-        <TextBox x:Name="AlturaTextBox" Watermark="Altura"/>
-        <TextBox x:Name="ActividadTextBox" Watermark="Actividad"/>
-        <TextBox x:Name="ObjetivoTextBox" Watermark="Objetivo"/>
-        <TextBox x:Name="TipoDietaTextBox" Watermark="Tipo Dieta"/>
+        <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto">
+            <TextBox x:Name="NombreTextBox"
+                     Grid.Row="0"
+                     Grid.Column="0"
+                     Margin="0,0,10,10"
+                     Watermark="Nombre"/>
 
-        <Button x:Name="GuardarButton" Content="Guardar" Width="120"/>
+            <TextBox x:Name="PesoTextBox"
+                     Grid.Row="0"
+                     Grid.Column="1"
+                     Margin="0,0,0,10"
+                     Watermark="Peso"/>
 
-        <TextBlock Text="Usuarios registrados:" Margin="0,20,0,0" FontSize="18"/>
+            <TextBox x:Name="AlturaTextBox"
+                     Grid.Row="1"
+                     Grid.Column="0"
+                     Margin="0,0,10,10"
+                     Watermark="Altura"/>
 
-        <ListBox x:Name="UsuariosListBox" Height="200"/>
+            <TextBox x:Name="ActividadTextBox"
+                     Grid.Row="1"
+                     Grid.Column="1"
+                     Margin="0,0,0,10"
+                     Watermark="Actividad"/>
+
+            <TextBox x:Name="ObjetivoTextBox"
+                     Grid.Row="2"
+                     Grid.Column="0"
+                     Margin="0,0,10,10"
+                     Watermark="Objetivo"/>
+
+            <TextBox x:Name="TipoDietaTextBox"
+                     Grid.Row="2"
+                     Grid.Column="1"
+                     Margin="0,0,0,10"
+                     Watermark="Tipo Dieta"/>
+        </Grid>
+
+        <StackPanel Orientation="Horizontal" Spacing="10">
+            <Button x:Name="GuardarButton" Content="Guardar" Width="140"/>
+            <Button x:Name="EliminarButton" Content="Eliminar seleccionado" Width="180"/>
+            <Button x:Name="LimpiarButton" Content="Limpiar" Width="120"/>
+        </StackPanel>
+
+        <TextBlock Text="Usuarios registrados:"
+                   Margin="0,20,0,0"
+                   FontSize="18"/>
+
+        <Border BorderThickness="1"
+                BorderBrush="Gray"
+                CornerRadius="4">
+
+            <avaloniaControls:DataGrid x:Name="UsuariosDataGrid"
+                                       Height="320"
+                                       GridLinesVisibility="All"
+                                       BorderThickness="0"
+                                       AutoGenerateColumns="False"
+                                       IsReadOnly="True">
+
+                <avaloniaControls:DataGrid.Columns>
+
+                    <avaloniaControls:DataGridTextColumn Header="Nombre"
+                                                         Binding="{Binding Nombre}"
+                                                         Width="2*" />
+
+                    <avaloniaControls:DataGridTemplateColumn Header="Peso"
+                                                             Width="*">
+                        <avaloniaControls:DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Peso}"
+                                           HorizontalAlignment="Center"
+                                           TextAlignment="Center"/>
+                            </DataTemplate>
+                        </avaloniaControls:DataGridTemplateColumn.CellTemplate>
+                    </avaloniaControls:DataGridTemplateColumn>
+
+                    <avaloniaControls:DataGridTemplateColumn Header="Altura"
+                                                             Width="*">
+                        <avaloniaControls:DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Altura}"
+                                           HorizontalAlignment="Center"
+                                           TextAlignment="Center"/>
+                            </DataTemplate>
+                        </avaloniaControls:DataGridTemplateColumn.CellTemplate>
+                    </avaloniaControls:DataGridTemplateColumn>
+
+                    <avaloniaControls:DataGridTextColumn Header="Actividad"
+                                                         Binding="{Binding Actividad}"
+                                                         Width="2*" />
+
+                    <avaloniaControls:DataGridTextColumn Header="Objetivo"
+                                                         Binding="{Binding Objetivo}"
+                                                         Width="2*" />
+
+                    <avaloniaControls:DataGridTextColumn Header="Tipo Dieta"
+                                                         Binding="{Binding TipoDieta}"
+                                                         Width="2*" />
+
+                </avaloniaControls:DataGrid.Columns>
+            </avaloniaControls:DataGrid>
+        </Border>
 
     </StackPanel>
-
 </Window>
