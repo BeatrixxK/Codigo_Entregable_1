@@ -27,12 +27,12 @@
     "TipoDieta": "Carnivora"
   },
   {
-    "Id": "8940c8cc-6fbb-4167-ae8a-31f571f87916",
-    "Nombre": "Jose Perez",
-    "Peso": 100,
-    "Altura": 175,
-    "Actividad": "ciclismo",
-    "Objetivo": "resistencia",
-    "TipoDieta": "Raw"
+    "Id": "fceab998-93fe-41a5-973f-27561ade0ddb",
+    "Nombre": "Jose Juan",
+    "Peso": 150,
+    "Altura": 220,
+    "Actividad": "Salto",
+    "Objetivo": "Rapidez",
+    "TipoDieta": "Carnivora"
   }
 ]
