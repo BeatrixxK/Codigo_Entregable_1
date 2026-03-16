@@ -1,36 +1,46 @@
-DragonNutrex.App
+CODIGO_ENTREGABLE_1
 │
-├── Controllers
-│   ├── UsuarioController.cs
-│   ├── ProductoController.cs
-│   └── MenuController.cs
+├── diagrams
+├── docs
+│   ├── diagram sprint1
+│   └── notas.txt
 │
-├── Models
-│   ├── Usuario.cs
-│   ├── Producto.cs
-│   ├── Menu.cs
-│   └── RegistroComida.cs
+├── entregables
+│   └── Entregable #1 Proyecto #1 – Nutrición para todos.pdf
 │
-├── Services
-│   ├── UsuarioService.cs
-│   ├── ProductoService.cs
-│   └── MenuService.cs
+├── src
+│   └── DragonNutrex.App
+│       ├── Controllers
+│       │   └── UsuarioController.cs
+│       │
+│       ├── Models
+│       │   ├── Usuario.cs
+│       │   ├── Producto.cs
+│       │   ├── Menu.cs
+│       │   └── RegistroComida.cs
+│       │
+│       ├── Services
+│       │   └── UsuarioService.cs
+│       │
+│       ├── Repositories
+│       │   └── UsuarioRepository.cs
+│       │
+│       ├── Interfaces
+│       │   └── IRepository.cs
+│       │
+│       ├── Utils
+│       │   └── FileStorage.cs
+│       │
+│       ├── Views
+│       │
+│       ├── Data
+│       │   └── usuarios.json
+│       │
+│       ├── Program.cs
+│       └── DragonNutrex.App.csproj
 │
-├── Repositories
-│   ├── UsuarioRepository.cs
-│   ├── ProductoRepository.cs
-│   └── MenuRepository.cs
-│
-├── Interfaces
-│   └── IRepository.cs  
-│
-├── Utils
-│   └── FileStorage.cs
-│
-├── Data
-│   └── usuarios.json
-│
-└── Program.cs
+├── .gitignore
+└── .gitattributes
 
 Flujo 03.15.26
 
