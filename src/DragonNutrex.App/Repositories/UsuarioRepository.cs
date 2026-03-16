@@ -1,28 +1,3 @@
-/*Usuario
-+
-IRepository
-+
-FileStorage
-y nos permite implementar:
-	•	Crear usuario
-	•	Editar usuario
-	•	Eliminar usuario
-	•	Listar usuarios
-    Método y Función
-Create()
-guarda un usuario
-Update()
-edita usuario
-Delete()
-elimina usuario
-GetAll()
-lista usuarios
-GetById()
-busca usuario
-
-GuARDA en Data/usuarios.json */
-
-
 using DragonNutrex.App.Interfaces;
 using DragonNutrex.App.Models;
 using DragonNutrex.App.Utils;
@@ -31,10 +6,14 @@ namespace DragonNutrex.App.Repositories;
 
 public class UsuarioRepository : IRepository<Usuario>
 {
-    private readonly string _filePath = Path.Combine(
-        Directory.GetParent(AppContext.BaseDirectory)!.Parent!.Parent!.Parent!.FullName,
-        "Data",
-        "usuarios.json"
+    private readonly string _filePath = Path.GetFullPath(
+        Path.Combine(
+            AppContext.BaseDirectory,
+            "..", "..", "..", "..",
+            "DragonNutrex.App",
+            "Data",
+            "usuarios.json"
+        )
     );
 
     public void Create(Usuario entity)

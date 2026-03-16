@@ -1,3 +1,7 @@
+/*✔ conecta servicio con UI */
+
+
+
 using DragonNutrex.App.Models;
 using DragonNutrex.App.Services;
 

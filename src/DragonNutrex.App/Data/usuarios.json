@@ -2,10 +2,37 @@
   {
     "Id": "0026a7d1-52fa-40d9-8001-66aeac91a56b",
     "Nombre": "Stephanie",
-    "Peso": 70,
+    "Peso": 90,
     "Altura": 1.65,
     "Actividad": "Moderada",
     "Objetivo": "Mantener peso",
     "TipoDieta": "Balanceada"
+  },
+  {
+    "Id": "ad96c776-1e43-4b85-8eb1-5d9cfb3caba0",
+    "Nombre": "Roberto Gonzalez",
+    "Peso": 95,
+    "Altura": 200,
+    "Actividad": "Basketball",
+    "Objetivo": "Resistencia",
+    "TipoDieta": "Carnivora"
+  },
+  {
+    "Id": "15c8c285-e394-4953-ae96-b5d862f7a843",
+    "Nombre": "jose rojas",
+    "Peso": 180,
+    "Altura": 210,
+    "Actividad": "correr",
+    "Objetivo": "quemar grasa",
+    "TipoDieta": "balanceada"
+  },
+  {
+    "Id": "d76d5f2d-bf9a-4e59-8e14-2f47556d2103",
+    "Nombre": "Diego Lopez",
+    "Peso": 150,
+    "Altura": 150,
+    "Actividad": "Nadar",
+    "Objetivo": "Perder peso",
+    "TipoDieta": "Carnivora"
   }
 ]

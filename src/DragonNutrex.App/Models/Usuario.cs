@@ -1,3 +1,5 @@
+/*✔ atributos del usuario
+✔ identificador Guid*/
 namespace DragonNutrex.App.Models;
 
 public class Usuario
