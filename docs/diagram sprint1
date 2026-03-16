@@ -44,14 +44,14 @@ CODIGO_ENTREGABLE_1
 
 Flujo 03.15.26
 
-Program.cs
-   ↓
+Avalonia UI
+     ↓
 UsuarioController
-   ↓
+     ↓
 UsuarioService
-   ↓
+     ↓
 UsuarioRepository
-   ↓
+     ↓
 FileStorage
-   ↓
+     ↓
 usuarios.json
