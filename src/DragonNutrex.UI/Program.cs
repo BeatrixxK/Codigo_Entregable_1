@@ -1,5 +1,4 @@
-<<<<<<< Updated upstream
-﻿using System;
+using System;
 using Avalonia;
 using DragonNutrex.App.Utils;
 
@@ -10,7 +9,8 @@ internal static class Program
     [STAThread]
     public static void Main(string[] args)
     {
-      //  DataSeeder.GenerarDatos();
+        // Ejecuta esto solo si quieres regenerar datos de prueba
+        // DataSeeder.GenerarDatos();
 
         BuildAvaloniaApp()
             .StartWithClassicDesktopLifetime(args);
@@ -21,26 +21,3 @@ internal static class Program
             .UsePlatformDetect()
             .LogToTrace();
 }
-=======
-﻿using Avalonia;
-using System;
-
-namespace DragonNutrex.UI;
-
-class Program
-{
-    // Initialization code. Don't use any Avalonia, third-party APIs or any
-    // SynchronizationContext-reliant code before AppMain is called: things aren't initialized
-    // yet and stuff might break.
-    [STAThread]
-    public static void Main(string[] args) => BuildAvaloniaApp()
-        .StartWithClassicDesktopLifetime(args);
-
-    // Avalonia configuration, don't remove; also used by visual designer.
-    public static AppBuilder BuildAvaloniaApp()
-        => AppBuilder.Configure<App>()
-            .UsePlatformDetect()
-            .WithInterFont()
-            .LogToTrace();
-}
->>>>>>> Stashed changes
