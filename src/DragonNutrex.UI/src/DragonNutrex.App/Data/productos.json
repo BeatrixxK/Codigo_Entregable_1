@@ -1,0 +1,802 @@
+[
+  {
+    "Id": "07f95fa6-3fe6-4e8a-9b97-64e89e4e982e",
+    "Nombre": "Producto 1",
+    "Calorias": 105,
+    "Proteinas": 14,
+    "Carbohidratos": 10,
+    "Grasas": 7
+  },
+  {
+    "Id": "f606087f-ed0b-4a2b-99ad-c8b0e90f471e",
+    "Nombre": "Producto 2",
+    "Calorias": 412,
+    "Proteinas": 7,
+    "Carbohidratos": 45,
+    "Grasas": 8
+  },
+  {
+    "Id": "829a3269-e54a-4daf-8942-ea84073c40c1",
+    "Nombre": "Producto 3",
+    "Calorias": 127,
+    "Proteinas": 23,
+    "Carbohidratos": 7,
+    "Grasas": 27
+  },
+  {
+    "Id": "d3f6c4f5-eba9-4e41-8e9e-97a625c8e7d9",
+    "Nombre": "Producto 4",
+    "Calorias": 309,
+    "Proteinas": 17,
+    "Carbohidratos": 38,
+    "Grasas": 29
+  },
+  {
+    "Id": "8555e0a2-7b45-4d91-b92d-fcec8023c9b8",
+    "Nombre": "Producto 5",
+    "Calorias": 485,
+    "Proteinas": 35,
+    "Carbohidratos": 60,
+    "Grasas": 16
+  },
+  {
+    "Id": "e7771bb5-4663-4143-b005-d34ec38b4474",
+    "Nombre": "Producto 6",
+    "Calorias": 239,
+    "Proteinas": 6,
+    "Carbohidratos": 87,
+    "Grasas": 27
+  },
+  {
+    "Id": "713b59ab-0a20-44d5-86ee-7aee016d029e",
+    "Nombre": "Producto 7",
+    "Calorias": 412,
+    "Proteinas": 34,
+    "Carbohidratos": 29,
+    "Grasas": 6
+  },
+  {
+    "Id": "fd66bd2a-3435-4119-9324-09250b6dd983",
+    "Nombre": "Producto 8",
+    "Calorias": 395,
+    "Proteinas": 21,
+    "Carbohidratos": 18,
+    "Grasas": 4
+  },
+  {
+    "Id": "a742de85-f28f-422f-937a-2bded923402f",
+    "Nombre": "Producto 9",
+    "Calorias": 146,
+    "Proteinas": 2,
+    "Carbohidratos": 68,
+    "Grasas": 28
+  },
+  {
+    "Id": "d2056170-ed64-4d3b-96b6-217786b5425d",
+    "Nombre": "Producto 10",
+    "Calorias": 208,
+    "Proteinas": 27,
+    "Carbohidratos": 29,
+    "Grasas": 16
+  },
+  {
+    "Id": "d4231e81-4809-41dd-b4dc-4488642cd4fa",
+    "Nombre": "Producto 11",
+    "Calorias": 375,
+    "Proteinas": 0,
+    "Carbohidratos": 58,
+    "Grasas": 28
+  },
+  {
+    "Id": "7359ec3b-bc81-4f43-9102-73f4bacaeac6",
+    "Nombre": "Producto 12",
+    "Calorias": 162,
+    "Proteinas": 10,
+    "Carbohidratos": 42,
+    "Grasas": 6
+  },
+  {
+    "Id": "20d76746-13ff-4d4b-b9e1-ed2af9ac37ff",
+    "Nombre": "Producto 13",
+    "Calorias": 264,
+    "Proteinas": 11,
+    "Carbohidratos": 93,
+    "Grasas": 20
+  },
+  {
+    "Id": "6a6d247e-ed17-428d-989d-77b848a3fcb3",
+    "Nombre": "Producto 14",
+    "Calorias": 388,
+    "Proteinas": 4,
+    "Carbohidratos": 61,
+    "Grasas": 7
+  },
+  {
+    "Id": "b4fe225d-b92f-4a13-97de-70350e215e38",
+    "Nombre": "Producto 15",
+    "Calorias": 146,
+    "Proteinas": 49,
+    "Carbohidratos": 14,
+    "Grasas": 8
+  },
+  {
+    "Id": "bfa59481-f4ac-4faa-bcb6-1f4ff78d1dc1",
+    "Nombre": "Producto 16",
+    "Calorias": 160,
+    "Proteinas": 42,
+    "Carbohidratos": 98,
+    "Grasas": 26
+  },
+  {
+    "Id": "32631c0d-f125-49de-a7bd-ac473e681ae4",
+    "Nombre": "Producto 17",
+    "Calorias": 416,
+    "Proteinas": 3,
+    "Carbohidratos": 73,
+    "Grasas": 4
+  },
+  {
+    "Id": "c64844b7-c54f-46b5-b810-ef274ea23138",
+    "Nombre": "Producto 18",
+    "Calorias": 100,
+    "Proteinas": 7,
+    "Carbohidratos": 3,
+    "Grasas": 22
+  },
+  {
+    "Id": "ccbda754-02ad-4dd7-930e-1db6a4fd7ae3",
+    "Nombre": "Producto 19",
+    "Calorias": 166,
+    "Proteinas": 11,
+    "Carbohidratos": 12,
+    "Grasas": 4
+  },
+  {
+    "Id": "51ef11c1-d027-4b3a-a83c-59de11f05f96",
+    "Nombre": "Producto 20",
+    "Calorias": 288,
+    "Proteinas": 37,
+    "Carbohidratos": 12,
+    "Grasas": 20
+  },
+  {
+    "Id": "ecb901b1-ec11-41f1-b0e3-134638202df2",
+    "Nombre": "Producto 21",
+    "Calorias": 186,
+    "Proteinas": 10,
+    "Carbohidratos": 98,
+    "Grasas": 16
+  },
+  {
+    "Id": "bc5d7606-6c7c-4c12-961a-ef3fb81edff8",
+    "Nombre": "Producto 22",
+    "Calorias": 221,
+    "Proteinas": 35,
+    "Carbohidratos": 32,
+    "Grasas": 0
+  },
+  {
+    "Id": "ccbeda23-f54d-4cac-8890-f471fd461ff0",
+    "Nombre": "Producto 23",
+    "Calorias": 416,
+    "Proteinas": 20,
+    "Carbohidratos": 37,
+    "Grasas": 7
+  },
+  {
+    "Id": "525695e6-e9b2-4df0-bc7d-42e790ec3444",
+    "Nombre": "Producto 24",
+    "Calorias": 289,
+    "Proteinas": 11,
+    "Carbohidratos": 47,
+    "Grasas": 6
+  },
+  {
+    "Id": "94b6313a-6950-49f7-ad51-e598fe3800cc",
+    "Nombre": "Producto 25",
+    "Calorias": 325,
+    "Proteinas": 22,
+    "Carbohidratos": 3,
+    "Grasas": 16
+  },
+  {
+    "Id": "818ae543-8baa-4e85-a472-a54c618c3478",
+    "Nombre": "Producto 26",
+    "Calorias": 447,
+    "Proteinas": 47,
+    "Carbohidratos": 41,
+    "Grasas": 27
+  },
+  {
+    "Id": "c1a3be90-2014-4280-a0a8-a431e18c3b1b",
+    "Nombre": "Producto 27",
+    "Calorias": 391,
+    "Proteinas": 27,
+    "Carbohidratos": 6,
+    "Grasas": 25
+  },
+  {
+    "Id": "d3f20eb4-608c-4e4c-83ad-03596701f3d1",
+    "Nombre": "Producto 28",
+    "Calorias": 483,
+    "Proteinas": 17,
+    "Carbohidratos": 68,
+    "Grasas": 21
+  },
+  {
+    "Id": "47389dad-d0cf-46eb-88a7-9c788f49c940",
+    "Nombre": "Producto 29",
+    "Calorias": 275,
+    "Proteinas": 26,
+    "Carbohidratos": 90,
+    "Grasas": 19
+  },
+  {
+    "Id": "5b79d780-d45f-4405-ae91-dd0bd7a167d7",
+    "Nombre": "Producto 30",
+    "Calorias": 254,
+    "Proteinas": 33,
+    "Carbohidratos": 84,
+    "Grasas": 21
+  },
+  {
+    "Id": "fdc0932f-6a34-42af-9d78-c4af08399107",
+    "Nombre": "Producto 31",
+    "Calorias": 253,
+    "Proteinas": 1,
+    "Carbohidratos": 56,
+    "Grasas": 8
+  },
+  {
+    "Id": "d059cb0d-a9f0-4d67-9bca-7c8e697da74f",
+    "Nombre": "Producto 32",
+    "Calorias": 361,
+    "Proteinas": 14,
+    "Carbohidratos": 35,
+    "Grasas": 17
+  },
+  {
+    "Id": "46873991-7c8f-48a6-9ee6-23bcbb01c3b1",
+    "Nombre": "Producto 33",
+    "Calorias": 431,
+    "Proteinas": 33,
+    "Carbohidratos": 44,
+    "Grasas": 6
+  },
+  {
+    "Id": "4f991c03-489b-4180-a31f-cac6eec1d073",
+    "Nombre": "Producto 34",
+    "Calorias": 285,
+    "Proteinas": 12,
+    "Carbohidratos": 9,
+    "Grasas": 15
+  },
+  {
+    "Id": "b1fbb809-5944-496c-87fa-c00835bdabb9",
+    "Nombre": "Producto 35",
+    "Calorias": 375,
+    "Proteinas": 38,
+    "Carbohidratos": 41,
+    "Grasas": 3
+  },
+  {
+    "Id": "ad731451-550e-44b9-8dde-81c25c1d1f31",
+    "Nombre": "Producto 36",
+    "Calorias": 320,
+    "Proteinas": 7,
+    "Carbohidratos": 30,
+    "Grasas": 17
+  },
+  {
+    "Id": "c95e39eb-3e0a-4df2-b328-fb30a5b671f2",
+    "Nombre": "Producto 37",
+    "Calorias": 167,
+    "Proteinas": 36,
+    "Carbohidratos": 51,
+    "Grasas": 5
+  },
+  {
+    "Id": "068d67e2-93fe-4d4c-ae30-f326c157fe55",
+    "Nombre": "Producto 38",
+    "Calorias": 332,
+    "Proteinas": 29,
+    "Carbohidratos": 87,
+    "Grasas": 11
+  },
+  {
+    "Id": "e4806edd-ac69-4f43-85be-6761c6fe6628",
+    "Nombre": "Producto 39",
+    "Calorias": 409,
+    "Proteinas": 21,
+    "Carbohidratos": 31,
+    "Grasas": 24
+  },
+  {
+    "Id": "5c79ad11-2545-4b6f-b9c8-f6a029428233",
+    "Nombre": "Producto 40",
+    "Calorias": 363,
+    "Proteinas": 8,
+    "Carbohidratos": 48,
+    "Grasas": 3
+  },
+  {
+    "Id": "5daf086c-a52c-43c3-ba6e-1cccc74356a3",
+    "Nombre": "Producto 41",
+    "Calorias": 116,
+    "Proteinas": 34,
+    "Carbohidratos": 67,
+    "Grasas": 17
+  },
+  {
+    "Id": "d9f19e29-61c2-4a80-ad73-1ced8e2961ed",
+    "Nombre": "Producto 42",
+    "Calorias": 319,
+    "Proteinas": 42,
+    "Carbohidratos": 50,
+    "Grasas": 14
+  },
+  {
+    "Id": "6a720d2d-6739-473c-a2e3-161b2e15a8b4",
+    "Nombre": "Producto 43",
+    "Calorias": 247,
+    "Proteinas": 39,
+    "Carbohidratos": 59,
+    "Grasas": 13
+  },
+  {
+    "Id": "967c2ec3-637f-4651-a8ab-9a67c9a431db",
+    "Nombre": "Producto 44",
+    "Calorias": 239,
+    "Proteinas": 34,
+    "Carbohidratos": 14,
+    "Grasas": 14
+  },
+  {
+    "Id": "dceb437f-af8f-4ede-a3e1-f9723898cf0e",
+    "Nombre": "Producto 45",
+    "Calorias": 246,
+    "Proteinas": 7,
+    "Carbohidratos": 7,
+    "Grasas": 16
+  },
+  {
+    "Id": "961da3cf-149a-4407-b91b-842547510f7d",
+    "Nombre": "Producto 46",
+    "Calorias": 208,
+    "Proteinas": 4,
+    "Carbohidratos": 50,
+    "Grasas": 16
+  },
+  {
+    "Id": "30c79550-3cb6-40ed-b6b6-54e608b57958",
+    "Nombre": "Producto 47",
+    "Calorias": 142,
+    "Proteinas": 49,
+    "Carbohidratos": 81,
+    "Grasas": 27
+  },
+  {
+    "Id": "3038b82b-7893-4f6d-9107-514a060dfffe",
+    "Nombre": "Producto 48",
+    "Calorias": 460,
+    "Proteinas": 6,
+    "Carbohidratos": 60,
+    "Grasas": 0
+  },
+  {
+    "Id": "10b6c713-a162-4bf8-b5d5-7cc2247fd6b9",
+    "Nombre": "Producto 49",
+    "Calorias": 266,
+    "Proteinas": 24,
+    "Carbohidratos": 23,
+    "Grasas": 9
+  },
+  {
+    "Id": "79c3996b-79fe-41cf-9a96-28e401845371",
+    "Nombre": "Producto 50",
+    "Calorias": 495,
+    "Proteinas": 22,
+    "Carbohidratos": 20,
+    "Grasas": 3
+  },
+  {
+    "Id": "53f9717c-a86b-471c-9cd5-3acf4201b28e",
+    "Nombre": "Producto 51",
+    "Calorias": 177,
+    "Proteinas": 31,
+    "Carbohidratos": 11,
+    "Grasas": 3
+  },
+  {
+    "Id": "ec306ea9-8a3b-4627-81e6-9a106a4c45ae",
+    "Nombre": "Producto 52",
+    "Calorias": 375,
+    "Proteinas": 36,
+    "Carbohidratos": 25,
+    "Grasas": 12
+  },
+  {
+    "Id": "ff4ecb24-9490-4b30-818f-a74042ff5d4b",
+    "Nombre": "Producto 53",
+    "Calorias": 472,
+    "Proteinas": 29,
+    "Carbohidratos": 29,
+    "Grasas": 16
+  },
+  {
+    "Id": "fd4c0ceb-7fc3-4785-9a1a-12de87bbff00",
+    "Nombre": "Producto 54",
+    "Calorias": 446,
+    "Proteinas": 35,
+    "Carbohidratos": 32,
+    "Grasas": 2
+  },
+  {
+    "Id": "f19a90db-f823-40a0-99a2-46710aa8279c",
+    "Nombre": "Producto 55",
+    "Calorias": 113,
+    "Proteinas": 20,
+    "Carbohidratos": 2,
+    "Grasas": 1
+  },
+  {
+    "Id": "9ff40139-f785-4385-bae5-baa6c53d87f1",
+    "Nombre": "Producto 56",
+    "Calorias": 127,
+    "Proteinas": 3,
+    "Carbohidratos": 93,
+    "Grasas": 24
+  },
+  {
+    "Id": "59a870ea-0cfb-42e4-ba42-40ab02464b88",
+    "Nombre": "Producto 57",
+    "Calorias": 194,
+    "Proteinas": 28,
+    "Carbohidratos": 44,
+    "Grasas": 9
+  },
+  {
+    "Id": "97b77a9d-df61-4ce9-b045-7517ab5a078e",
+    "Nombre": "Producto 58",
+    "Calorias": 422,
+    "Proteinas": 25,
+    "Carbohidratos": 96,
+    "Grasas": 9
+  },
+  {
+    "Id": "f3bf3738-014a-4b82-99c4-48062c5c4d18",
+    "Nombre": "Producto 59",
+    "Calorias": 425,
+    "Proteinas": 42,
+    "Carbohidratos": 21,
+    "Grasas": 13
+  },
+  {
+    "Id": "ba31277e-d3cc-44ec-bfee-4c83e0048e53",
+    "Nombre": "Producto 60",
+    "Calorias": 166,
+    "Proteinas": 48,
+    "Carbohidratos": 78,
+    "Grasas": 22
+  },
+  {
+    "Id": "91b93e55-6dff-4e67-8c23-58caae36ba86",
+    "Nombre": "Producto 61",
+    "Calorias": 152,
+    "Proteinas": 13,
+    "Carbohidratos": 49,
+    "Grasas": 11
+  },
+  {
+    "Id": "8b49e1fc-f6de-48e8-851b-bf407b478620",
+    "Nombre": "Producto 62",
+    "Calorias": 299,
+    "Proteinas": 24,
+    "Carbohidratos": 55,
+    "Grasas": 19
+  },
+  {
+    "Id": "1582815b-f509-4651-b121-dde0d60ed5ab",
+    "Nombre": "Producto 63",
+    "Calorias": 449,
+    "Proteinas": 16,
+    "Carbohidratos": 63,
+    "Grasas": 17
+  },
+  {
+    "Id": "24c38ec6-9294-4132-996b-b32da45fc70f",
+    "Nombre": "Producto 64",
+    "Calorias": 255,
+    "Proteinas": 33,
+    "Carbohidratos": 56,
+    "Grasas": 8
+  },
+  {
+    "Id": "34162068-c89e-4cd3-8e26-5fd70e1788a5",
+    "Nombre": "Producto 65",
+    "Calorias": 57,
+    "Proteinas": 30,
+    "Carbohidratos": 16,
+    "Grasas": 23
+  },
+  {
+    "Id": "fa8e97ce-a537-4e26-aaa5-5a650ca3913a",
+    "Nombre": "Producto 66",
+    "Calorias": 318,
+    "Proteinas": 48,
+    "Carbohidratos": 26,
+    "Grasas": 3
+  },
+  {
+    "Id": "d4a6e243-799b-4dc3-818a-04958b8a15f7",
+    "Nombre": "Producto 67",
+    "Calorias": 444,
+    "Proteinas": 34,
+    "Carbohidratos": 93,
+    "Grasas": 1
+  },
+  {
+    "Id": "c2fa419b-3d66-4a13-bbdb-7a725fd35300",
+    "Nombre": "Producto 68",
+    "Calorias": 483,
+    "Proteinas": 36,
+    "Carbohidratos": 2,
+    "Grasas": 12
+  },
+  {
+    "Id": "8b3ca20c-8a3c-47e8-af78-f3d7d2490b4d",
+    "Nombre": "Producto 69",
+    "Calorias": 385,
+    "Proteinas": 38,
+    "Carbohidratos": 26,
+    "Grasas": 9
+  },
+  {
+    "Id": "28dfb01d-111c-49fe-bfe6-37ab97a46f79",
+    "Nombre": "Producto 70",
+    "Calorias": 478,
+    "Proteinas": 23,
+    "Carbohidratos": 82,
+    "Grasas": 6
+  },
+  {
+    "Id": "4f486138-3487-4f11-ad0e-e92bea32bdb1",
+    "Nombre": "Producto 71",
+    "Calorias": 238,
+    "Proteinas": 17,
+    "Carbohidratos": 96,
+    "Grasas": 10
+  },
+  {
+    "Id": "e84f1f24-cfad-43d9-91ab-420cb415be6b",
+    "Nombre": "Producto 72",
+    "Calorias": 94,
+    "Proteinas": 40,
+    "Carbohidratos": 11,
+    "Grasas": 14
+  },
+  {
+    "Id": "e1f3ed6e-5141-437c-9375-75fd7d07822a",
+    "Nombre": "Producto 73",
+    "Calorias": 294,
+    "Proteinas": 19,
+    "Carbohidratos": 14,
+    "Grasas": 26
+  },
+  {
+    "Id": "1a6f1f9e-5cd3-481c-82c1-86b7ce01e49f",
+    "Nombre": "Producto 74",
+    "Calorias": 312,
+    "Proteinas": 26,
+    "Carbohidratos": 69,
+    "Grasas": 1
+  },
+  {
+    "Id": "15a3adb6-5417-42dc-8caf-d7bf89a49a19",
+    "Nombre": "Producto 75",
+    "Calorias": 225,
+    "Proteinas": 22,
+    "Carbohidratos": 65,
+    "Grasas": 2
+  },
+  {
+    "Id": "de61f59d-ac3a-430a-b7ef-905e64f2f356",
+    "Nombre": "Producto 76",
+    "Calorias": 382,
+    "Proteinas": 0,
+    "Carbohidratos": 68,
+    "Grasas": 19
+  },
+  {
+    "Id": "0b16ae99-cee7-4eb0-a659-eb0e911e646a",
+    "Nombre": "Producto 77",
+    "Calorias": 319,
+    "Proteinas": 35,
+    "Carbohidratos": 78,
+    "Grasas": 14
+  },
+  {
+    "Id": "e03a3e85-7672-44c2-8bd1-cd31b64efa9e",
+    "Nombre": "Producto 78",
+    "Calorias": 327,
+    "Proteinas": 0,
+    "Carbohidratos": 41,
+    "Grasas": 5
+  },
+  {
+    "Id": "01dce377-b9a6-43a5-a28e-b6c586d2f4c3",
+    "Nombre": "Producto 79",
+    "Calorias": 156,
+    "Proteinas": 22,
+    "Carbohidratos": 10,
+    "Grasas": 2
+  },
+  {
+    "Id": "2be23dac-3b86-4ffc-b593-7c32308a2857",
+    "Nombre": "Producto 80",
+    "Calorias": 377,
+    "Proteinas": 9,
+    "Carbohidratos": 56,
+    "Grasas": 13
+  },
+  {
+    "Id": "2675b321-cb8e-4ecd-84d2-ef3fc0cf0cec",
+    "Nombre": "Producto 81",
+    "Calorias": 437,
+    "Proteinas": 12,
+    "Carbohidratos": 18,
+    "Grasas": 13
+  },
+  {
+    "Id": "cb34bef1-1226-4555-9d93-687f4fc3220e",
+    "Nombre": "Producto 82",
+    "Calorias": 83,
+    "Proteinas": 31,
+    "Carbohidratos": 92,
+    "Grasas": 6
+  },
+  {
+    "Id": "cb618d70-e7f8-4d9a-ac56-81553c0068bb",
+    "Nombre": "Producto 83",
+    "Calorias": 484,
+    "Proteinas": 34,
+    "Carbohidratos": 65,
+    "Grasas": 5
+  },
+  {
+    "Id": "73da8676-ae68-4182-a69c-dd27015a510e",
+    "Nombre": "Producto 84",
+    "Calorias": 101,
+    "Proteinas": 28,
+    "Carbohidratos": 34,
+    "Grasas": 26
+  },
+  {
+    "Id": "89dda8f9-4d5a-4850-ad09-f5473c990b8c",
+    "Nombre": "Producto 85",
+    "Calorias": 71,
+    "Proteinas": 9,
+    "Carbohidratos": 32,
+    "Grasas": 20
+  },
+  {
+    "Id": "6c8f66a2-9508-4561-9e6c-0e9efa17752f",
+    "Nombre": "Producto 86",
+    "Calorias": 242,
+    "Proteinas": 47,
+    "Carbohidratos": 64,
+    "Grasas": 16
+  },
+  {
+    "Id": "8dc89818-a940-4495-832e-61cf28bcc7f6",
+    "Nombre": "Producto 87",
+    "Calorias": 204,
+    "Proteinas": 39,
+    "Carbohidratos": 46,
+    "Grasas": 9
+  },
+  {
+    "Id": "7ddc0ece-0d74-44af-9398-fd40ac36bf60",
+    "Nombre": "Producto 88",
+    "Calorias": 144,
+    "Proteinas": 41,
+    "Carbohidratos": 56,
+    "Grasas": 2
+  },
+  {
+    "Id": "35db63c7-3557-4900-8723-4803cf6279cf",
+    "Nombre": "Producto 89",
+    "Calorias": 363,
+    "Proteinas": 10,
+    "Carbohidratos": 39,
+    "Grasas": 11
+  },
+  {
+    "Id": "5301d7e8-dd33-45aa-b00a-ce3b449ed617",
+    "Nombre": "Producto 90",
+    "Calorias": 497,
+    "Proteinas": 26,
+    "Carbohidratos": 99,
+    "Grasas": 23
+  },
+  {
+    "Id": "c572c008-d7c7-452f-b6ff-60432afa1e62",
+    "Nombre": "Producto 91",
+    "Calorias": 436,
+    "Proteinas": 11,
+    "Carbohidratos": 77,
+    "Grasas": 22
+  },
+  {
+    "Id": "252e014a-6dc9-44b3-b37c-5b80fd68e836",
+    "Nombre": "Producto 92",
+    "Calorias": 247,
+    "Proteinas": 30,
+    "Carbohidratos": 79,
+    "Grasas": 7
+  },
+  {
+    "Id": "6cf29651-7f00-4a73-8a0d-17479c0bb86e",
+    "Nombre": "Producto 93",
+    "Calorias": 370,
+    "Proteinas": 7,
+    "Carbohidratos": 6,
+    "Grasas": 27
+  },
+  {
+    "Id": "f8d035e3-a5c1-4aa6-b6c6-3015ef2336cc",
+    "Nombre": "Producto 94",
+    "Calorias": 103,
+    "Proteinas": 20,
+    "Carbohidratos": 75,
+    "Grasas": 23
+  },
+  {
+    "Id": "f2d718e9-cebc-4379-a189-64637fb75711",
+    "Nombre": "Producto 95",
+    "Calorias": 249,
+    "Proteinas": 38,
+    "Carbohidratos": 82,
+    "Grasas": 7
+  },
+  {
+    "Id": "a6e07d43-f6e6-4234-b006-88293a95b029",
+    "Nombre": "Producto 96",
+    "Calorias": 145,
+    "Proteinas": 24,
+    "Carbohidratos": 8,
+    "Grasas": 16
+  },
+  {
+    "Id": "ecfbe579-1126-4870-b7d1-4aef1781bb55",
+    "Nombre": "Producto 97",
+    "Calorias": 191,
+    "Proteinas": 38,
+    "Carbohidratos": 93,
+    "Grasas": 15
+  },
+  {
+    "Id": "9cb849ca-1a79-4131-a39f-16ac824177c1",
+    "Nombre": "Producto 98",
+    "Calorias": 310,
+    "Proteinas": 11,
+    "Carbohidratos": 25,
+    "Grasas": 0
+  },
+  {
+    "Id": "b3c5a510-a3ef-4f28-9e66-911c5cb7331f",
+    "Nombre": "Producto 99",
+    "Calorias": 433,
+    "Proteinas": 44,
+    "Carbohidratos": 38,
+    "Grasas": 0
+  },
+  {
+    "Id": "6c347b49-cae9-455a-9efb-0b1a93df37a7",
+    "Nombre": "Producto 100",
+    "Calorias": 155,
+    "Proteinas": 33,
+    "Carbohidratos": 78,
+    "Grasas": 5
+  }
+]

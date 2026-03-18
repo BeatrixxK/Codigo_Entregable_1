@@ -56,8 +56,4 @@ public class ProductoService
         if (producto.Grasas < 0)
             throw new Exception("Las grasas no pueden ser negativas.");
     }
-<<<<<<< Updated upstream
 }
-=======
-}
->>>>>>> Stashed changes

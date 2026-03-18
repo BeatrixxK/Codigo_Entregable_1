@@ -1,36 +1,4 @@
-# Build folders
 bin/
 obj/
-
-# Visual Studio / VS Code
-.vs/
-.vscode/
-
-# macOS
 .DS_Store
-<<<<<<< Updated upstream
-
-# Logs
-*.log
-
-# .NET user files
-*.user
-*.suo
-
-# NuGet
-*.nupkg
-
-# Runtime
-*.runtimeconfig.json
-
-# Ignore data file if you don't want it versioned
-# src/DragonNutrex.App/Data/usuarios.json
-=======
-src/DragonNutrex.App/Data/usuarios.json
-bin/
-obj/
 .vscode/
-.vs/
-.DS_Store
-*.log
->>>>>>> Stashed changes
