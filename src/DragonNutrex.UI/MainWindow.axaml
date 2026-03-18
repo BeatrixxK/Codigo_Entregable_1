@@ -1,9 +1,13 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+<<<<<<< Updated upstream
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:controls="clr-namespace:Avalonia.Controls;assembly=Avalonia.Controls.DataGrid"
         mc:Ignorable="d"
+=======
+        xmlns:controls="clr-namespace:Avalonia.Controls;assembly=Avalonia.Controls.DataGrid"
+>>>>>>> Stashed changes
         x:Class="DragonNutrex.UI.MainWindow"
         Width="1100"
         Height="750"
@@ -18,16 +22,30 @@
 
     <StackPanel Margin="20" Spacing="10">
 
+<<<<<<< Updated upstream
+=======
+        <!-- MENSAJE SUPERIOR -->
+>>>>>>> Stashed changes
         <Border Background="#1E1E1E"
                 Padding="10"
                 CornerRadius="6"
                 Margin="0,0,0,10">
+<<<<<<< Updated upstream
             <TextBlock Text="Seleccione un módulo para agregar, visualizar, editar o eliminar datos y realizar cálculos."
                        FontSize="24"
+=======
+
+            <TextBlock Text="Seleccione un módulo para agregar, visualizar, editar o eliminar datos y realizar cálculos."
+                       FontSize="14"
+>>>>>>> Stashed changes
                        Foreground="#CCCCCC"
                        TextWrapping="Wrap"/>
         </Border>
 
+<<<<<<< Updated upstream
+=======
+        <!-- MENÚ -->
+>>>>>>> Stashed changes
         <StackPanel Orientation="Horizontal" Spacing="10">
             <Button x:Name="UsuariosModuloButton" Content="Usuarios" Width="120"/>
             <Button x:Name="ProductosModuloButton" Content="Productos" Width="120"/>
@@ -36,6 +54,7 @@
             <Button x:Name="EstadisticasModuloButton" Content="Estadísticas" Width="120"/>
         </StackPanel>
 
+<<<<<<< Updated upstream
         <!-- ========================= -->
         <!-- PANEL USUARIOS -->
         <!-- ========================= -->
@@ -78,6 +97,24 @@
                          Grid.Column="1"
                          Margin="0,0,0,10"
                          Watermark="Tipo Dieta"/>
+=======
+        <!-- ===================== -->
+        <!-- USUARIOS -->
+        <!-- ===================== -->
+        <StackPanel x:Name="UsuariosPanel" Spacing="10">
+
+            <TextBlock Text="Gestión de Usuarios" FontSize="24"/>
+
+            <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto">
+                <TextBox x:Name="NombreTextBox" Grid.Row="0" Grid.Column="0" Margin="0,0,10,10" Watermark="Nombre"/>
+                <TextBox x:Name="PesoTextBox" Grid.Row="0" Grid.Column="1" Margin="0,0,0,10" Watermark="Peso"/>
+
+                <TextBox x:Name="AlturaTextBox" Grid.Row="1" Grid.Column="0" Margin="0,0,10,10" Watermark="Altura"/>
+                <TextBox x:Name="ActividadTextBox" Grid.Row="1" Grid.Column="1" Margin="0,0,0,10" Watermark="Actividad"/>
+
+                <TextBox x:Name="ObjetivoTextBox" Grid.Row="2" Grid.Column="0" Margin="0,0,10,10" Watermark="Objetivo"/>
+                <TextBox x:Name="TipoDietaTextBox" Grid.Row="2" Grid.Column="1" Margin="0,0,0,10" Watermark="Tipo Dieta"/>
+>>>>>>> Stashed changes
             </Grid>
 
             <StackPanel Orientation="Horizontal" Spacing="10">
@@ -86,6 +123,7 @@
                 <Button x:Name="LimpiarButton" Content="Limpiar" Width="120"/>
             </StackPanel>
 
+<<<<<<< Updated upstream
             <Border BorderThickness="1"
                     BorderBrush="Gray"
                     CornerRadius="4">
@@ -94,6 +132,13 @@
                                    GridLinesVisibility="All"
                                    AutoGenerateColumns="False"
                                    IsReadOnly="True">
+=======
+            <Border BorderThickness="1" BorderBrush="Gray" CornerRadius="4">
+                <controls:DataGrid x:Name="UsuariosDataGrid"
+                                   Height="200"
+                                   GridLinesVisibility="All"
+                                   AutoGenerateColumns="False">
+>>>>>>> Stashed changes
                     <controls:DataGrid.Columns>
                         <controls:DataGridTextColumn Header="Nombre" Binding="{Binding Nombre}"/>
                         <controls:DataGridTextColumn Header="Peso" Binding="{Binding Peso}"/>
@@ -104,6 +149,7 @@
                     </controls:DataGrid.Columns>
                 </controls:DataGrid>
             </Border>
+<<<<<<< Updated upstream
         </StackPanel>
 
         <!-- ========================= -->
@@ -142,6 +188,26 @@
                          Grid.Column="0"
                          Margin="0,0,10,10"
                          Watermark="Grasas"/>
+=======
+
+        </StackPanel>
+
+        <!-- ===================== -->
+        <!-- PRODUCTOS -->
+        <!-- ===================== -->
+        <StackPanel x:Name="ProductosPanel" IsVisible="False" Spacing="10">
+
+            <TextBlock Text="Gestión de Productos" FontSize="24"/>
+
+            <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto">
+                <TextBox x:Name="ProductoNombreTextBox" Grid.Row="0" Grid.Column="0" Margin="0,0,10,10" Watermark="Nombre"/>
+                <TextBox x:Name="CaloriasTextBox" Grid.Row="0" Grid.Column="1" Margin="0,0,0,10" Watermark="Calorías"/>
+
+                <TextBox x:Name="ProteinasTextBox" Grid.Row="1" Grid.Column="0" Margin="0,0,10,10" Watermark="Proteínas"/>
+                <TextBox x:Name="CarbohidratosTextBox" Grid.Row="1" Grid.Column="1" Margin="0,0,0,10" Watermark="Carbohidratos"/>
+
+                <TextBox x:Name="GrasasTextBox" Grid.Row="2" Grid.Column="0" Margin="0,0,10,10" Watermark="Grasas"/>
+>>>>>>> Stashed changes
             </Grid>
 
             <StackPanel Orientation="Horizontal" Spacing="10">
@@ -150,6 +216,7 @@
                 <Button x:Name="LimpiarProductoButton" Content="Limpiar" Width="120"/>
             </StackPanel>
 
+<<<<<<< Updated upstream
             <Border BorderThickness="1"
                     BorderBrush="Gray"
                     CornerRadius="4">
@@ -158,6 +225,13 @@
                                    GridLinesVisibility="All"
                                    AutoGenerateColumns="False"
                                    IsReadOnly="True">
+=======
+            <Border BorderThickness="1" BorderBrush="Gray">
+                <controls:DataGrid x:Name="ProductosDataGrid"
+                                   Height="200"
+                                   GridLinesVisibility="All"
+                                   AutoGenerateColumns="False">
+>>>>>>> Stashed changes
                     <controls:DataGrid.Columns>
                         <controls:DataGridTextColumn Header="Nombre" Binding="{Binding Nombre}"/>
                         <controls:DataGridTextColumn Header="Calorías" Binding="{Binding Calorias}"/>
@@ -167,6 +241,10 @@
                     </controls:DataGrid.Columns>
                 </controls:DataGrid>
             </Border>
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
         </StackPanel>
 
     </StackPanel>

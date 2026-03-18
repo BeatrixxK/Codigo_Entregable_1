@@ -20,6 +20,7 @@ public partial class MainWindow : Window
 
     public MainWindow()
     {
+<<<<<<< Updated upstream
         try
         {
             InitializeComponent();
@@ -107,6 +108,55 @@ private async void GuardarUsuario(object? sender, RoutedEventArgs e)
         await MostrarMensaje(ex.Message);
     }
 }
+=======
+        InitializeComponent();
+
+        _usuarioController = new UsuarioController(new UsuarioService(new UsuarioRepository()));
+        _productoController = new ProductoController(new ProductoService(new ProductoRepository()));
+
+        GuardarButton.Click += GuardarUsuario;
+        EliminarButton.Click += EliminarUsuario;
+        LimpiarButton.Click += (_, _) => LimpiarUsuario();
+
+        GuardarProductoButton.Click += GuardarProducto;
+        EliminarProductoButton.Click += EliminarProducto;
+        LimpiarProductoButton.Click += (_, _) => LimpiarProducto();
+
+        UsuariosModuloButton.Click += (_, _) =>
+        {
+            UsuariosPanel.IsVisible = true;
+            ProductosPanel.IsVisible = false;
+        };
+
+        ProductosModuloButton.Click += (_, _) =>
+        {
+            UsuariosPanel.IsVisible = false;
+            ProductosPanel.IsVisible = true;
+        };
+
+        CargarUsuarios();
+        CargarProductos();
+    }
+
+    // ================= USUARIOS =================
+
+    private void GuardarUsuario(object? sender, RoutedEventArgs e)
+    {
+        var usuario = new Usuario
+        {
+            Nombre = NombreTextBox.Text ?? "",
+            Peso = decimal.Parse(PesoTextBox.Text ?? "0"),
+            Altura = decimal.Parse(AlturaTextBox.Text ?? "0"),
+            Actividad = ActividadTextBox.Text ?? "",
+            Objetivo = ObjetivoTextBox.Text ?? "",
+            TipoDieta = TipoDietaTextBox.Text ?? ""
+        };
+
+        _usuarioController.CrearUsuario(usuario);
+        CargarUsuarios();
+        LimpiarUsuario();
+    }
+>>>>>>> Stashed changes
 
     private async void EliminarUsuario(object? sender, RoutedEventArgs e)
     {
@@ -117,6 +167,7 @@ private async void GuardarUsuario(object? sender, RoutedEventArgs e)
 
             _usuarioController.EliminarUsuario(usuario.Id);
             CargarUsuarios();
+<<<<<<< Updated upstream
             LimpiarUsuario();
         }
     }
@@ -135,25 +186,34 @@ private async void GuardarUsuario(object? sender, RoutedEventArgs e)
             TipoDietaTextBox.Text = usuario.TipoDieta;
 
             GuardarButton.Content = "Actualizar";
+=======
+>>>>>>> Stashed changes
         }
     }
 
     private void CargarUsuarios()
     {
+<<<<<<< Updated upstream
         UsuariosDataGrid.ItemsSource = null;
+=======
+>>>>>>> Stashed changes
         UsuariosDataGrid.ItemsSource = _usuarioController.ObtenerUsuarios();
     }
 
     private void LimpiarUsuario()
     {
+<<<<<<< Updated upstream
         _usuarioSeleccionado = null;
 
+=======
+>>>>>>> Stashed changes
         NombreTextBox.Text = "";
         PesoTextBox.Text = "";
         AlturaTextBox.Text = "";
         ActividadTextBox.Text = "";
         ObjetivoTextBox.Text = "";
         TipoDietaTextBox.Text = "";
+<<<<<<< Updated upstream
 
         UsuariosDataGrid.SelectedItem = null;
         GuardarButton.Content = "Guardar";
@@ -199,6 +259,27 @@ private async void GuardarUsuario(object? sender, RoutedEventArgs e)
         await MostrarMensaje(ex.Message);
     }
 }
+=======
+    }
+
+    // ================= PRODUCTOS =================
+
+    private void GuardarProducto(object? sender, RoutedEventArgs e)
+    {
+        var producto = new Producto
+        {
+            Nombre = ProductoNombreTextBox.Text ?? "",
+            Calorias = decimal.Parse(CaloriasTextBox.Text ?? "0"),
+            Proteinas = decimal.Parse(ProteinasTextBox.Text ?? "0"),
+            Carbohidratos = decimal.Parse(CarbohidratosTextBox.Text ?? "0"),
+            Grasas = decimal.Parse(GrasasTextBox.Text ?? "0")
+        };
+
+        _productoController.CrearProducto(producto);
+        CargarProductos();
+        LimpiarProducto();
+    }
+>>>>>>> Stashed changes
 
     private async void EliminarProducto(object? sender, RoutedEventArgs e)
     {
@@ -209,6 +290,7 @@ private async void GuardarUsuario(object? sender, RoutedEventArgs e)
 
             _productoController.EliminarProducto(producto.Id);
             CargarProductos();
+<<<<<<< Updated upstream
             LimpiarProducto();
         }
     }
@@ -226,24 +308,33 @@ private async void GuardarUsuario(object? sender, RoutedEventArgs e)
             GrasasTextBox.Text = producto.Grasas.ToString();
 
             GuardarProductoButton.Content = "Actualizar Producto";
+=======
+>>>>>>> Stashed changes
         }
     }
 
     private void CargarProductos()
     {
+<<<<<<< Updated upstream
         ProductosDataGrid.ItemsSource = null;
+=======
+>>>>>>> Stashed changes
         ProductosDataGrid.ItemsSource = _productoController.ObtenerProductos();
     }
 
     private void LimpiarProducto()
     {
+<<<<<<< Updated upstream
         _productoSeleccionado = null;
 
+=======
+>>>>>>> Stashed changes
         ProductoNombreTextBox.Text = "";
         CaloriasTextBox.Text = "";
         ProteinasTextBox.Text = "";
         CarbohidratosTextBox.Text = "";
         GrasasTextBox.Text = "";
+<<<<<<< Updated upstream
 
         ProductosDataGrid.SelectedItem = null;
         GuardarProductoButton.Content = "Guardar Producto";
@@ -305,5 +396,39 @@ private async void GuardarUsuario(object? sender, RoutedEventArgs e)
 
         ventana.Show();
         return await tcs.Task;
+=======
+    }
+
+    // ================= CONFIRMACIÓN =================
+
+    private async Task<bool> Confirmar(string mensaje)
+    {
+        var dialog = new Window
+        {
+            Title = "Confirmación",
+            Width = 300,
+            Height = 150
+        };
+
+        bool resultado = false;
+
+        var si = new Button { Content = "Sí" };
+        var no = new Button { Content = "No" };
+
+        si.Click += (_, _) => { resultado = true; dialog.Close(); };
+        no.Click += (_, _) => { resultado = false; dialog.Close(); };
+
+        dialog.Content = new StackPanel
+        {
+            Children =
+            {
+                new TextBlock { Text = mensaje },
+                new StackPanel { Orientation = Avalonia.Layout.Orientation.Horizontal, Children = { si, no } }
+            }
+        };
+
+        await dialog.ShowDialog(this);
+        return resultado;
+>>>>>>> Stashed changes
     }
 }
