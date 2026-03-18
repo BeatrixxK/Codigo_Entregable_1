@@ -18,6 +18,15 @@
     "TipoDieta": "balanceada"
   },
   {
+    "Id": "d76d5f2d-bf9a-4e59-8e14-2f47556d2103",
+    "Nombre": "Diego Lopez",
+    "Peso": 150,
+    "Altura": 150,
+    "Actividad": "Nadar",
+    "Objetivo": "Perder peso",
+    "TipoDieta": "Carnivora"
+  },
+  {
     "Id": "fceab998-93fe-41a5-973f-27561ade0ddb",
     "Nombre": "Jose Juan",
     "Peso": 150,

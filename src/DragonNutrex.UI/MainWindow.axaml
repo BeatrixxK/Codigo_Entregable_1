@@ -1,0 +1,173 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:controls="clr-namespace:Avalonia.Controls;assembly=Avalonia.Controls.DataGrid"
+        mc:Ignorable="d"
+        x:Class="DragonNutrex.UI.MainWindow"
+        Width="1100"
+        Height="750"
+        Title="DragonNutrex">
+
+    <Window.Styles>
+        <Style Selector="DataGridRow:selected">
+            <Setter Property="Background" Value="#2D6CDF"/>
+            <Setter Property="Foreground" Value="White"/>
+        </Style>
+    </Window.Styles>
+
+    <StackPanel Margin="20" Spacing="10">
+
+        <Border Background="#1E1E1E"
+                Padding="10"
+                CornerRadius="6"
+                Margin="0,0,0,10">
+            <TextBlock Text="Seleccione un módulo para agregar, visualizar, editar o eliminar datos y realizar cálculos."
+                       FontSize="24"
+                       Foreground="#CCCCCC"
+                       TextWrapping="Wrap"/>
+        </Border>
+
+        <StackPanel Orientation="Horizontal" Spacing="10">
+            <Button x:Name="UsuariosModuloButton" Content="Usuarios" Width="120"/>
+            <Button x:Name="ProductosModuloButton" Content="Productos" Width="120"/>
+            <Button x:Name="MenusModuloButton" Content="Menús" Width="120"/>
+            <Button x:Name="NutricionModuloButton" Content="Nutrición" Width="120"/>
+            <Button x:Name="EstadisticasModuloButton" Content="Estadísticas" Width="120"/>
+        </StackPanel>
+
+        <!-- ========================= -->
+        <!-- PANEL USUARIOS -->
+        <!-- ========================= -->
+        <StackPanel x:Name="UsuariosPanel" Spacing="10">
+            <TextBlock Text="Gestión de Usuarios" FontSize="24"/>
+
+            <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto">
+                <TextBox x:Name="NombreTextBox"
+                         Grid.Row="0"
+                         Grid.Column="0"
+                         Margin="0,0,10,10"
+                         Watermark="Nombre"/>
+
+                <TextBox x:Name="PesoTextBox"
+                         Grid.Row="0"
+                         Grid.Column="1"
+                         Margin="0,0,0,10"
+                         Watermark="Peso"/>
+
+                <TextBox x:Name="AlturaTextBox"
+                         Grid.Row="1"
+                         Grid.Column="0"
+                         Margin="0,0,10,10"
+                         Watermark="Altura"/>
+
+                <TextBox x:Name="ActividadTextBox"
+                         Grid.Row="1"
+                         Grid.Column="1"
+                         Margin="0,0,0,10"
+                         Watermark="Actividad"/>
+
+                <TextBox x:Name="ObjetivoTextBox"
+                         Grid.Row="2"
+                         Grid.Column="0"
+                         Margin="0,0,10,10"
+                         Watermark="Objetivo"/>
+
+                <TextBox x:Name="TipoDietaTextBox"
+                         Grid.Row="2"
+                         Grid.Column="1"
+                         Margin="0,0,0,10"
+                         Watermark="Tipo Dieta"/>
+            </Grid>
+
+            <StackPanel Orientation="Horizontal" Spacing="10">
+                <Button x:Name="GuardarButton" Content="Guardar" Width="140"/>
+                <Button x:Name="EliminarButton" Content="Eliminar seleccionado" Width="180"/>
+                <Button x:Name="LimpiarButton" Content="Limpiar" Width="120"/>
+            </StackPanel>
+
+            <Border BorderThickness="1"
+                    BorderBrush="Gray"
+                    CornerRadius="4">
+                <controls:DataGrid x:Name="UsuariosDataGrid"
+                                   Height="200"
+                                   GridLinesVisibility="All"
+                                   AutoGenerateColumns="False"
+                                   IsReadOnly="True">
+                    <controls:DataGrid.Columns>
+                        <controls:DataGridTextColumn Header="Nombre" Binding="{Binding Nombre}"/>
+                        <controls:DataGridTextColumn Header="Peso" Binding="{Binding Peso}"/>
+                        <controls:DataGridTextColumn Header="Altura" Binding="{Binding Altura}"/>
+                        <controls:DataGridTextColumn Header="Actividad" Binding="{Binding Actividad}"/>
+                        <controls:DataGridTextColumn Header="Objetivo" Binding="{Binding Objetivo}"/>
+                        <controls:DataGridTextColumn Header="Tipo Dieta" Binding="{Binding TipoDieta}"/>
+                    </controls:DataGrid.Columns>
+                </controls:DataGrid>
+            </Border>
+        </StackPanel>
+
+        <!-- ========================= -->
+        <!-- PANEL PRODUCTOS -->
+        <!-- ========================= -->
+        <StackPanel x:Name="ProductosPanel" IsVisible="False" Spacing="10">
+            <TextBlock Text="Gestión de Productos" FontSize="24"/>
+
+            <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto">
+                <TextBox x:Name="ProductoNombreTextBox"
+                         Grid.Row="0"
+                         Grid.Column="0"
+                         Margin="0,0,10,10"
+                         Watermark="Nombre"/>
+
+                <TextBox x:Name="CaloriasTextBox"
+                         Grid.Row="0"
+                         Grid.Column="1"
+                         Margin="0,0,0,10"
+                         Watermark="Calorías"/>
+
+                <TextBox x:Name="ProteinasTextBox"
+                         Grid.Row="1"
+                         Grid.Column="0"
+                         Margin="0,0,10,10"
+                         Watermark="Proteínas"/>
+
+                <TextBox x:Name="CarbohidratosTextBox"
+                         Grid.Row="1"
+                         Grid.Column="1"
+                         Margin="0,0,0,10"
+                         Watermark="Carbohidratos"/>
+
+                <TextBox x:Name="GrasasTextBox"
+                         Grid.Row="2"
+                         Grid.Column="0"
+                         Margin="0,0,10,10"
+                         Watermark="Grasas"/>
+            </Grid>
+
+            <StackPanel Orientation="Horizontal" Spacing="10">
+                <Button x:Name="GuardarProductoButton" Content="Guardar Producto" Width="160"/>
+                <Button x:Name="EliminarProductoButton" Content="Eliminar seleccionado" Width="180"/>
+                <Button x:Name="LimpiarProductoButton" Content="Limpiar" Width="120"/>
+            </StackPanel>
+
+            <Border BorderThickness="1"
+                    BorderBrush="Gray"
+                    CornerRadius="4">
+                <controls:DataGrid x:Name="ProductosDataGrid"
+                                   Height="200"
+                                   GridLinesVisibility="All"
+                                   AutoGenerateColumns="False"
+                                   IsReadOnly="True">
+                    <controls:DataGrid.Columns>
+                        <controls:DataGridTextColumn Header="Nombre" Binding="{Binding Nombre}"/>
+                        <controls:DataGridTextColumn Header="Calorías" Binding="{Binding Calorias}"/>
+                        <controls:DataGridTextColumn Header="Proteínas" Binding="{Binding Proteinas}"/>
+                        <controls:DataGridTextColumn Header="Carbohidratos" Binding="{Binding Carbohidratos}"/>
+                        <controls:DataGridTextColumn Header="Grasas" Binding="{Binding Grasas}"/>
+                    </controls:DataGrid.Columns>
+                </controls:DataGrid>
+            </Border>
+        </StackPanel>
+
+    </StackPanel>
+</Window>
