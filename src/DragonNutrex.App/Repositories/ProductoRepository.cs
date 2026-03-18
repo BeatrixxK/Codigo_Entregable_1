@@ -1,9 +1,12 @@
+<<<<<<< Updated upstream
 /*	Create → guarda un producto nuevo
 	Update → actualiza un producto existente
 	Delete → elimina un producto
 	GetAll → devuelve todos los productos
 	GetById → busca un producto por id*/
 
+=======
+>>>>>>> Stashed changes
 using DragonNutrex.App.Interfaces;
 using DragonNutrex.App.Models;
 using DragonNutrex.App.Utils;
@@ -62,5 +65,9 @@ public class ProductoRepository : IRepository<Producto>
     {
         return GetAll().FirstOrDefault(p => p.Id == id);
     }
+<<<<<<< Updated upstream
 }
 
+=======
+}
+>>>>>>> Stashed changes

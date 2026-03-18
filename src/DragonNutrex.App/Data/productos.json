@@ -1,8 +1,14 @@
 [
   {
+<<<<<<< Updated upstream
     "Id": "7666abf7-f92b-4985-abd1-e428de2f1f86",
     "Nombre": "Batido Proteina",
     "Calorias": 125,
+=======
+    "Id": "ebc904b8-857f-4e9c-9c4d-ccd81c287196",
+    "Nombre": "Batido proteina",
+    "Calorias": 100,
+>>>>>>> Stashed changes
     "Proteinas": 30,
     "Carbohidratos": 0,
     "Grasas": 0
