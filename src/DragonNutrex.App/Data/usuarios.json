@@ -1,0 +1,29 @@
+[
+  {
+    "Id": "0026a7d1-52fa-40d9-8001-66aeac91a56b",
+    "Nombre": "Stephanie",
+    "Peso": 90,
+    "Altura": 1.65,
+    "Actividad": "Moderada",
+    "Objetivo": "Mantener peso",
+    "TipoDieta": "Balanceada"
+  },
+  {
+    "Id": "15c8c285-e394-4953-ae96-b5d862f7a843",
+    "Nombre": "Jose Rojas",
+    "Peso": 180,
+    "Altura": 210,
+    "Actividad": "correr",
+    "Objetivo": "quemar grasa",
+    "TipoDieta": "balanceada"
+  },
+  {
+    "Id": "fceab998-93fe-41a5-973f-27561ade0ddb",
+    "Nombre": "Jose Juan",
+    "Peso": 150,
+    "Altura": 220,
+    "Actividad": "Salto",
+    "Objetivo": "Rapidez",
+    "TipoDieta": "Carnivora"
+  }
+]
