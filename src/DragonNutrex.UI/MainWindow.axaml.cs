@@ -15,21 +15,36 @@ namespace DragonNutrex.UI;
 public partial class MainWindow : Window
 {
     private readonly UsuarioController _usuarioController;
+    private readonly ProductoController _productoController;
+
     private Usuario? _usuarioSeleccionado;
+    private Producto? _productoSeleccionado;
 
     public MainWindow()
     {
         InitializeComponent();
 
-        var repo = new UsuarioRepository();
-        var service = new UsuarioService(repo);
-        _usuarioController = new UsuarioController(service);
+        var usuarioRepo = new UsuarioRepository();
+        var usuarioService = new UsuarioService(usuarioRepo);
+        _usuarioController = new UsuarioController(usuarioService);
 
+        var productoRepo = new ProductoRepository();
+        var productoService = new ProductoService(productoRepo);
+        _productoController = new ProductoController(productoService);
+
+        // Usuarios
         GuardarButton.Click += GuardarUsuario;
         EliminarButton.Click += EliminarUsuario;
         LimpiarButton.Click += LimpiarFormularioClick;
         UsuariosDataGrid.SelectionChanged += UsuariosDataGrid_SelectionChanged;
 
+        // Productos
+        GuardarProductoButton.Click += GuardarProducto;
+        EliminarProductoButton.Click += EliminarProducto;
+        LimpiarProductoButton.Click += LimpiarProductoFormularioClick;
+        ProductosDataGrid.SelectionChanged += ProductosDataGrid_SelectionChanged;
+
+        // Navegación
         UsuariosModuloButton.Click += UsuariosModuloClick;
         ProductosModuloButton.Click += ProductosModuloClick;
         MenusModuloButton.Click += MenusModuloClick;
@@ -37,7 +52,12 @@ public partial class MainWindow : Window
         EstadisticasModuloButton.Click += EstadisticasModuloClick;
 
         CargarUsuarios();
+        CargarProductos();
     }
+
+    // =========================
+    // USUARIOS
+    // =========================
 
     private async void GuardarUsuario(object? sender, RoutedEventArgs e)
     {
@@ -76,7 +96,7 @@ public partial class MainWindow : Window
         }
         catch (Exception ex)
         {
-            await MostrarMensaje($"Error al guardar: {ex.Message}");
+            await MostrarMensaje($"Error: {ex.Message}");
         }
     }
 
@@ -84,26 +104,18 @@ public partial class MainWindow : Window
     {
         if (UsuariosDataGrid.SelectedItem is not Usuario usuario)
         {
-            await MostrarMensaje("Seleccione un usuario para eliminar.");
+            await MostrarMensaje("Seleccione un usuario.");
             return;
         }
 
-        bool confirmar = await MostrarConfirmacion($"¿Seguro que deseas eliminar a {usuario.Nombre}?");
+        bool confirmar = await MostrarConfirmacion($"¿Eliminar a {usuario.Nombre}?");
 
         if (!confirmar)
             return;
 
-        try
-        {
-            _usuarioController.EliminarUsuario(usuario.Id);
-            LimpiarFormulario();
-            CargarUsuarios();
-            await MostrarMensaje("Usuario eliminado correctamente.");
-        }
-        catch (Exception ex)
-        {
-            await MostrarMensaje($"Error al eliminar: {ex.Message}");
-        }
+        _usuarioController.EliminarUsuario(usuario.Id);
+        LimpiarFormulario();
+        CargarUsuarios();
     }
 
     private void UsuariosDataGrid_SelectionChanged(object? sender, SelectionChangedEventArgs e)
@@ -125,9 +137,8 @@ public partial class MainWindow : Window
 
     private void CargarUsuarios()
     {
-        List<Usuario> usuarios = _usuarioController.ObtenerUsuarios();
         UsuariosDataGrid.ItemsSource = null;
-        UsuariosDataGrid.ItemsSource = usuarios;
+        UsuariosDataGrid.ItemsSource = _usuarioController.ObtenerUsuarios();
     }
 
     private void LimpiarFormulario()
@@ -141,7 +152,6 @@ public partial class MainWindow : Window
         ObjetivoTextBox.Text = "";
         TipoDietaTextBox.Text = "";
 
-        UsuariosDataGrid.SelectedItem = null;
         GuardarButton.Content = "Guardar";
     }
 
@@ -150,64 +160,154 @@ public partial class MainWindow : Window
         LimpiarFormulario();
     }
 
-    private async void UsuariosModuloClick(object? sender, RoutedEventArgs e)
+    // =========================
+    // PRODUCTOS
+    // =========================
+
+    private async void GuardarProducto(object? sender, RoutedEventArgs e)
     {
-        await MostrarMensaje("Módulo de Usuarios activo.");
+        try
+        {
+            if (_productoSeleccionado == null)
+            {
+                var producto = new Producto
+                {
+                    Nombre = ProductoNombreTextBox.Text ?? "",
+                    Calorias = decimal.Parse(CaloriasTextBox.Text ?? "0"),
+                    Proteinas = decimal.Parse(ProteinasTextBox.Text ?? "0"),
+                    Carbohidratos = decimal.Parse(CarbohidratosTextBox.Text ?? "0"),
+                    Grasas = decimal.Parse(GrasasTextBox.Text ?? "0")
+                };
+
+                _productoController.CrearProducto(producto);
+                await MostrarMensaje("Producto guardado.");
+            }
+            else
+            {
+                _productoSeleccionado.Nombre = ProductoNombreTextBox.Text ?? "";
+                _productoSeleccionado.Calorias = decimal.Parse(CaloriasTextBox.Text ?? "0");
+                _productoSeleccionado.Proteinas = decimal.Parse(ProteinasTextBox.Text ?? "0");
+                _productoSeleccionado.Carbohidratos = decimal.Parse(CarbohidratosTextBox.Text ?? "0");
+                _productoSeleccionado.Grasas = decimal.Parse(GrasasTextBox.Text ?? "0");
+
+                _productoController.ActualizarProducto(_productoSeleccionado);
+                await MostrarMensaje("Producto actualizado.");
+            }
+
+            LimpiarProductoFormulario();
+            CargarProductos();
+        }
+        catch (Exception ex)
+        {
+            await MostrarMensaje($"Error: {ex.Message}");
+        }
     }
 
-    private async void ProductosModuloClick(object? sender, RoutedEventArgs e)
+    private async void EliminarProducto(object? sender, RoutedEventArgs e)
     {
-        await MostrarMensaje("Placeholder: aquí irá el módulo de Productos.");
+        if (ProductosDataGrid.SelectedItem is not Producto producto)
+        {
+            await MostrarMensaje("Seleccione un producto.");
+            return;
+        }
+
+        bool confirmar = await MostrarConfirmacion($"¿Eliminar {producto.Nombre}?");
+
+        if (!confirmar)
+            return;
+
+        _productoController.EliminarProducto(producto.Id);
+        LimpiarProductoFormulario();
+        CargarProductos();
+    }
+
+    private void ProductosDataGrid_SelectionChanged(object? sender, SelectionChangedEventArgs e)
+    {
+        if (ProductosDataGrid.SelectedItem is Producto producto)
+        {
+            _productoSeleccionado = producto;
+
+            ProductoNombreTextBox.Text = producto.Nombre;
+            CaloriasTextBox.Text = producto.Calorias.ToString();
+            ProteinasTextBox.Text = producto.Proteinas.ToString();
+            CarbohidratosTextBox.Text = producto.Carbohidratos.ToString();
+            GrasasTextBox.Text = producto.Grasas.ToString();
+
+            GuardarProductoButton.Content = "Actualizar Producto";
+        }
+    }
+
+    private void CargarProductos()
+    {
+        ProductosDataGrid.ItemsSource = null;
+        ProductosDataGrid.ItemsSource = _productoController.ObtenerProductos();
+    }
+
+    private void LimpiarProductoFormulario()
+    {
+        _productoSeleccionado = null;
+
+        ProductoNombreTextBox.Text = "";
+        CaloriasTextBox.Text = "";
+        ProteinasTextBox.Text = "";
+        CarbohidratosTextBox.Text = "";
+        GrasasTextBox.Text = "";
+
+        GuardarProductoButton.Content = "Guardar Producto";
+    }
+
+    private void LimpiarProductoFormularioClick(object? sender, RoutedEventArgs e)
+    {
+        LimpiarProductoFormulario();
+    }
+
+    // =========================
+    // NAVEGACIÓN
+    // =========================
+
+    private void UsuariosModuloClick(object? sender, RoutedEventArgs e)
+    {
+        UsuariosPanel.IsVisible = true;
+        ProductosPanel.IsVisible = false;
+    }
+
+    private void ProductosModuloClick(object? sender, RoutedEventArgs e)
+    {
+        UsuariosPanel.IsVisible = false;
+        ProductosPanel.IsVisible = true;
     }
 
     private async void MenusModuloClick(object? sender, RoutedEventArgs e)
     {
-        await MostrarMensaje("Placeholder: aquí irá el módulo de Menús.");
+        await MostrarMensaje("Módulo Menús próximamente.");
     }
 
     private async void NutricionModuloClick(object? sender, RoutedEventArgs e)
     {
-        await MostrarMensaje("Placeholder: aquí irá el módulo de Nutrición.");
+        await MostrarMensaje("Módulo Nutrición próximamente.");
     }
 
     private async void EstadisticasModuloClick(object? sender, RoutedEventArgs e)
     {
-        await MostrarMensaje("Placeholder: aquí irá el módulo de Estadísticas.");
+        await MostrarMensaje("Módulo Estadísticas próximamente.");
     }
+
+    // =========================
+    // UTILIDADES UI
+    // =========================
 
     private async Task MostrarMensaje(string mensaje)
     {
         var ventana = new Window
         {
             Title = "Mensaje",
-            Width = 400,
-            Height = 180,
-            WindowStartupLocation = WindowStartupLocation.CenterOwner
-        };
-
-        var texto = new TextBlock
-        {
-            Text = mensaje,
-            TextWrapping = TextWrapping.Wrap
-        };
-
-        var botonCerrar = new Button
-        {
-            Content = "Cerrar",
-            Width = 100,
-            HorizontalAlignment = HorizontalAlignment.Center
-        };
-
-        botonCerrar.Click += (_, _) => ventana.Close();
-
-        ventana.Content = new StackPanel
-        {
-            Margin = new Avalonia.Thickness(20),
-            Spacing = 15,
-            Children =
+            Width = 300,
+            Height = 150,
+            Content = new TextBlock
             {
-                texto,
-                botonCerrar
+                Text = mensaje,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Center
             }
         };
 
@@ -216,68 +316,37 @@ public partial class MainWindow : Window
 
     private async Task<bool> MostrarConfirmacion(string mensaje)
     {
-        bool resultado = false;
+        var tcs = new TaskCompletionSource<bool>();
 
         var ventana = new Window
         {
-            Title = "Confirmación",
-            Width = 420,
-            Height = 190,
-            WindowStartupLocation = WindowStartupLocation.CenterOwner
+            Title = "Confirmar",
+            Width = 350,
+            Height = 180
         };
 
-        var texto = new TextBlock
-        {
-            Text = mensaje,
-            TextWrapping = TextWrapping.Wrap
-        };
+        var si = new Button { Content = "Sí", Width = 80 };
+        var no = new Button { Content = "No", Width = 80 };
 
-        var botonSi = new Button
-        {
-            Content = "Sí",
-            Width = 100
-        };
-
-        var botonNo = new Button
-        {
-            Content = "No",
-            Width = 100
-        };
-
-        botonSi.Click += (_, _) =>
-        {
-            resultado = true;
-            ventana.Close();
-        };
-
-        botonNo.Click += (_, _) =>
-        {
-            resultado = false;
-            ventana.Close();
-        };
+        si.Click += (_, _) => { tcs.SetResult(true); ventana.Close(); };
+        no.Click += (_, _) => { tcs.SetResult(false); ventana.Close(); };
 
         ventana.Content = new StackPanel
         {
             Margin = new Avalonia.Thickness(20),
-            Spacing = 15,
             Children =
             {
-                texto,
+                new TextBlock { Text = mensaje },
                 new StackPanel
                 {
                     Orientation = Orientation.Horizontal,
                     Spacing = 10,
-                    HorizontalAlignment = HorizontalAlignment.Center,
-                    Children =
-                    {
-                        botonSi,
-                        botonNo
-                    }
+                    Children = { si, no }
                 }
             }
         };
 
-        await ventana.ShowDialog(this);
-        return resultado;
+        ventana.Show();
+        return await tcs.Task;
     }
 }
