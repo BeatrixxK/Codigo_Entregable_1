@@ -1,0 +1,88 @@
+UI Avalonia → MenuController → MenuService → MenuRepository → menus.json
+
+Codigo_Entregable_1
+│
+├── docs
+├── entregables
+├── src
+│   ├── DragonNutrex.App
+│   │   ├── Controllers
+│   │   │   ├── UsuarioController.cs
+│   │   │   ├── ProductoController.cs
+│   │   │   └── MenuController.cs
+│   │   │
+│   │   ├── Data
+│   │   │   ├── usuarios.json
+│   │   │   ├── productos.json
+│   │   │   └── menus.json
+│   │   │
+│   │   ├── Interfaces
+│   │   │   └── IRepository.cs
+│   │   │
+│   │   ├── Models
+│   │   │   ├── Usuario.cs
+│   │   │   ├── Producto.cs
+│   │   │   ├── Menu.cs
+│   │   │   └── RegistroComida.cs
+│   │   │
+│   │   ├── Repositories
+│   │   │   ├── UsuarioRepository.cs
+│   │   │   ├── ProductoRepository.cs
+│   │   │   └── MenuRepository.cs
+│   │   │
+│   │   ├── Services
+│   │   │   ├── UsuarioService.cs
+│   │   │   ├── ProductoService.cs
+│   │   │   └── MenuService.cs
+│   │   │
+│   │   ├── Utils
+│   │   │   ├── FileStorage.cs
+│   │   │   └── DataSeeder.cs
+│   │   │
+│   │   └── DragonNutrex.App.csproj
+│   │
+│   ├── DragonNutrex.UI
+│   │   ├── App.axaml
+│   │   ├── App.axaml.cs
+│   │   ├── MainWindow.axaml
+│   │   ├── MainWindow.axaml.cs
+│   │   ├── Program.cs
+│   │   ├── app.manifest
+│   │   └── DragonNutrex.UI.csproj
+│   │
+│   └── DragonNutrex.slnx
+│
+└── .gitignore
+
+
+MainWindow.axaml / MainWindow.axaml.cs
+        ↓
+MenuController
+        ↓
+MenuService
+        ↓
+MenuRepository
+        ↓
+menus.json
+
+
+
+
+
+UI Avalonia
+→ captura usuario, fecha, productos y cantidades
+
+MenuController
+→ recibe acciones de crear, guardar, actualizar y eliminar menús
+
+MenuService
+→ aplica reglas de negocio:
+   - agregar productos al menú
+   - actualizar cantidades
+   - eliminar registros
+   - calcular totales de calorías, proteínas, carbohidratos y grasas
+
+MenuRepository
+→ persiste los menús en menus.json
+
+
