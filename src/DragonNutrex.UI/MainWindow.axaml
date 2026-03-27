@@ -5,8 +5,8 @@
         xmlns:controls="clr-namespace:Avalonia.Controls;assembly=Avalonia.Controls.DataGrid"
         mc:Ignorable="d"
         x:Class="DragonNutrex.UI.MainWindow"
-        Width="1100"
-        Height="750"
+        Width="1200"
+        Height="850"
         Title="DragonNutrex">
 
     <Window.Styles>
@@ -36,6 +36,9 @@
             <Button x:Name="EstadisticasModuloButton" Content="Estadísticas" Width="120"/>
         </StackPanel>
 
+        <!-- ========================= -->
+        <!-- PANEL USUARIOS -->
+        <!-- ========================= -->
         <StackPanel x:Name="UsuariosPanel" Spacing="10">
             <TextBlock Text="Gestión de Usuarios" FontSize="24"/>
 
@@ -54,12 +57,13 @@
                 <Button x:Name="LimpiarButton" Content="Limpiar" Width="120"/>
             </StackPanel>
 
-            <Border BorderThickness="1" BorderBrush="Gray" CornerRadius="4">
+            <Border BorderThickness="3" BorderBrush="Gray" CornerRadius="4">
                 <controls:DataGrid x:Name="UsuariosDataGrid"
-                                   Height="200"
+                                   Height="500"
                                    GridLinesVisibility="All"
                                    AutoGenerateColumns="False"
-                                   IsReadOnly="True">
+                                   IsReadOnly="True"
+                                   HorizontalAlignment="Left">
                     <controls:DataGrid.Columns>
                         <controls:DataGridTextColumn Header="Nombre" Binding="{Binding Nombre}"/>
                         <controls:DataGridTextColumn Header="Peso" Binding="{Binding Peso}"/>
@@ -72,6 +76,9 @@
             </Border>
         </StackPanel>
 
+        <!-- ========================= -->
+        <!-- PANEL PRODUCTOS -->
+        <!-- ========================= -->
         <StackPanel x:Name="ProductosPanel" IsVisible="False" Spacing="10">
             <TextBlock Text="Gestión de Productos" FontSize="24"/>
 
@@ -89,18 +96,125 @@
                 <Button x:Name="LimpiarProductoButton" Content="Limpiar" Width="120"/>
             </StackPanel>
 
-            <Border BorderThickness="1" BorderBrush="Gray" CornerRadius="4">
+            <Border BorderThickness="3" BorderBrush="Gray" CornerRadius="4">
                 <controls:DataGrid x:Name="ProductosDataGrid"
-                                   Height="200"
+                                   Height="500"
                                    GridLinesVisibility="All"
                                    AutoGenerateColumns="False"
-                                   IsReadOnly="True">
+                                   IsReadOnly="True"
+                                   HorizontalAlignment="Left">
                     <controls:DataGrid.Columns>
                         <controls:DataGridTextColumn Header="Nombre" Binding="{Binding Nombre}"/>
                         <controls:DataGridTextColumn Header="Calorías" Binding="{Binding Calorias}"/>
                         <controls:DataGridTextColumn Header="Proteínas" Binding="{Binding Proteinas}"/>
                         <controls:DataGridTextColumn Header="Carbohidratos" Binding="{Binding Carbohidratos}"/>
                         <controls:DataGridTextColumn Header="Grasas" Binding="{Binding Grasas}"/>
+                    </controls:DataGrid.Columns>
+                </controls:DataGrid>
+            </Border>
+        </StackPanel>
+
+        <!-- ========================= -->
+        <!-- PANEL MENUS -->
+        <!-- ========================= -->
+        <StackPanel x:Name="MenusPanel" IsVisible="False" Spacing="10">
+            <TextBlock Text="Gestión de Menús" FontSize="24"/>
+
+            <Grid ColumnDefinitions="*,*,*" RowDefinitions="Auto,Auto">
+                <ComboBox x:Name="UsuariosMenuComboBox"
+                          Grid.Row="0"
+                          Grid.Column="0"
+                          Margin="0,0,10,10"
+                          HorizontalAlignment="Stretch"/>
+
+                <DatePicker x:Name="FechaMenuDatePicker"
+                            Grid.Row="0"
+                            Grid.Column="1"
+                            Margin="0,0,10,10"/>
+
+                <Button x:Name="NuevoMenuButton"
+                        Grid.Row="0"
+                        Grid.Column="2"
+                        Content="Nuevo Menú"
+                        Width="140"/>
+
+                <ComboBox x:Name="ProductosMenuComboBox"
+                          Grid.Row="1"
+                          Grid.Column="0"
+                          Margin="0,0,10,10"
+                          HorizontalAlignment="Stretch"/>
+
+                <TextBox x:Name="CantidadProductoTextBox"
+                         Grid.Row="1"
+                         Grid.Column="1"
+                         Margin="0,0,10,10"
+                         Watermark="Cantidad"/>
+
+                <Button x:Name="AgregarProductoMenuButton"
+                        Grid.Row="1"
+                        Grid.Column="2"
+                        Content="Agregar Producto"
+                        Width="160"/>
+            </Grid>
+
+            <StackPanel Orientation="Horizontal" Spacing="20">
+                <TextBlock x:Name="TotalCaloriasTextBlock" Text="Calorías: 0" FontSize="16"/>
+                <TextBlock x:Name="TotalProteinasTextBlock" Text="Proteínas: 0" FontSize="16"/>
+                <TextBlock x:Name="TotalCarbohidratosTextBlock" Text="Carbohidratos: 0" FontSize="16"/>
+                <TextBlock x:Name="TotalGrasasTextBlock" Text="Grasas: 0" FontSize="16"/>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" Spacing="10">
+                <Button x:Name="GuardarMenuButton" Content="Guardar Menú" Width="140"/>
+                <Button x:Name="ActualizarRegistroMenuButton" Content="Actualizar Cantidad" Width="170"/>
+                <Button x:Name="EliminarRegistroMenuButton" Content="Eliminar Registro" Width="160"/>
+                <Button x:Name="EliminarMenuButton" Content="Eliminar Menú" Width="140"/>
+                <Button x:Name="LimpiarMenuButton" Content="Limpiar" Width="120"/>
+            </StackPanel>
+
+            <Border BorderThickness="3" BorderBrush="Gray" CornerRadius="4">
+                <controls:DataGrid x:Name="RegistrosMenuDataGrid"
+                                   Height="200"
+                                   GridLinesVisibility="All"
+                                   AutoGenerateColumns="False"
+                                   IsReadOnly="True"
+                                   HorizontalAlignment="Left">
+                    <controls:DataGrid.Columns>
+                        <controls:DataGridTextColumn Header="Producto" Binding="{Binding NombreProducto}"/>
+                        <controls:DataGridTextColumn Header="Cantidad" Binding="{Binding Cantidad}"/>
+                        <controls:DataGridTextColumn Header="Calorías" Binding="{Binding Calorias}"/>
+                        <controls:DataGridTextColumn Header="Proteínas" Binding="{Binding Proteinas}"/>
+                        <controls:DataGridTextColumn Header="Carbohidratos" Binding="{Binding Carbohidratos}"/>
+                        <controls:DataGridTextColumn Header="Grasas" Binding="{Binding Grasas}"/>
+                    </controls:DataGrid.Columns>
+                </controls:DataGrid>
+            </Border>
+
+            <StackPanel>
+                <TextBlock Text="Menús guardados"
+                        FontSize="20"
+                        FontWeight="Bold"/>
+
+                <TextBlock Text="Para editar, seleccione un menú y luego use los botones para agregar, limpiar o eliminar registros y haga clic en Guardar Menú"
+                        FontSize="14"
+                        Foreground="#CCCCCC"
+                        TextWrapping="Wrap"/>
+            </StackPanel>
+
+            <Border BorderThickness="3" BorderBrush="Gray" CornerRadius="4">
+                <controls:DataGrid x:Name="MenusDataGrid"
+                                   Height="200"
+                                   GridLinesVisibility="All"
+                                   AutoGenerateColumns="False"
+                                   IsReadOnly="True"
+                                   HorizontalAlignment="Left">
+                    <controls:DataGrid.Columns>
+                        <controls:DataGridTextColumn Header="Usuario" Binding="{Binding UsuarioNombre}"/>
+                        <controls:DataGridTextColumn Header="Fecha" Binding="{Binding Fecha}"/>
+                        <controls:DataGridTextColumn Header="Calorías" Binding="{Binding TotalCalorias}"/>
+                        <controls:DataGridTextColumn Header="Proteínas" Binding="{Binding TotalProteinas}"/>
+                        <controls:DataGridTextColumn Header="Carbohidratos" Binding="{Binding TotalCarbohidratos}"/>
+                        <controls:DataGridTextColumn Header="Grasas" Binding="{Binding TotalGrasas}"/>
                     </controls:DataGrid.Columns>
                 </controls:DataGrid>
             </Border>
