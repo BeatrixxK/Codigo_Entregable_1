@@ -5,8 +5,8 @@
         xmlns:controls="clr-namespace:Avalonia.Controls;assembly=Avalonia.Controls.DataGrid"
         mc:Ignorable="d"
         x:Class="DragonNutrex.UI.MainWindow"
-        Width="1200"
-        Height="850"
+        Width="1250"
+        Height="950"
         Title="DragonNutrex">
 
     <Window.Styles>
@@ -29,11 +29,10 @@
         </Border>
 
         <StackPanel Orientation="Horizontal" Spacing="10">
-            <Button x:Name="UsuariosModuloButton" Content="Usuarios" Width="120"/>
-            <Button x:Name="ProductosModuloButton" Content="Productos" Width="120"/>
-            <Button x:Name="MenusModuloButton" Content="Menús" Width="120"/>
-            <Button x:Name="NutricionModuloButton" Content="Nutrición" Width="120"/>
-            <Button x:Name="EstadisticasModuloButton" Content="Estadísticas" Width="120"/>
+            <Button x:Name="UsuariosModuloButton" Content="Usuarios" Width="140"/>
+            <Button x:Name="ProductosModuloButton" Content="Productos" Width="140"/>
+            <Button x:Name="MenusModuloButton" Content="Menús" Width="140"/>
+            <Button x:Name="EstadisticasNutricionModuloButton" Content="Estadísticas de Nutrición" Width="220"/>
         </StackPanel>
 
         <!-- ========================= -->
@@ -48,7 +47,11 @@
                 <TextBox x:Name="AlturaTextBox" Grid.Row="1" Grid.Column="0" Margin="0,0,10,10" Watermark="Altura"/>
                 <TextBox x:Name="ActividadTextBox" Grid.Row="1" Grid.Column="1" Margin="0,0,0,10" Watermark="Actividad"/>
                 <TextBox x:Name="ObjetivoTextBox" Grid.Row="2" Grid.Column="0" Margin="0,0,10,10" Watermark="Objetivo"/>
-                <TextBox x:Name="TipoDietaTextBox" Grid.Row="2" Grid.Column="1" Margin="0,0,0,10" Watermark="Tipo Dieta"/>
+                <ComboBox x:Name="TipoDietaComboBox"
+                          Grid.Row="2"
+                          Grid.Column="1"
+                          Margin="0,0,0,10"
+                          HorizontalAlignment="Stretch"/>
             </Grid>
 
             <StackPanel Orientation="Horizontal" Spacing="10">
@@ -192,13 +195,13 @@
 
             <StackPanel>
                 <TextBlock Text="Menús guardados"
-                        FontSize="20"
-                        FontWeight="Bold"/>
+                           FontSize="20"
+                           FontWeight="Bold"/>
 
                 <TextBlock Text="Para editar, seleccione un menú y luego use los botones para agregar, limpiar o eliminar registros y haga clic en Guardar Menú"
-                        FontSize="14"
-                        Foreground="#CCCCCC"
-                        TextWrapping="Wrap"/>
+                           FontSize="14"
+                           Foreground="#CCCCCC"
+                           TextWrapping="Wrap"/>
             </StackPanel>
 
             <Border BorderThickness="3" BorderBrush="Gray" CornerRadius="4">
@@ -217,6 +220,99 @@
                         <controls:DataGridTextColumn Header="Grasas" Binding="{Binding TotalGrasas}"/>
                     </controls:DataGrid.Columns>
                 </controls:DataGrid>
+            </Border>
+        </StackPanel>
+
+        <!-- ========================= -->
+        <!-- PANEL ESTADISTICAS NUTRICION -->
+        <!-- ========================= -->
+        <StackPanel x:Name="EstadisticasNutricionPanel" IsVisible="False" Spacing="10">
+            <TextBlock Text="Estadísticas de Nutrición" FontSize="24"/>
+
+            <Grid ColumnDefinitions="*,*,*,*" RowDefinitions="Auto,Auto">
+                <ComboBox x:Name="UsuariosEstadisticaComboBox"
+                          Grid.Row="0"
+                          Grid.Column="0"
+                          Margin="0,0,10,10"
+                          HorizontalAlignment="Stretch"
+                          SelectionChanged="UsuariosEstadisticaComboBox_SelectionChanged"/>
+
+                <ComboBox x:Name="DietaEstadisticaComboBox"
+                          Grid.Row="0"
+                          Grid.Column="1"
+                          Margin="0,0,10,10"
+                          HorizontalAlignment="Stretch"/>
+
+                <DatePicker x:Name="FechaInicioEstadisticaDatePicker"
+                            Grid.Row="0"
+                            Grid.Column="2"
+                            Margin="0,0,10,10"/>
+
+                <DatePicker x:Name="FechaFinEstadisticaDatePicker"
+                            Grid.Row="0"
+                            Grid.Column="3"
+                            Margin="0,0,0,10"/>
+
+                <Button x:Name="CalcularEstadisticaNutricionButton"
+                        Grid.Row="1"
+                        Grid.Column="0"
+                        Grid.ColumnSpan="4"
+                        Content="Calcular Estadísticas de Nutrición"
+                        Width="260"
+                        HorizontalAlignment="Left"/>
+            </Grid>
+
+            <Border BorderThickness="1" BorderBrush="Gray" CornerRadius="4" Padding="15">
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="40">
+
+                    <StackPanel Grid.Column="0" Spacing="8">
+                        <TextBlock Text="Resumen general" FontSize="20" FontWeight="Bold"/>
+
+                        <TextBlock x:Name="EstadisticaNombreUsuarioTextBlock" Text="Usuario: -" FontSize="16"/>
+                        <TextBlock x:Name="EstadisticaTipoDietaTextBlock" Text="Dieta seleccionada: -" FontSize="16"/>
+                        <TextBlock x:Name="EstadisticaFechaInicioTextBlock" Text="Fecha inicio: -" FontSize="16"/>
+                        <TextBlock x:Name="EstadisticaFechaFinTextBlock" Text="Fecha fin: -" FontSize="16"/>
+                        <TextBlock x:Name="EstadisticaCantidadMenusTextBlock" Text="Cantidad de menús: -" FontSize="16"/>
+
+                        <TextBlock Text="Totales consumidos en el rango" FontSize="20" FontWeight="Bold" Margin="0,18,0,0"/>
+                        <TextBlock x:Name="EstadisticaCaloriasTotalesTextBlock" Text="Calorías totales: -" FontSize="16"/>
+                        <TextBlock x:Name="EstadisticaProteinasTotalesTextBlock" Text="Proteínas totales: -" FontSize="16"/>
+                        <TextBlock x:Name="EstadisticaCarbohidratosTotalesTextBlock" Text="Carbohidratos totales: -" FontSize="16"/>
+                        <TextBlock x:Name="EstadisticaGrasasTotalesTextBlock" Text="Grasas totales: -" FontSize="16"/>
+
+                        <TextBlock Text="Promedio diario" FontSize="20" FontWeight="Bold" Margin="0,18,0,0"/>
+                        <TextBlock x:Name="EstadisticaCaloriasPromedioTextBlock" Text="Calorías promedio: -" FontSize="16"/>
+                        <TextBlock x:Name="EstadisticaProteinasPromedioTextBlock" Text="Proteínas promedio: -" FontSize="16"/>
+                        <TextBlock x:Name="EstadisticaCarbohidratosPromedioTextBlock" Text="Carbohidratos promedio: -" FontSize="16"/>
+                        <TextBlock x:Name="EstadisticaGrasasPromedioTextBlock" Text="Grasas promedio: -" FontSize="16"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="1" Spacing="8">
+                        <TextBlock Text="IMC y estado del usuario" FontSize="20" FontWeight="Bold"/>
+                        <TextBlock x:Name="EstadisticaImcTextBlock" Text="IMC: -" FontSize="16"/>
+                        <TextBlock x:Name="EstadisticaCategoriaImcTextBlock" Text="Categoría IMC: -" FontSize="16"/>
+
+                        <TextBlock Text="Objetivos según dieta" FontSize="20" FontWeight="Bold" Margin="0,18,0,0"/>
+                        <TextBlock x:Name="EstadisticaCaloriasObjetivoTextBlock" Text="Calorías objetivo dieta: -" FontSize="16"/>
+                        <TextBlock x:Name="EstadisticaProteinasObjetivoTextBlock" Text="Proteínas objetivo dieta: -" FontSize="16"/>
+                        <TextBlock x:Name="EstadisticaCarbohidratosObjetivoTextBlock" Text="Carbohidratos objetivo dieta: -" FontSize="16"/>
+                        <TextBlock x:Name="EstadisticaGrasasObjetivoTextBlock" Text="Grasas objetivo dieta: -" FontSize="16"/>
+
+                        <TextBlock Text="Diferencia promedio vs dieta" FontSize="20" FontWeight="Bold" Margin="0,18,0,0"/>
+                        <TextBlock x:Name="EstadisticaDiferenciaCaloriasTextBlock" Text="Diferencia calorías: -" FontSize="16"/>
+                        <TextBlock x:Name="EstadisticaDiferenciaProteinasTextBlock" Text="Diferencia proteínas: -" FontSize="16"/>
+                        <TextBlock x:Name="EstadisticaDiferenciaCarbohidratosTextBlock" Text="Diferencia carbohidratos: -" FontSize="16"/>
+                        <TextBlock x:Name="EstadisticaDiferenciaGrasasTextBlock" Text="Diferencia grasas: -" FontSize="16"/>
+
+                        <TextBlock Text="Resultado final" FontSize="20" FontWeight="Bold" Margin="0,18,0,0"/>
+                        <TextBlock x:Name="EstadisticaEstadoCaloricoTextBlock" Text="Estado calórico: -" FontSize="16"/>
+                        <TextBlock x:Name="EstadisticaRecomendacionTextBlock"
+                                   Text="Recomendación: -"
+                                   FontSize="16"
+                                   TextWrapping="Wrap"/>
+                    </StackPanel>
+
+                </Grid>
             </Border>
         </StackPanel>
 

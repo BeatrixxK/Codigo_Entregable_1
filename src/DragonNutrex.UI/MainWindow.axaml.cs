@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using Avalonia.Media;
 using DragonNutrex.App.Controllers;
 using DragonNutrex.App.Models;
 using DragonNutrex.App.Repositories;
@@ -17,6 +18,7 @@ public partial class MainWindow : Window
     private readonly UsuarioController _usuarioController;
     private readonly ProductoController _productoController;
     private readonly MenuController _menuController;
+    private readonly EstadisticasNutricionController _estadisticasNutricionController;
 
     private Usuario? _usuarioSeleccionado;
     private Producto? _productoSeleccionado;
@@ -36,6 +38,12 @@ public partial class MainWindow : Window
                 new ProductoRepository()
             )
         );
+        _estadisticasNutricionController = new EstadisticasNutricionController(
+            new EstadisticasNutricionService(
+                new UsuarioRepository(),
+                new MenuRepository()
+            )
+        );
 
         GuardarButton.Click += GuardarUsuario;
         EliminarButton.Click += EliminarUsuario;
@@ -48,33 +56,24 @@ public partial class MainWindow : Window
         UsuariosDataGrid.SelectionChanged += UsuariosDataGrid_SelectionChanged;
         ProductosDataGrid.SelectionChanged += ProductosDataGrid_SelectionChanged;
 
-        UsuariosModuloButton.Click += (_, _) =>
-        {
-            UsuariosPanel.IsVisible = true;
-            ProductosPanel.IsVisible = false;
-            MenusPanel.IsVisible = false;
-        };
-
-        ProductosModuloButton.Click += (_, _) =>
-        {
-            UsuariosPanel.IsVisible = false;
-            ProductosPanel.IsVisible = true;
-            MenusPanel.IsVisible = false;
-        };
+        UsuariosModuloButton.Click += (_, _) => MostrarSoloPanelUsuarios();
+        ProductosModuloButton.Click += (_, _) => MostrarSoloPanelProductos();
 
         MenusModuloButton.Click += (_, _) =>
         {
-            UsuariosPanel.IsVisible = false;
-            ProductosPanel.IsVisible = false;
-            MenusPanel.IsVisible = true;
-
+            MostrarSoloPanelMenus();
             CargarUsuariosEnCombo();
             CargarProductosEnCombo();
             CargarMenus();
         };
 
-        NutricionModuloButton.Click += async (_, _) => await MostrarMensaje("Módulo Nutrición próximamente.");
-        EstadisticasModuloButton.Click += async (_, _) => await MostrarMensaje("Módulo Estadísticas próximamente.");
+        EstadisticasNutricionModuloButton.Click += (_, _) =>
+        {
+            MostrarSoloPanelEstadisticasNutricion();
+            CargarUsuariosEnComboEstadistica();
+            CargarDietasEnComboEstadistica();
+            LimpiarResumenEstadisticaNutricion();
+        };
 
         NuevoMenuButton.Click += NuevoMenu;
         AgregarProductoMenuButton.Click += AgregarProductoAlMenu;
@@ -87,12 +86,52 @@ public partial class MainWindow : Window
         RegistrosMenuDataGrid.SelectionChanged += RegistrosMenuDataGrid_SelectionChanged;
         MenusDataGrid.SelectionChanged += MenusDataGrid_SelectionChanged;
 
+        CalcularEstadisticaNutricionButton.Click += CalcularEstadisticasNutricion;
+
         CargarUsuarios();
         CargarProductos();
         CargarUsuariosEnCombo();
         CargarProductosEnCombo();
         CargarMenus();
+        CargarUsuariosEnComboEstadistica();
+        CargarDietasEnComboEstadistica();
+        CargarDietasEnComboUsuarios();
+
         LimpiarMenu();
+        LimpiarResumenEstadisticaNutricion();
+        MostrarSoloPanelUsuarios();
+    }
+
+    private void MostrarSoloPanelUsuarios()
+    {
+        UsuariosPanel.IsVisible = true;
+        ProductosPanel.IsVisible = false;
+        MenusPanel.IsVisible = false;
+        EstadisticasNutricionPanel.IsVisible = false;
+    }
+
+    private void MostrarSoloPanelProductos()
+    {
+        UsuariosPanel.IsVisible = false;
+        ProductosPanel.IsVisible = true;
+        MenusPanel.IsVisible = false;
+        EstadisticasNutricionPanel.IsVisible = false;
+    }
+
+    private void MostrarSoloPanelMenus()
+    {
+        UsuariosPanel.IsVisible = false;
+        ProductosPanel.IsVisible = false;
+        MenusPanel.IsVisible = true;
+        EstadisticasNutricionPanel.IsVisible = false;
+    }
+
+    private void MostrarSoloPanelEstadisticasNutricion()
+    {
+        UsuariosPanel.IsVisible = false;
+        ProductosPanel.IsVisible = false;
+        MenusPanel.IsVisible = false;
+        EstadisticasNutricionPanel.IsVisible = true;
     }
 
     // =========================
@@ -112,7 +151,7 @@ public partial class MainWindow : Window
                     Altura = decimal.TryParse(AlturaTextBox.Text, out var altura) ? altura : 0,
                     Actividad = ActividadTextBox.Text ?? "",
                     Objetivo = ObjetivoTextBox.Text ?? "",
-                    TipoDieta = TipoDietaTextBox.Text ?? ""
+                    TipoDieta = ObtenerTipoDietaUsuarioSeleccionada()
                 };
 
                 _usuarioController.CrearUsuario(usuario);
@@ -124,13 +163,14 @@ public partial class MainWindow : Window
                 _usuarioSeleccionado.Altura = decimal.TryParse(AlturaTextBox.Text, out var altura) ? altura : 0;
                 _usuarioSeleccionado.Actividad = ActividadTextBox.Text ?? "";
                 _usuarioSeleccionado.Objetivo = ObjetivoTextBox.Text ?? "";
-                _usuarioSeleccionado.TipoDieta = TipoDietaTextBox.Text ?? "";
+                _usuarioSeleccionado.TipoDieta = ObtenerTipoDietaUsuarioSeleccionada();
 
                 _usuarioController.ActualizarUsuario(_usuarioSeleccionado);
             }
 
             CargarUsuarios();
             CargarUsuariosEnCombo();
+            CargarUsuariosEnComboEstadistica();
             LimpiarUsuario();
         }
         catch (Exception ex)
@@ -150,6 +190,7 @@ public partial class MainWindow : Window
             _usuarioController.EliminarUsuario(usuario.Id);
             CargarUsuarios();
             CargarUsuariosEnCombo();
+            CargarUsuariosEnComboEstadistica();
             LimpiarUsuario();
         }
     }
@@ -165,7 +206,7 @@ public partial class MainWindow : Window
             AlturaTextBox.Text = usuario.Altura.ToString();
             ActividadTextBox.Text = usuario.Actividad;
             ObjetivoTextBox.Text = usuario.Objetivo;
-            TipoDietaTextBox.Text = usuario.TipoDieta;
+            SeleccionarDietaUsuario(usuario.TipoDieta);
 
             GuardarButton.Content = "Actualizar";
         }
@@ -186,10 +227,48 @@ public partial class MainWindow : Window
         AlturaTextBox.Text = "";
         ActividadTextBox.Text = "";
         ObjetivoTextBox.Text = "";
-        TipoDietaTextBox.Text = "";
+        TipoDietaComboBox.SelectedItem = null;
 
         UsuariosDataGrid.SelectedItem = null;
         GuardarButton.Content = "Guardar";
+    }
+
+    private void CargarDietasEnComboUsuarios()
+    {
+        TipoDietaComboBox.Items.Clear();
+
+        var dietas = _estadisticasNutricionController.ObtenerDietasDisponibles();
+
+        foreach (var dieta in dietas)
+        {
+            TipoDietaComboBox.Items.Add(new ComboBoxItem
+            {
+                Content = dieta.Nombre,
+                Tag = dieta.Nombre
+            });
+        }
+    }
+
+    private string ObtenerTipoDietaUsuarioSeleccionada()
+    {
+        if (TipoDietaComboBox.SelectedItem is ComboBoxItem item && item.Tag is string nombre)
+            return nombre;
+
+        return string.Empty;
+    }
+
+    private void SeleccionarDietaUsuario(string tipoDieta)
+    {
+        foreach (var item in TipoDietaComboBox.Items)
+        {
+            if (item is ComboBoxItem comboItem &&
+                comboItem.Tag is string nombre &&
+                nombre.Equals(tipoDieta, StringComparison.OrdinalIgnoreCase))
+            {
+                TipoDietaComboBox.SelectedItem = comboItem;
+                break;
+            }
+        }
     }
 
     // =========================
@@ -648,6 +727,244 @@ public partial class MainWindow : Window
     }
 
     // =========================
+    // ESTADISTICAS DE NUTRICION
+    // =========================
+
+    private void CargarUsuariosEnComboEstadistica()
+    {
+        var usuarios = _usuarioController.ObtenerUsuarios();
+
+        UsuariosEstadisticaComboBox.Items.Clear();
+
+        foreach (var usuario in usuarios)
+        {
+            UsuariosEstadisticaComboBox.Items.Add(new ComboBoxItem
+            {
+                Content = usuario.Nombre,
+                Tag = usuario.Id
+            });
+        }
+
+        FechaInicioEstadisticaDatePicker.SelectedDate = DateTime.Today;
+        FechaFinEstadisticaDatePicker.SelectedDate = DateTime.Today;
+    }
+
+    private void CargarDietasEnComboEstadistica()
+    {
+        var dietas = _estadisticasNutricionController.ObtenerDietasDisponibles();
+
+        DietaEstadisticaComboBox.Items.Clear();
+
+        foreach (var dieta in dietas)
+        {
+            DietaEstadisticaComboBox.Items.Add(new ComboBoxItem
+            {
+                Content = dieta.Nombre,
+                Tag = dieta.Nombre
+            });
+        }
+    }
+
+    private Guid ObtenerUsuarioIdEstadisticaSeleccionado()
+    {
+        if (UsuariosEstadisticaComboBox.SelectedItem is ComboBoxItem item && item.Tag is Guid id)
+            return id;
+
+        return Guid.Empty;
+    }
+
+    private string ObtenerDietaEstadisticaSeleccionada()
+    {
+        if (DietaEstadisticaComboBox.SelectedItem is ComboBoxItem item && item.Tag is string nombre)
+            return nombre;
+
+        return string.Empty;
+    }
+
+    private void SeleccionarDietaEstadistica(string tipoDieta)
+    {
+        foreach (var item in DietaEstadisticaComboBox.Items)
+        {
+            if (item is ComboBoxItem comboItem &&
+                comboItem.Tag is string nombre &&
+                nombre.Equals(tipoDieta, StringComparison.OrdinalIgnoreCase))
+            {
+                DietaEstadisticaComboBox.SelectedItem = comboItem;
+                break;
+            }
+        }
+    }
+
+    private void UsuariosEstadisticaComboBox_SelectionChanged(object? sender, SelectionChangedEventArgs e)
+    {
+        var usuarioId = ObtenerUsuarioIdEstadisticaSeleccionado();
+        if (usuarioId == Guid.Empty)
+            return;
+
+        var usuario = _usuarioController.ObtenerUsuarios()
+            .FirstOrDefault(u => u.Id == usuarioId);
+
+        if (usuario == null || string.IsNullOrWhiteSpace(usuario.TipoDieta))
+            return;
+
+        SeleccionarDietaEstadistica(usuario.TipoDieta);
+    }
+
+    private async void CalcularEstadisticasNutricion(object? sender, RoutedEventArgs e)
+    {
+        try
+        {
+            var usuarioId = ObtenerUsuarioIdEstadisticaSeleccionado();
+            if (usuarioId == Guid.Empty)
+            {
+                await MostrarMensaje("Seleccione un usuario.");
+                return;
+            }
+
+            var dieta = ObtenerDietaEstadisticaSeleccionada();
+            if (string.IsNullOrWhiteSpace(dieta))
+            {
+                await MostrarMensaje("Seleccione un tipo de dieta.");
+                return;
+            }
+
+            var fechaInicio = FechaInicioEstadisticaDatePicker.SelectedDate?.Date ?? DateTime.Today;
+            var fechaFin = FechaFinEstadisticaDatePicker.SelectedDate?.Date ?? DateTime.Today;
+
+            var resumen = _estadisticasNutricionController.ObtenerResumen(
+                usuarioId,
+                fechaInicio,
+                fechaFin,
+                dieta
+            );
+
+            EstadisticaNombreUsuarioTextBlock.Text = $"Usuario: {resumen.NombreUsuario}";
+            EstadisticaTipoDietaTextBlock.Text = $"Dieta seleccionada: {resumen.TipoDieta}";
+            EstadisticaFechaInicioTextBlock.Text = $"Fecha inicio: {resumen.FechaInicio:dd/MM/yyyy}";
+            EstadisticaFechaFinTextBlock.Text = $"Fecha fin: {resumen.FechaFin:dd/MM/yyyy}";
+            EstadisticaCantidadMenusTextBlock.Text = $"Cantidad de menús: {resumen.CantidadMenus}";
+
+            EstadisticaImcTextBlock.Text = $"IMC: {resumen.Imc:F2}";
+            EstadisticaCategoriaImcTextBlock.Text = $"Categoría IMC: {resumen.CategoriaImc}";
+
+            EstadisticaCaloriasTotalesTextBlock.Text = $"Calorías totales: {resumen.CaloriasTotalesConsumidas:F2}";
+            EstadisticaProteinasTotalesTextBlock.Text = $"Proteínas totales: {resumen.ProteinasTotalesConsumidas:F2}";
+            EstadisticaCarbohidratosTotalesTextBlock.Text = $"Carbohidratos totales: {resumen.CarbohidratosTotalesConsumidos:F2}";
+            EstadisticaGrasasTotalesTextBlock.Text = $"Grasas totales: {resumen.GrasasTotalesConsumidas:F2}";
+
+            EstadisticaCaloriasPromedioTextBlock.Text = $"Calorías promedio: {resumen.CaloriasPromedio:F2}";
+            EstadisticaProteinasPromedioTextBlock.Text = $"Proteínas promedio: {resumen.ProteinasPromedio:F2}";
+            EstadisticaCarbohidratosPromedioTextBlock.Text = $"Carbohidratos promedio: {resumen.CarbohidratosPromedio:F2}";
+            EstadisticaGrasasPromedioTextBlock.Text = $"Grasas promedio: {resumen.GrasasPromedio:F2}";
+
+            EstadisticaCaloriasObjetivoTextBlock.Text = $"Calorías objetivo dieta: {resumen.CaloriasObjetivoDieta:F2}";
+            EstadisticaProteinasObjetivoTextBlock.Text = $"Proteínas objetivo dieta: {resumen.ProteinasObjetivoDieta:F2}";
+            EstadisticaCarbohidratosObjetivoTextBlock.Text = $"Carbohidratos objetivo dieta: {resumen.CarbohidratosObjetivoDieta:F2}";
+            EstadisticaGrasasObjetivoTextBlock.Text = $"Grasas objetivo dieta: {resumen.GrasasObjetivoDieta:F2}";
+
+            EstadisticaDiferenciaCaloriasTextBlock.Text = $"Diferencia calorías: {resumen.DiferenciaCalorias:F2}";
+            EstadisticaDiferenciaProteinasTextBlock.Text = $"Diferencia proteínas: {resumen.DiferenciaProteinas:F2}";
+            EstadisticaDiferenciaCarbohidratosTextBlock.Text = $"Diferencia carbohidratos: {resumen.DiferenciaCarbohidratos:F2}";
+            EstadisticaDiferenciaGrasasTextBlock.Text = $"Diferencia grasas: {resumen.DiferenciaGrasas:F2}";
+
+            EstadisticaEstadoCaloricoTextBlock.Text = $"Estado calórico: {resumen.EstadoCalorico}";
+            EstadisticaRecomendacionTextBlock.Text = $"Recomendación: {resumen.Recomendacion}";
+
+            ColorTextoMacro(EstadisticaDiferenciaCaloriasTextBlock, resumen.DiferenciaCalorias);
+            ColorTextoMacro(EstadisticaDiferenciaProteinasTextBlock, resumen.DiferenciaProteinas);
+            ColorTextoMacro(EstadisticaDiferenciaCarbohidratosTextBlock, resumen.DiferenciaCarbohidratos);
+            ColorTextoMacro(EstadisticaDiferenciaGrasasTextBlock, resumen.DiferenciaGrasas);
+
+            ColorTextoImc(EstadisticaImcTextBlock, resumen.CategoriaImc);
+            ColorTextoImc(EstadisticaCategoriaImcTextBlock, resumen.CategoriaImc);
+
+            if (resumen.EstadoCalorico.Contains("Por debajo"))
+                EstadisticaEstadoCaloricoTextBlock.Foreground = Brushes.Orange;
+            else if (resumen.EstadoCalorico.Contains("Dentro"))
+                EstadisticaEstadoCaloricoTextBlock.Foreground = Brushes.Green;
+            else
+                EstadisticaEstadoCaloricoTextBlock.Foreground = Brushes.Red;
+        }
+        catch (Exception ex)
+        {
+            await MostrarMensaje(ex.Message);
+        }
+    }
+
+    private void ColorTextoMacro(TextBlock textBlock, decimal diferencia)
+    {
+        if (Math.Abs(diferencia) <= 10m)
+            textBlock.Foreground = Brushes.Green;
+        else if (diferencia > 0)
+            textBlock.Foreground = Brushes.Red;
+        else
+            textBlock.Foreground = Brushes.Orange;
+    }
+
+    private void ColorTextoImc(TextBlock textBlock, string categoriaImc)
+    {
+        switch ((categoriaImc ?? "").Trim().ToLowerInvariant())
+        {
+            case "normal":
+                textBlock.Foreground = Brushes.Green;
+                break;
+            case "bajo peso":
+            case "sobrepeso":
+                textBlock.Foreground = Brushes.Orange;
+                break;
+            case "obesidad":
+                textBlock.Foreground = Brushes.Red;
+                break;
+            default:
+                textBlock.Foreground = Brushes.White;
+                break;
+        }
+    }
+
+    private void LimpiarResumenEstadisticaNutricion()
+    {
+        EstadisticaNombreUsuarioTextBlock.Text = "Usuario: -";
+        EstadisticaTipoDietaTextBlock.Text = "Dieta seleccionada: -";
+        EstadisticaFechaInicioTextBlock.Text = "Fecha inicio: -";
+        EstadisticaFechaFinTextBlock.Text = "Fecha fin: -";
+        EstadisticaCantidadMenusTextBlock.Text = "Cantidad de menús: -";
+
+        EstadisticaImcTextBlock.Text = "IMC: -";
+        EstadisticaCategoriaImcTextBlock.Text = "Categoría IMC: -";
+
+        EstadisticaCaloriasTotalesTextBlock.Text = "Calorías totales: -";
+        EstadisticaProteinasTotalesTextBlock.Text = "Proteínas totales: -";
+        EstadisticaCarbohidratosTotalesTextBlock.Text = "Carbohidratos totales: -";
+        EstadisticaGrasasTotalesTextBlock.Text = "Grasas totales: -";
+
+        EstadisticaCaloriasPromedioTextBlock.Text = "Calorías promedio: -";
+        EstadisticaProteinasPromedioTextBlock.Text = "Proteínas promedio: -";
+        EstadisticaCarbohidratosPromedioTextBlock.Text = "Carbohidratos promedio: -";
+        EstadisticaGrasasPromedioTextBlock.Text = "Grasas promedio: -";
+
+        EstadisticaCaloriasObjetivoTextBlock.Text = "Calorías objetivo dieta: -";
+        EstadisticaProteinasObjetivoTextBlock.Text = "Proteínas objetivo dieta: -";
+        EstadisticaCarbohidratosObjetivoTextBlock.Text = "Carbohidratos objetivo dieta: -";
+        EstadisticaGrasasObjetivoTextBlock.Text = "Grasas objetivo dieta: -";
+
+        EstadisticaDiferenciaCaloriasTextBlock.Text = "Diferencia calorías: -";
+        EstadisticaDiferenciaProteinasTextBlock.Text = "Diferencia proteínas: -";
+        EstadisticaDiferenciaCarbohidratosTextBlock.Text = "Diferencia carbohidratos: -";
+        EstadisticaDiferenciaGrasasTextBlock.Text = "Diferencia grasas: -";
+
+        EstadisticaEstadoCaloricoTextBlock.Text = "Estado calórico: -";
+        EstadisticaRecomendacionTextBlock.Text = "Recomendación: -";
+
+        EstadisticaEstadoCaloricoTextBlock.Foreground = Brushes.White;
+        EstadisticaDiferenciaCaloriasTextBlock.Foreground = Brushes.White;
+        EstadisticaDiferenciaProteinasTextBlock.Foreground = Brushes.White;
+        EstadisticaDiferenciaCarbohidratosTextBlock.Foreground = Brushes.White;
+        EstadisticaDiferenciaGrasasTextBlock.Foreground = Brushes.White;
+        EstadisticaImcTextBlock.Foreground = Brushes.White;
+        EstadisticaCategoriaImcTextBlock.Foreground = Brushes.White;
+    }
+
+    // =========================
     // UTILIDADES UI
     // =========================
 
@@ -656,14 +973,31 @@ public partial class MainWindow : Window
         var ventana = new Window
         {
             Title = "Mensaje",
-            Width = 320,
-            Height = 160,
-            Content = new TextBlock
+            Width = 380,
+            Height = 180
+        };
+
+        var okButton = new Button
+        {
+            Content = "OK",
+            HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center,
+            Width = 100
+        };
+
+        okButton.Click += (_, _) => ventana.Close();
+
+        ventana.Content = new StackPanel
+        {
+            Margin = new Avalonia.Thickness(20),
+            Spacing = 12,
+            Children =
             {
-                Text = mensaje,
-                HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center,
-                VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
-                TextWrapping = Avalonia.Media.TextWrapping.Wrap
+                new TextBlock
+                {
+                    Text = mensaje,
+                    TextWrapping = TextWrapping.Wrap
+                },
+                okButton
             }
         };
 
@@ -681,35 +1015,37 @@ public partial class MainWindow : Window
             Height = 180
         };
 
-        var si = new Button { Content = "Sí" };
-        var no = new Button { Content = "No" };
+        var si = new Button { Content = "Sí", Width = 100 };
+        var no = new Button { Content = "No", Width = 100 };
 
         si.Click += (_, _) =>
         {
-            tcs.SetResult(true);
+            tcs.TrySetResult(true);
             ventana.Close();
         };
 
         no.Click += (_, _) =>
         {
-            tcs.SetResult(false);
+            tcs.TrySetResult(false);
             ventana.Close();
         };
 
         ventana.Content = new StackPanel
         {
             Margin = new Avalonia.Thickness(20),
+            Spacing = 12,
             Children =
             {
                 new TextBlock
                 {
                     Text = mensaje,
-                    TextWrapping = Avalonia.Media.TextWrapping.Wrap
+                    TextWrapping = TextWrapping.Wrap
                 },
                 new StackPanel
                 {
                     Orientation = Avalonia.Layout.Orientation.Horizontal,
                     Spacing = 10,
+                    HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center,
                     Children = { si, no }
                 }
             }
