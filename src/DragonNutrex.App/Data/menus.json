@@ -1,0 +1,145 @@
+[
+  {
+    "Id": "bbed5d63-1c96-4f04-82d9-0ee62f6b6515",
+    "UsuarioId": "d3a6fb8b-2eff-44ec-910b-b13c544e7a10",
+    "Fecha": "2026-03-27T00:00:00",
+    "Registros": [
+      {
+        "Id": "631e155d-13c0-40dd-8e36-2420dd5d817f",
+        "ProductoId": "ef1a6f10-ecf3-45d6-937f-3fcd9d9ca4f8",
+        "NombreProducto": "Leche 1",
+        "Cantidad": 10,
+        "Calorias": 3400,
+        "Proteinas": 150,
+        "Carbohidratos": 210,
+        "Grasas": 130
+      },
+      {
+        "Id": "2e2ceba9-a1a1-47c3-991c-0f43c8c14dc7",
+        "ProductoId": "4ca0eaa8-6c7b-413f-a0ec-9cd2f3afe6eb",
+        "NombreProducto": "Papa 14",
+        "Cantidad": 10,
+        "Calorias": 1290,
+        "Proteinas": 0,
+        "Carbohidratos": 430,
+        "Grasas": 60
+      },
+      {
+        "Id": "1b0ea7cf-845d-4faf-8d58-634d753b005c",
+        "ProductoId": "daf24bf2-461a-4a49-8245-aaca0c53480d",
+        "NombreProducto": "Queso 6",
+        "Cantidad": 5,
+        "Calorias": 1310,
+        "Proteinas": 170,
+        "Carbohidratos": 305,
+        "Grasas": 5
+      },
+      {
+        "Id": "1127e098-fc5b-44be-a676-50bacec8b121",
+        "ProductoId": "53eadaf0-21c9-4aa7-8e1d-4d095299cff9",
+        "NombreProducto": "Pechuga 53",
+        "Cantidad": 2,
+        "Calorias": 520,
+        "Proteinas": 38,
+        "Carbohidratos": 72,
+        "Grasas": 48
+      }
+    ],
+    "TotalCalorias": 6520,
+    "TotalProteinas": 358,
+    "TotalCarbohidratos": 1017,
+    "TotalGrasas": 243
+  },
+  {
+    "Id": "623a70e7-b294-45d0-9be3-8698763393f6",
+    "UsuarioId": "ebc59b83-82b6-4aae-8dd2-78ddbbbbfeec",
+    "Fecha": "2026-03-27T00:00:00",
+    "Registros": [
+      {
+        "Id": "6c69b295-76eb-4a60-9468-60a39529d272",
+        "ProductoId": "280236c6-3619-4dd4-b64a-b8cb808e397f",
+        "NombreProducto": "Banano 7",
+        "Cantidad": 1,
+        "Calorias": 338,
+        "Proteinas": 12,
+        "Carbohidratos": 34,
+        "Grasas": 8
+      },
+      {
+        "Id": "d9549c84-2252-4483-89a3-79b976023469",
+        "ProductoId": "a6dfd63c-f5de-4d08-b425-a87529c6c029",
+        "NombreProducto": "Almendras 9",
+        "Cantidad": 5,
+        "Calorias": 1750,
+        "Proteinas": 90,
+        "Carbohidratos": 305,
+        "Grasas": 50
+      },
+      {
+        "Id": "6ae2cf25-30f8-4d6c-b14a-5b0076c20236",
+        "ProductoId": "daf24bf2-461a-4a49-8245-aaca0c53480d",
+        "NombreProducto": "Queso 6",
+        "Cantidad": 1,
+        "Calorias": 262,
+        "Proteinas": 34,
+        "Carbohidratos": 61,
+        "Grasas": 1
+      },
+      {
+        "Id": "f212727a-3a94-4fa1-81ae-cc70a9d7955f",
+        "ProductoId": "92b72f0d-fa9f-47e4-95bf-ed6fb635d2d2",
+        "NombreProducto": "Aguacate 10",
+        "Cantidad": 1,
+        "Calorias": 191,
+        "Proteinas": 37,
+        "Carbohidratos": 69,
+        "Grasas": 0
+      }
+    ],
+    "TotalCalorias": 2541,
+    "TotalProteinas": 173,
+    "TotalCarbohidratos": 469,
+    "TotalGrasas": 59
+  },
+  {
+    "Id": "4f94aaa2-3065-4c0d-858b-6eca4e0bce84",
+    "UsuarioId": "ebc59b83-82b6-4aae-8dd2-78ddbbbbfeec",
+    "Fecha": "2026-03-29T00:00:00",
+    "Registros": [
+      {
+        "Id": "f36699b7-a2db-4204-a2f1-44d39cdde8fc",
+        "ProductoId": "9c930dd2-eb9f-4f67-ab95-c12e3b5da09d",
+        "NombreProducto": "Banano 13",
+        "Cantidad": 2,
+        "Calorias": 764,
+        "Proteinas": 22,
+        "Carbohidratos": 106,
+        "Grasas": 18
+      },
+      {
+        "Id": "237fb046-589b-401a-9708-b3a42fb7c981",
+        "ProductoId": "0be5ce4d-e729-496a-9e3b-4fb518e6258a",
+        "NombreProducto": "Manzana 2",
+        "Cantidad": 1,
+        "Calorias": 377,
+        "Proteinas": 0,
+        "Carbohidratos": 22,
+        "Grasas": 19
+      },
+      {
+        "Id": "df0538a4-77b1-42b9-a8d2-005a62492dfb",
+        "ProductoId": "8ad5fbba-193c-430e-b6fb-522c59fc6536",
+        "NombreProducto": "Almendras 17",
+        "Cantidad": 5,
+        "Calorias": 1415,
+        "Proteinas": 130,
+        "Carbohidratos": 385,
+        "Grasas": 5
+      }
+    ],
+    "TotalCalorias": 2556,
+    "TotalProteinas": 152,
+    "TotalCarbohidratos": 513,
+    "TotalGrasas": 42
+  }
+]

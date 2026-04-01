@@ -1,0 +1,227 @@
+[
+  {
+    "Id": "d3a6fb8b-2eff-44ec-910b-b13c544e7a10",
+    "Nombre": "Usuario 1",
+    "Peso": 75,
+    "Altura": 1.88,
+    "Actividad": "Ligera",
+    "Objetivo": "Bajar peso",
+    "TipoDieta": "Keto"
+  },
+  {
+    "Id": "ebc59b83-82b6-4aae-8dd2-78ddbbbbfeec",
+    "Nombre": "Usuario 2",
+    "Peso": 87,
+    "Altura": 1.54,
+    "Actividad": "Ligera",
+    "Objetivo": "Ganar masa",
+    "TipoDieta": "Vegetariana"
+  },
+  {
+    "Id": "6fc49e5a-586a-4bef-9e72-56284220f175",
+    "Nombre": "Usuario 3",
+    "Peso": 62,
+    "Altura": 1.72,
+    "Actividad": "Sedentaria",
+    "Objetivo": "Mantener",
+    "TipoDieta": "Alta prote\u00EDna"
+  },
+  {
+    "Id": "11ffdf68-f10c-4377-bf18-a3853fe5ca56",
+    "Nombre": "Usuario 4",
+    "Peso": 88,
+    "Altura": 1.73,
+    "Actividad": "Sedentaria",
+    "Objetivo": "Mantener",
+    "TipoDieta": "Vegetariana"
+  },
+  {
+    "Id": "66250f84-bbae-4e50-8cab-dba290f6bfc6",
+    "Nombre": "Usuario 5",
+    "Peso": 104,
+    "Altura": 1.64,
+    "Actividad": "Alta",
+    "Objetivo": "Bajar peso",
+    "TipoDieta": "Vegana"
+  },
+  {
+    "Id": "b9cb2b34-56b9-4b93-bb32-09888c1a38dc",
+    "Nombre": "Usuario 6",
+    "Peso": 107,
+    "Altura": 1.52,
+    "Actividad": "Ligera",
+    "Objetivo": "Resistencia",
+    "TipoDieta": "Keto"
+  },
+  {
+    "Id": "c02ba5dd-650c-4973-a095-245714c9ad07",
+    "Nombre": "Usuario 7",
+    "Peso": 65,
+    "Altura": 1.77,
+    "Actividad": "Sedentaria",
+    "Objetivo": "Ganar masa",
+    "TipoDieta": "Vegetariana"
+  },
+  {
+    "Id": "69cf15e6-c152-45ae-a84d-ce9851802bab",
+    "Nombre": "Usuario 8",
+    "Peso": 86,
+    "Altura": 1.59,
+    "Actividad": "Moderada",
+    "Objetivo": "Mantener",
+    "TipoDieta": "Keto"
+  },
+  {
+    "Id": "389fcf49-c1a4-4a9b-87fe-3903a42070d0",
+    "Nombre": "Usuario 9",
+    "Peso": 108,
+    "Altura": 1.84,
+    "Actividad": "Alta",
+    "Objetivo": "Ganar masa",
+    "TipoDieta": "Balanceada"
+  },
+  {
+    "Id": "b6c19937-e20b-44d5-a285-6785bb7f848b",
+    "Nombre": "Usuario 10",
+    "Peso": 55,
+    "Altura": 1.87,
+    "Actividad": "Ligera",
+    "Objetivo": "Resistencia",
+    "TipoDieta": "Keto"
+  },
+  {
+    "Id": "d3762ff9-8301-4f4a-98d0-efe8e8111419",
+    "Nombre": "Usuario 11",
+    "Peso": 70,
+    "Altura": 1.78,
+    "Actividad": "Sedentaria",
+    "Objetivo": "Resistencia",
+    "TipoDieta": "Alta prote\u00EDna"
+  },
+  {
+    "Id": "f7ac3690-a195-4c40-a0bc-1dbc7d121e20",
+    "Nombre": "Usuario 12",
+    "Peso": 56,
+    "Altura": 1.91,
+    "Actividad": "Ligera",
+    "Objetivo": "Resistencia",
+    "TipoDieta": "Vegetariana"
+  },
+  {
+    "Id": "78542e9d-1474-4a89-a534-425505175e99",
+    "Nombre": "Usuario 13",
+    "Peso": 104,
+    "Altura": 1.52,
+    "Actividad": "Moderada",
+    "Objetivo": "Resistencia",
+    "TipoDieta": "Balanceada"
+  },
+  {
+    "Id": "256456bf-3345-470e-824a-3d55ec764b22",
+    "Nombre": "Usuario 14",
+    "Peso": 100,
+    "Altura": 1.49,
+    "Actividad": "Sedentaria",
+    "Objetivo": "Ganar masa",
+    "TipoDieta": "Alta prote\u00EDna"
+  },
+  {
+    "Id": "e3c8503c-ad36-4bdf-b330-024d6fd7c2c6",
+    "Nombre": "Usuario 15",
+    "Peso": 57,
+    "Altura": 1.74,
+    "Actividad": "Sedentaria",
+    "Objetivo": "Mantener",
+    "TipoDieta": "Keto"
+  },
+  {
+    "Id": "667f628e-c10f-473c-ab23-ca5933f31576",
+    "Nombre": "Usuario 16",
+    "Peso": 109,
+    "Altura": 1.82,
+    "Actividad": "Alta",
+    "Objetivo": "Mantener",
+    "TipoDieta": "Vegetariana"
+  },
+  {
+    "Id": "b50e62f5-e3b5-4aed-835f-23b85003aef0",
+    "Nombre": "Usuario 17",
+    "Peso": 98,
+    "Altura": 1.99,
+    "Actividad": "Sedentaria",
+    "Objetivo": "Resistencia",
+    "TipoDieta": "Alta prote\u00EDna"
+  },
+  {
+    "Id": "8b76ce9c-888a-4e02-a036-f7a533ef184e",
+    "Nombre": "Usuario 18",
+    "Peso": 109,
+    "Altura": 1.79,
+    "Actividad": "Ligera",
+    "Objetivo": "Ganar masa",
+    "TipoDieta": "Vegana"
+  },
+  {
+    "Id": "d2d692c6-979b-46c0-a1e8-23c7cda0f759",
+    "Nombre": "Usuario 19",
+    "Peso": 78,
+    "Altura": 1.97,
+    "Actividad": "Sedentaria",
+    "Objetivo": "Bajar peso",
+    "TipoDieta": "Balanceada"
+  },
+  {
+    "Id": "95012bc6-bdc1-4f5a-82a9-6f981997227c",
+    "Nombre": "Usuario 20",
+    "Peso": 55,
+    "Altura": 1.91,
+    "Actividad": "Moderada",
+    "Objetivo": "Bajar peso",
+    "TipoDieta": "Balanceada"
+  },
+  {
+    "Id": "d79c87db-4f92-49ca-9e8b-2d578e2a83e8",
+    "Nombre": "Usuario 21",
+    "Peso": 76,
+    "Altura": 1.99,
+    "Actividad": "Sedentaria",
+    "Objetivo": "Resistencia",
+    "TipoDieta": "Alta prote\u00EDna"
+  },
+  {
+    "Id": "10ec0bf8-fb86-49ff-990c-c2328957aa17",
+    "Nombre": "Usuario 22",
+    "Peso": 99,
+    "Altura": 1.72,
+    "Actividad": "Ligera",
+    "Objetivo": "Bajar peso",
+    "TipoDieta": "Vegetariana"
+  },
+  {
+    "Id": "46b08cdd-317a-49a4-a98b-d5c6f80601ac",
+    "Nombre": "Usuario 23",
+    "Peso": 86,
+    "Altura": 1.54,
+    "Actividad": "Alta",
+    "Objetivo": "Ganar masa",
+    "TipoDieta": "Alta prote\u00EDna"
+  },
+  {
+    "Id": "1fbcbf88-40a8-40d7-9744-4b767ed0ac11",
+    "Nombre": "Usuario 24",
+    "Peso": 63,
+    "Altura": 1.97,
+    "Actividad": "Alta",
+    "Objetivo": "Mantener",
+    "TipoDieta": "Vegana"
+  },
+  {
+    "Id": "9e10d6f8-dd61-4323-9c02-e20eb56306a8",
+    "Nombre": "Usuario 25",
+    "Peso": 60,
+    "Altura": 1.61,
+    "Actividad": "Moderada",
+    "Objetivo": "Bajar peso",
+    "TipoDieta": "Vegetariana"
+  }
+]

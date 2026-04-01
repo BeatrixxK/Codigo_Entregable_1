@@ -1,0 +1,94 @@
+Sprint 4
+UI Avalonia → EstadisticasNutricionController → EstadisticasNutricionService
+            → UsuarioRepository + MenuRepository
+            → usuarios.json + menus.json
+
+            
+Codigo_Entregable_1
+│
+├── docs
+├── entregables
+├── src
+│   ├── DragonNutrex.App
+│   │   ├── Controllers
+│   │   │   ├── UsuarioController.cs
+│   │   │   ├── ProductoController.cs
+│   │   │   ├── MenuController.cs
+│   │   │   └── EstadisticasNutricionController.cs
+│   │   │
+│   │   ├── Data
+│   │   │   ├── usuarios.json
+│   │   │   ├── productos.json
+│   │   │   └── menus.json
+│   │   │
+│   │   ├── Interfaces
+│   │   │   └── IRepository.cs
+│   │   │
+│   │   ├── Models
+│   │   │   ├── Usuario.cs
+│   │   │   ├── Producto.cs
+│   │   │   ├── Menu.cs
+│   │   │   ├── RegistroComida.cs
+│   │   │   ├── TipoDietaMeta.cs
+│   │   │   └── ResumenEstadisticaNutricional.cs
+│   │   │
+│   │   ├── Repositories
+│   │   │   ├── UsuarioRepository.cs
+│   │   │   ├── ProductoRepository.cs
+│   │   │   └── MenuRepository.cs
+│   │   │
+│   │   ├── Services
+│   │   │   ├── UsuarioService.cs
+│   │   │   ├── ProductoService.cs
+│   │   │   ├── MenuService.cs
+│   │   │   └── EstadisticasNutricionService.cs
+│   │   │
+│   │   ├── Utils
+│   │   │   ├── FileStorage.cs
+│   │   │   └── DataSeeder.cs
+│   │   │
+│   │   └── DragonNutrex.App.csproj
+│   │
+│   ├── DragonNutrex.UI
+│   │   ├── App.axaml
+│   │   ├── App.axaml.cs
+│   │   ├── MainWindow.axaml
+│   │   ├── MainWindow.axaml.cs
+│   │   ├── Program.cs
+│   │   ├── app.manifest
+│   │   └── DragonNutrex.UI.csproj
+│   │
+│   └── DragonNutrex.slnx
+│
+└── .gitignore
+
+
+MainWindow.axaml / MainWindow.axaml.cs
+        ↓
+EstadisticasNutricionController
+        ↓
+EstadisticasNutricionService
+        ↓
+UsuarioRepository + MenuRepository
+        ↓
+usuarios.json + menus.json
+
+
+UI Avalonia
+→ selecciona usuario, dieta, fecha inicio y fecha fin
+→ muestra resultados nutricionales y estadísticos
+
+EstadisticasNutricionController
+→ coordina la solicitud del resumen nutricional
+
+EstadisticasNutricionService
+→ aplica lógica de negocio:
+   - obtener histórico de menús por usuario
+   - calcular totales y promedios por rango de fechas
+   - calcular IMC
+   - calcular distribución de macros
+   - comparar consumo contra dieta objetivo
+   - generar estado calórico y recomendación
+
+UsuarioRepository / MenuRepository
+→ leen datos persistidos desde usuarios.json y menus.json

@@ -1,0 +1,802 @@
+[
+  {
+    "Id": "ef1a6f10-ecf3-45d6-937f-3fcd9d9ca4f8",
+    "Nombre": "Leche 1",
+    "Calorias": 340,
+    "Proteinas": 15,
+    "Carbohidratos": 21,
+    "Grasas": 13
+  },
+  {
+    "Id": "0be5ce4d-e729-496a-9e3b-4fb518e6258a",
+    "Nombre": "Manzana 2",
+    "Calorias": 377,
+    "Proteinas": 0,
+    "Carbohidratos": 22,
+    "Grasas": 19
+  },
+  {
+    "Id": "938d0d29-eb88-413b-acc1-c69c40f91623",
+    "Nombre": "Banano 3",
+    "Calorias": 126,
+    "Proteinas": 8,
+    "Carbohidratos": 63,
+    "Grasas": 7
+  },
+  {
+    "Id": "2bb8c082-fc4c-49d6-98bf-f6e2ccdc93b9",
+    "Nombre": "Papa 4",
+    "Calorias": 354,
+    "Proteinas": 36,
+    "Carbohidratos": 69,
+    "Grasas": 24
+  },
+  {
+    "Id": "409b8a40-ba4c-4a32-b693-30e49d2b9d16",
+    "Nombre": "Pollo 5",
+    "Calorias": 468,
+    "Proteinas": 13,
+    "Carbohidratos": 68,
+    "Grasas": 11
+  },
+  {
+    "Id": "daf24bf2-461a-4a49-8245-aaca0c53480d",
+    "Nombre": "Queso 6",
+    "Calorias": 262,
+    "Proteinas": 34,
+    "Carbohidratos": 61,
+    "Grasas": 1
+  },
+  {
+    "Id": "280236c6-3619-4dd4-b64a-b8cb808e397f",
+    "Nombre": "Banano 7",
+    "Calorias": 338,
+    "Proteinas": 12,
+    "Carbohidratos": 34,
+    "Grasas": 8
+  },
+  {
+    "Id": "eb3ca3fe-17d0-497c-9a96-d26c2e7ee8b5",
+    "Nombre": "Arroz 8",
+    "Calorias": 412,
+    "Proteinas": 39,
+    "Carbohidratos": 76,
+    "Grasas": 13
+  },
+  {
+    "Id": "a6dfd63c-f5de-4d08-b425-a87529c6c029",
+    "Nombre": "Almendras 9",
+    "Calorias": 350,
+    "Proteinas": 18,
+    "Carbohidratos": 61,
+    "Grasas": 10
+  },
+  {
+    "Id": "92b72f0d-fa9f-47e4-95bf-ed6fb635d2d2",
+    "Nombre": "Aguacate 10",
+    "Calorias": 191,
+    "Proteinas": 37,
+    "Carbohidratos": 69,
+    "Grasas": 0
+  },
+  {
+    "Id": "2ecd1d89-dffe-4bf5-8fb6-24101470475e",
+    "Nombre": "Manzana 11",
+    "Calorias": 133,
+    "Proteinas": 32,
+    "Carbohidratos": 11,
+    "Grasas": 14
+  },
+  {
+    "Id": "3808d020-3d57-4d0d-912d-2a258ac1224c",
+    "Nombre": "Pollo 12",
+    "Calorias": 103,
+    "Proteinas": 5,
+    "Carbohidratos": 76,
+    "Grasas": 23
+  },
+  {
+    "Id": "9c930dd2-eb9f-4f67-ab95-c12e3b5da09d",
+    "Nombre": "Banano 13",
+    "Calorias": 382,
+    "Proteinas": 11,
+    "Carbohidratos": 53,
+    "Grasas": 9
+  },
+  {
+    "Id": "4ca0eaa8-6c7b-413f-a0ec-9cd2f3afe6eb",
+    "Nombre": "Papa 14",
+    "Calorias": 129,
+    "Proteinas": 0,
+    "Carbohidratos": 43,
+    "Grasas": 6
+  },
+  {
+    "Id": "2de09018-d153-4c0f-9758-cb72e5e0be6f",
+    "Nombre": "Aguacate 15",
+    "Calorias": 293,
+    "Proteinas": 25,
+    "Carbohidratos": 53,
+    "Grasas": 1
+  },
+  {
+    "Id": "6f21b406-1f1a-4053-ba7c-98011f58fc2c",
+    "Nombre": "At\u00FAn 16",
+    "Calorias": 115,
+    "Proteinas": 22,
+    "Carbohidratos": 53,
+    "Grasas": 19
+  },
+  {
+    "Id": "8ad5fbba-193c-430e-b6fb-522c59fc6536",
+    "Nombre": "Almendras 17",
+    "Calorias": 283,
+    "Proteinas": 26,
+    "Carbohidratos": 77,
+    "Grasas": 1
+  },
+  {
+    "Id": "384b7b56-e7d7-4a09-a060-1a0bbc2a49b5",
+    "Nombre": "Granola 18",
+    "Calorias": 395,
+    "Proteinas": 18,
+    "Carbohidratos": 5,
+    "Grasas": 19
+  },
+  {
+    "Id": "d3ef1e86-c76a-4ed8-9db5-c126320978e6",
+    "Nombre": "Salm\u00F3n 19",
+    "Calorias": 228,
+    "Proteinas": 7,
+    "Carbohidratos": 6,
+    "Grasas": 15
+  },
+  {
+    "Id": "c4c551d7-78b7-4b45-b6c3-a6ca43b64ec2",
+    "Nombre": "Queso 20",
+    "Calorias": 104,
+    "Proteinas": 1,
+    "Carbohidratos": 34,
+    "Grasas": 7
+  },
+  {
+    "Id": "6cd264fe-0527-4089-9074-b8e7eb8fbb79",
+    "Nombre": "Salm\u00F3n 21",
+    "Calorias": 348,
+    "Proteinas": 7,
+    "Carbohidratos": 63,
+    "Grasas": 14
+  },
+  {
+    "Id": "b24f612b-b67f-4169-a921-53e73968762f",
+    "Nombre": "At\u00FAn 22",
+    "Calorias": 209,
+    "Proteinas": 16,
+    "Carbohidratos": 67,
+    "Grasas": 19
+  },
+  {
+    "Id": "9be73614-5296-4261-9b78-7e8cca3011a0",
+    "Nombre": "Queso 23",
+    "Calorias": 450,
+    "Proteinas": 3,
+    "Carbohidratos": 14,
+    "Grasas": 23
+  },
+  {
+    "Id": "982ac0a0-e693-485b-a3da-e5f759b7d7d9",
+    "Nombre": "Avena 24",
+    "Calorias": 286,
+    "Proteinas": 31,
+    "Carbohidratos": 45,
+    "Grasas": 17
+  },
+  {
+    "Id": "a9b33954-7724-4d3a-a90d-24ff6d9f2d8d",
+    "Nombre": "Salm\u00F3n 25",
+    "Calorias": 417,
+    "Proteinas": 28,
+    "Carbohidratos": 10,
+    "Grasas": 22
+  },
+  {
+    "Id": "1fbae53a-a903-4276-a268-ce995ad11df2",
+    "Nombre": "Aguacate 26",
+    "Calorias": 495,
+    "Proteinas": 20,
+    "Carbohidratos": 0,
+    "Grasas": 9
+  },
+  {
+    "Id": "d4232780-b2d2-4db4-bfe0-7a10bc78b7f7",
+    "Nombre": "Frijoles 27",
+    "Calorias": 253,
+    "Proteinas": 17,
+    "Carbohidratos": 1,
+    "Grasas": 17
+  },
+  {
+    "Id": "d4f29b91-adab-449a-92db-0c06c5e274ef",
+    "Nombre": "Pan Integral 28",
+    "Calorias": 166,
+    "Proteinas": 2,
+    "Carbohidratos": 72,
+    "Grasas": 4
+  },
+  {
+    "Id": "571ef977-f416-4973-bb82-d9c543e58d85",
+    "Nombre": "At\u00FAn 29",
+    "Calorias": 284,
+    "Proteinas": 6,
+    "Carbohidratos": 23,
+    "Grasas": 9
+  },
+  {
+    "Id": "420286d1-804a-426f-8367-774dd6328b1a",
+    "Nombre": "Almendras 30",
+    "Calorias": 108,
+    "Proteinas": 0,
+    "Carbohidratos": 59,
+    "Grasas": 1
+  },
+  {
+    "Id": "a67d8d56-f51b-42e8-9fbb-eb43b2601b1b",
+    "Nombre": "Manzana 31",
+    "Calorias": 295,
+    "Proteinas": 18,
+    "Carbohidratos": 41,
+    "Grasas": 3
+  },
+  {
+    "Id": "4db7ba40-7925-40aa-b7ac-8869a09d1394",
+    "Nombre": "Pechuga 32",
+    "Calorias": 148,
+    "Proteinas": 10,
+    "Carbohidratos": 64,
+    "Grasas": 20
+  },
+  {
+    "Id": "1e16001c-7184-496a-b688-5fc0686f9a90",
+    "Nombre": "Pollo 33",
+    "Calorias": 250,
+    "Proteinas": 11,
+    "Carbohidratos": 8,
+    "Grasas": 13
+  },
+  {
+    "Id": "909ef2ef-5abd-4b92-82f6-7347e903fade",
+    "Nombre": "Pollo 34",
+    "Calorias": 425,
+    "Proteinas": 32,
+    "Carbohidratos": 69,
+    "Grasas": 20
+  },
+  {
+    "Id": "fef0e63d-8896-4616-b519-2626f6091247",
+    "Nombre": "Carne 35",
+    "Calorias": 329,
+    "Proteinas": 14,
+    "Carbohidratos": 66,
+    "Grasas": 9
+  },
+  {
+    "Id": "bbcb51bf-2d76-4740-98c7-e7cd04aa8269",
+    "Nombre": "Aguacate 36",
+    "Calorias": 388,
+    "Proteinas": 18,
+    "Carbohidratos": 8,
+    "Grasas": 13
+  },
+  {
+    "Id": "a5490c6a-5352-45d3-a251-d42829ed3f80",
+    "Nombre": "Pechuga 37",
+    "Calorias": 485,
+    "Proteinas": 16,
+    "Carbohidratos": 40,
+    "Grasas": 9
+  },
+  {
+    "Id": "cac23474-d7e7-4cfb-92f9-a17ce161e5c9",
+    "Nombre": "Queso 38",
+    "Calorias": 497,
+    "Proteinas": 7,
+    "Carbohidratos": 38,
+    "Grasas": 6
+  },
+  {
+    "Id": "3e7da26e-56e1-40c2-85ed-c7dfdf6a1fe9",
+    "Nombre": "Pechuga 39",
+    "Calorias": 192,
+    "Proteinas": 12,
+    "Carbohidratos": 21,
+    "Grasas": 9
+  },
+  {
+    "Id": "f32a3db4-b200-454d-8551-5f1e85e78b4b",
+    "Nombre": "Aguacate 40",
+    "Calorias": 348,
+    "Proteinas": 21,
+    "Carbohidratos": 68,
+    "Grasas": 20
+  },
+  {
+    "Id": "c7bbd8e8-1bdd-4056-afbd-6367f30f3743",
+    "Nombre": "Queso 41",
+    "Calorias": 138,
+    "Proteinas": 4,
+    "Carbohidratos": 6,
+    "Grasas": 4
+  },
+  {
+    "Id": "c4d2984c-be17-49fe-aa66-06f06a8a3f41",
+    "Nombre": "Pollo 42",
+    "Calorias": 302,
+    "Proteinas": 3,
+    "Carbohidratos": 39,
+    "Grasas": 7
+  },
+  {
+    "Id": "42fb4e66-3ade-4482-92f9-c9cb4040238e",
+    "Nombre": "Pasta 43",
+    "Calorias": 340,
+    "Proteinas": 29,
+    "Carbohidratos": 16,
+    "Grasas": 0
+  },
+  {
+    "Id": "9a191a08-53af-453a-9911-c73edb289da8",
+    "Nombre": "Pasta 44",
+    "Calorias": 477,
+    "Proteinas": 37,
+    "Carbohidratos": 75,
+    "Grasas": 18
+  },
+  {
+    "Id": "c2c2133a-367f-46d7-8e01-537adf83d2f7",
+    "Nombre": "Frijoles 45",
+    "Calorias": 304,
+    "Proteinas": 12,
+    "Carbohidratos": 14,
+    "Grasas": 19
+  },
+  {
+    "Id": "20386781-f1ae-4125-90e3-cbb734f3bf23",
+    "Nombre": "Pechuga 46",
+    "Calorias": 148,
+    "Proteinas": 13,
+    "Carbohidratos": 41,
+    "Grasas": 10
+  },
+  {
+    "Id": "087e11ae-d54d-4e6a-866c-a9b08d879d67",
+    "Nombre": "Manzana 47",
+    "Calorias": 148,
+    "Proteinas": 0,
+    "Carbohidratos": 8,
+    "Grasas": 3
+  },
+  {
+    "Id": "56ff4387-84b5-40fe-8e3e-920f96661616",
+    "Nombre": "Banano 48",
+    "Calorias": 266,
+    "Proteinas": 7,
+    "Carbohidratos": 68,
+    "Grasas": 1
+  },
+  {
+    "Id": "49d26bac-aed7-4370-bc5b-7d61b0186b55",
+    "Nombre": "At\u00FAn 49",
+    "Calorias": 267,
+    "Proteinas": 28,
+    "Carbohidratos": 33,
+    "Grasas": 2
+  },
+  {
+    "Id": "d9c1fdad-db6a-4b69-ba07-9a00d19e6055",
+    "Nombre": "Leche 50",
+    "Calorias": 314,
+    "Proteinas": 7,
+    "Carbohidratos": 15,
+    "Grasas": 1
+  },
+  {
+    "Id": "7ef08999-5b49-4376-87ac-213ed3a0490e",
+    "Nombre": "Huevo 51",
+    "Calorias": 387,
+    "Proteinas": 18,
+    "Carbohidratos": 16,
+    "Grasas": 20
+  },
+  {
+    "Id": "bcdd9e92-2524-43ad-83b5-03a5e88210ce",
+    "Nombre": "Leche 52",
+    "Calorias": 171,
+    "Proteinas": 18,
+    "Carbohidratos": 73,
+    "Grasas": 4
+  },
+  {
+    "Id": "53eadaf0-21c9-4aa7-8e1d-4d095299cff9",
+    "Nombre": "Pechuga 53",
+    "Calorias": 260,
+    "Proteinas": 19,
+    "Carbohidratos": 36,
+    "Grasas": 24
+  },
+  {
+    "Id": "e2e5197e-c47c-47b5-9f9c-a50d705ca9a1",
+    "Nombre": "Manzana 54",
+    "Calorias": 75,
+    "Proteinas": 9,
+    "Carbohidratos": 45,
+    "Grasas": 20
+  },
+  {
+    "Id": "e8156c32-fe11-483c-8935-fd3c6e65d096",
+    "Nombre": "Frijoles 55",
+    "Calorias": 266,
+    "Proteinas": 1,
+    "Carbohidratos": 70,
+    "Grasas": 2
+  },
+  {
+    "Id": "e700fe19-3f07-44f1-958e-99a6ed35d796",
+    "Nombre": "Frijoles 56",
+    "Calorias": 374,
+    "Proteinas": 0,
+    "Carbohidratos": 20,
+    "Grasas": 20
+  },
+  {
+    "Id": "a7079c13-6080-4e1a-8552-705dde004211",
+    "Nombre": "At\u00FAn 57",
+    "Calorias": 440,
+    "Proteinas": 24,
+    "Carbohidratos": 73,
+    "Grasas": 2
+  },
+  {
+    "Id": "cec621bb-9444-4198-82be-f6cdf28ab2a4",
+    "Nombre": "Manzana 58",
+    "Calorias": 220,
+    "Proteinas": 26,
+    "Carbohidratos": 78,
+    "Grasas": 12
+  },
+  {
+    "Id": "858fdb3f-24f1-4366-bdf7-3dcd0815d1b0",
+    "Nombre": "Salm\u00F3n 59",
+    "Calorias": 124,
+    "Proteinas": 28,
+    "Carbohidratos": 43,
+    "Grasas": 8
+  },
+  {
+    "Id": "0e3f4aee-2939-40a4-9db7-5e5cc12b59ea",
+    "Nombre": "Granola 60",
+    "Calorias": 284,
+    "Proteinas": 14,
+    "Carbohidratos": 50,
+    "Grasas": 3
+  },
+  {
+    "Id": "459fd135-2e51-449b-8138-41375728af51",
+    "Nombre": "Carne 61",
+    "Calorias": 196,
+    "Proteinas": 32,
+    "Carbohidratos": 40,
+    "Grasas": 17
+  },
+  {
+    "Id": "de78e220-9df5-4812-a55a-f1a997320df6",
+    "Nombre": "Salm\u00F3n 62",
+    "Calorias": 439,
+    "Proteinas": 27,
+    "Carbohidratos": 4,
+    "Grasas": 1
+  },
+  {
+    "Id": "8c1b0278-389c-4974-98df-7e8b5c4d3ecb",
+    "Nombre": "Pasta 63",
+    "Calorias": 140,
+    "Proteinas": 32,
+    "Carbohidratos": 23,
+    "Grasas": 8
+  },
+  {
+    "Id": "c1288c9f-3b0e-42a4-bcee-dd149336e820",
+    "Nombre": "Granola 64",
+    "Calorias": 233,
+    "Proteinas": 36,
+    "Carbohidratos": 71,
+    "Grasas": 10
+  },
+  {
+    "Id": "5836ba67-de05-4e8a-b0af-e7382bfad1f5",
+    "Nombre": "Pollo 65",
+    "Calorias": 477,
+    "Proteinas": 20,
+    "Carbohidratos": 28,
+    "Grasas": 9
+  },
+  {
+    "Id": "dae42a90-74bd-4f15-b414-5cfb19784307",
+    "Nombre": "Pechuga 66",
+    "Calorias": 281,
+    "Proteinas": 29,
+    "Carbohidratos": 55,
+    "Grasas": 6
+  },
+  {
+    "Id": "758d47d7-cb6c-43c6-8803-025b38936fd6",
+    "Nombre": "Arroz 67",
+    "Calorias": 344,
+    "Proteinas": 31,
+    "Carbohidratos": 51,
+    "Grasas": 3
+  },
+  {
+    "Id": "7bd87c9d-70e0-4621-836f-955395ba0977",
+    "Nombre": "Pan Integral 68",
+    "Calorias": 344,
+    "Proteinas": 12,
+    "Carbohidratos": 28,
+    "Grasas": 9
+  },
+  {
+    "Id": "588e1a21-5278-4870-8022-daa11d861bec",
+    "Nombre": "At\u00FAn 69",
+    "Calorias": 492,
+    "Proteinas": 37,
+    "Carbohidratos": 11,
+    "Grasas": 8
+  },
+  {
+    "Id": "eac8c73d-da33-4715-91ea-0a00f7faf3e8",
+    "Nombre": "Pan Integral 70",
+    "Calorias": 73,
+    "Proteinas": 33,
+    "Carbohidratos": 31,
+    "Grasas": 14
+  },
+  {
+    "Id": "fb964dee-92f4-49fd-ad0c-6afda64f5496",
+    "Nombre": "Pasta 71",
+    "Calorias": 348,
+    "Proteinas": 6,
+    "Carbohidratos": 59,
+    "Grasas": 20
+  },
+  {
+    "Id": "f6e20a53-cd87-4185-bad6-94119f80c352",
+    "Nombre": "Banano 72",
+    "Calorias": 166,
+    "Proteinas": 20,
+    "Carbohidratos": 23,
+    "Grasas": 23
+  },
+  {
+    "Id": "f54e94ef-7444-4680-82e2-b8eec2b710a9",
+    "Nombre": "Manzana 73",
+    "Calorias": 64,
+    "Proteinas": 37,
+    "Carbohidratos": 5,
+    "Grasas": 18
+  },
+  {
+    "Id": "bda6f7a8-2731-4c6c-8fd9-7b645588c2fb",
+    "Nombre": "Pasta 74",
+    "Calorias": 444,
+    "Proteinas": 17,
+    "Carbohidratos": 56,
+    "Grasas": 23
+  },
+  {
+    "Id": "368e4237-e24f-419e-8068-390cd6bdafd3",
+    "Nombre": "Pasta 75",
+    "Calorias": 305,
+    "Proteinas": 19,
+    "Carbohidratos": 51,
+    "Grasas": 24
+  },
+  {
+    "Id": "aedefbaf-f741-47c9-8def-b0df19922339",
+    "Nombre": "Frijoles 76",
+    "Calorias": 366,
+    "Proteinas": 16,
+    "Carbohidratos": 35,
+    "Grasas": 9
+  },
+  {
+    "Id": "7e7dc6f7-d9b7-4d35-a71d-a214a11e6c7f",
+    "Nombre": "At\u00FAn 77",
+    "Calorias": 120,
+    "Proteinas": 24,
+    "Carbohidratos": 61,
+    "Grasas": 4
+  },
+  {
+    "Id": "18d44c51-e369-41c8-8d81-32aff643d753",
+    "Nombre": "Yogurt 78",
+    "Calorias": 337,
+    "Proteinas": 17,
+    "Carbohidratos": 26,
+    "Grasas": 5
+  },
+  {
+    "Id": "eda1119e-68aa-46f9-8636-de12bf97fbc9",
+    "Nombre": "Pan Integral 79",
+    "Calorias": 374,
+    "Proteinas": 6,
+    "Carbohidratos": 37,
+    "Grasas": 17
+  },
+  {
+    "Id": "e58b9b03-9ec6-424d-b223-6b16b79d1a54",
+    "Nombre": "Huevo 80",
+    "Calorias": 431,
+    "Proteinas": 31,
+    "Carbohidratos": 41,
+    "Grasas": 11
+  },
+  {
+    "Id": "7b8e70a9-dda4-4ab6-8055-3a4c3102921a",
+    "Nombre": "Pasta 81",
+    "Calorias": 425,
+    "Proteinas": 12,
+    "Carbohidratos": 43,
+    "Grasas": 22
+  },
+  {
+    "Id": "d740d3ba-8052-49cb-a869-4bf0a24ecb6f",
+    "Nombre": "Leche 82",
+    "Calorias": 230,
+    "Proteinas": 33,
+    "Carbohidratos": 38,
+    "Grasas": 17
+  },
+  {
+    "Id": "f3bfd59b-0508-408e-b85f-dc9e1f25f051",
+    "Nombre": "Arroz 83",
+    "Calorias": 308,
+    "Proteinas": 25,
+    "Carbohidratos": 66,
+    "Grasas": 19
+  },
+  {
+    "Id": "091b1acc-b6a6-4e8d-b470-9daf9dfdc6b2",
+    "Nombre": "Avena 84",
+    "Calorias": 179,
+    "Proteinas": 31,
+    "Carbohidratos": 71,
+    "Grasas": 11
+  },
+  {
+    "Id": "2e4e0e01-fe3c-4b04-907b-265139ce99ea",
+    "Nombre": "Pollo 85",
+    "Calorias": 270,
+    "Proteinas": 38,
+    "Carbohidratos": 51,
+    "Grasas": 7
+  },
+  {
+    "Id": "fa988b6e-6162-4c7a-8b40-4b7a9e3cdfa4",
+    "Nombre": "Pechuga 86",
+    "Calorias": 97,
+    "Proteinas": 33,
+    "Carbohidratos": 42,
+    "Grasas": 20
+  },
+  {
+    "Id": "8692d8ed-a87c-4867-8368-7b99718a5da2",
+    "Nombre": "Pasta 87",
+    "Calorias": 239,
+    "Proteinas": 4,
+    "Carbohidratos": 12,
+    "Grasas": 2
+  },
+  {
+    "Id": "fdb43739-fc26-4853-9247-1e5624c947c5",
+    "Nombre": "Banano 88",
+    "Calorias": 232,
+    "Proteinas": 36,
+    "Carbohidratos": 51,
+    "Grasas": 24
+  },
+  {
+    "Id": "87ec611c-1e81-4942-b340-912d19e4158d",
+    "Nombre": "Almendras 89",
+    "Calorias": 447,
+    "Proteinas": 38,
+    "Carbohidratos": 53,
+    "Grasas": 18
+  },
+  {
+    "Id": "a7ba1eb9-19db-4477-9906-6a3bec79be78",
+    "Nombre": "Aguacate 90",
+    "Calorias": 423,
+    "Proteinas": 27,
+    "Carbohidratos": 5,
+    "Grasas": 1
+  },
+  {
+    "Id": "fbf92824-0cec-4406-b306-f810d6d09f6c",
+    "Nombre": "Aguacate 91",
+    "Calorias": 409,
+    "Proteinas": 39,
+    "Carbohidratos": 17,
+    "Grasas": 20
+  },
+  {
+    "Id": "62ceb02c-c068-450a-88af-f21e9c8d77f2",
+    "Nombre": "Pollo 92",
+    "Calorias": 152,
+    "Proteinas": 37,
+    "Carbohidratos": 5,
+    "Grasas": 10
+  },
+  {
+    "Id": "10671e56-29a1-48d9-a136-7fb831ab1f4a",
+    "Nombre": "Manzana 93",
+    "Calorias": 452,
+    "Proteinas": 26,
+    "Carbohidratos": 31,
+    "Grasas": 5
+  },
+  {
+    "Id": "093f7364-dfa5-4fbd-bf0d-b1a0c784b23b",
+    "Nombre": "Banano 94",
+    "Calorias": 235,
+    "Proteinas": 28,
+    "Carbohidratos": 18,
+    "Grasas": 13
+  },
+  {
+    "Id": "07fc73de-5b0d-4bbf-8f3e-9e5eb01707ba",
+    "Nombre": "Banano 95",
+    "Calorias": 456,
+    "Proteinas": 30,
+    "Carbohidratos": 12,
+    "Grasas": 22
+  },
+  {
+    "Id": "f170ab2c-c5cb-4d1b-a697-ebb01c73728b",
+    "Nombre": "Avena 96",
+    "Calorias": 215,
+    "Proteinas": 38,
+    "Carbohidratos": 66,
+    "Grasas": 1
+  },
+  {
+    "Id": "520073db-2373-4b2c-b9e2-32a6242a166e",
+    "Nombre": "Granola 97",
+    "Calorias": 66,
+    "Proteinas": 18,
+    "Carbohidratos": 17,
+    "Grasas": 19
+  },
+  {
+    "Id": "36a33f80-3cc4-4453-8a29-69facc3b6dd7",
+    "Nombre": "Pan Integral 98",
+    "Calorias": 293,
+    "Proteinas": 36,
+    "Carbohidratos": 45,
+    "Grasas": 18
+  },
+  {
+    "Id": "761c4c39-ff14-4444-87cb-8bbd74899c9c",
+    "Nombre": "Granola 99",
+    "Calorias": 240,
+    "Proteinas": 25,
+    "Carbohidratos": 63,
+    "Grasas": 12
+  },
+  {
+    "Id": "7faa33ec-5472-4004-95f9-9197ec3e8988",
+    "Nombre": "Pollo 100",
+    "Calorias": 378,
+    "Proteinas": 1,
+    "Carbohidratos": 76,
+    "Grasas": 6
+  }
+]

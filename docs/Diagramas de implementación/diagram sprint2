@@ -1,0 +1,32 @@
+<<<<<<< Updated upstream
+UI Avalonia → Controller → Service → Repository → JSON
+
+=======
+Codigo_Entregable_1
+│
+├── docs
+├── entregables
+├── src
+│   ├── DragonNutrex.App
+│   │   ├── Controllers
+│   │   ├── Data
+│   │   ├── Interfaces
+│   │   ├── Models
+│   │   ├── Repositories
+│   │   ├── Services
+│   │   ├── Utils
+│   │   └── DragonNutrex.App.csproj
+│   │
+│   ├── DragonNutrex.UI
+│   │   ├── App.axaml
+│   │   ├── App.axaml.cs
+│   │   ├── MainWindow.axaml
+│   │   ├── MainWindow.axaml.cs
+│   │   ├── Program.cs
+│   │   ├── app.manifest
+│   │   └── DragonNutrex.UI.csproj
+│   │
+│   └── DragonNutrex.slnx
+│
+└── .gitignore
+>>>>>>> Stashed changes
