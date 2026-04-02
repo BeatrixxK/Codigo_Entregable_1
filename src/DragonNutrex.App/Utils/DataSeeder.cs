@@ -28,6 +28,16 @@ public static class DataSeeder
             )
         );
 
+        var menusPath = Path.GetFullPath(
+            Path.Combine(
+                AppContext.BaseDirectory,
+                "..", "..", "..", "..",
+                "DragonNutrex.App",
+                "Data",
+                "menus.json"
+            )
+        );
+
         var usuarios = new List<Usuario>();
         for (int i = 1; i <= 25; i++)
         {
@@ -57,8 +67,55 @@ public static class DataSeeder
             });
         }
 
+        var menus = new List<Menu>();
+        var fechaInicio = DateTime.Today.AddDays(-14);
+
+        foreach (var usuario in usuarios)
+        {
+            for (int i = 0; i < 15; i++)
+            {
+                var fecha = fechaInicio.AddDays(i);
+
+                var menu = new Menu
+                {
+                    Id = Guid.NewGuid(),
+                    UsuarioId = usuario.Id,
+                    Fecha = fecha,
+                    Registros = new List<RegistroComida>()
+                };
+
+                var cantidadRegistros = random.Next(3, 6);
+
+                for (int j = 0; j < cantidadRegistros; j++)
+                {
+                    var producto = productos[random.Next(productos.Count)];
+                    var cantidad = random.Next(1, 5);
+
+                    menu.Registros.Add(new RegistroComida
+                    {
+                        Id = Guid.NewGuid(),
+                        ProductoId = producto.Id,
+                        NombreProducto = producto.Nombre,
+                        Cantidad = cantidad,
+                        Calorias = producto.Calorias * cantidad,
+                        Proteinas = producto.Proteinas * cantidad,
+                        Carbohidratos = producto.Carbohidratos * cantidad,
+                        Grasas = producto.Grasas * cantidad
+                    });
+                }
+
+                menu.TotalCalorias = menu.Registros.Sum(r => r.Calorias);
+                menu.TotalProteinas = menu.Registros.Sum(r => r.Proteinas);
+                menu.TotalCarbohidratos = menu.Registros.Sum(r => r.Carbohidratos);
+                menu.TotalGrasas = menu.Registros.Sum(r => r.Grasas);
+
+                menus.Add(menu);
+            }
+        }
+
         FileStorage.WriteList(usuariosPath, usuarios);
         FileStorage.WriteList(productosPath, productos);
+        FileStorage.WriteList(menusPath, menus);
     }
 
     private static readonly string[] Actividades =
