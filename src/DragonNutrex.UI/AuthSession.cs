@@ -29,4 +29,12 @@ public static class AuthSession
         UsuarioId = Guid.Empty;
         NombreUsuario = string.Empty;
     }
+
+public static void CerrarSesion()
+{
+    UsuarioId = Guid.Empty;
+    NombreUsuario = string.Empty;
+    EsAdmin = false;
+}
+
 }

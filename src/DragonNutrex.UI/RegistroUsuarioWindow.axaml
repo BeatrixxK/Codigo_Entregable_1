@@ -1,34 +1,91 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         x:Class="DragonNutrex.UI.RegistroUsuarioWindow"
-        Width="500"
-        Height="460"
+        Width="520"
+        Height="700"
         Title="Registro de Usuario">
 
-    <StackPanel Margin="20" Spacing="10">
+    <!--
+        Contenedor principal del formulario.
+        Usa un StackPanel vertical para organizar todos los campos.
+    -->
+    <StackPanel Margin="25" Spacing="12">
 
+        <!-- ===================================================== -->
+        <!-- TÍTULO -->
+        <!-- ===================================================== -->
         <TextBlock Text="Registro de Usuario"
-                   FontSize="24"
+                   FontSize="22"
                    FontWeight="Bold"/>
 
-        <TextBox x:Name="NombreTextBox" Watermark="Nombre"/>
-        <TextBox x:Name="PesoTextBox" Watermark="Peso"/>
-        <TextBox x:Name="AlturaTextBox" Watermark="Altura"/>
-        <TextBox x:Name="ActividadTextBox" Watermark="Actividad"/>
-        <TextBox x:Name="ObjetivoTextBox" Watermark="Objetivo"/>
+        <!-- ===================================================== -->
+        <!-- DATOS PERSONALES -->
+        <!-- ===================================================== -->
 
-        <ComboBox x:Name="TipoDietaComboBox"/>
+        <!-- Nombre completo del usuario -->
+        <TextBox x:Name="NombreTextBox"
+                 Watermark="Nombre completo"/>
 
+        <!-- Correo (se usará como usuario para login) -->
+        <TextBox x:Name="CorreoTextBox"
+                 Watermark="Correo electrónico"/>
+
+        <!-- Peso en kilogramos -->
+        <TextBox x:Name="PesoTextBox"
+                 Watermark="Peso (kg)"/>
+
+        <!-- Altura en metros -->
+        <TextBox x:Name="AlturaTextBox"
+                 Watermark="Altura (m)"/>
+
+        <!-- ===================================================== -->
+        <!-- CONFIGURACIÓN DEL USUARIO -->
+        <!-- ===================================================== -->
+
+        <!-- Nivel de actividad física -->
+        <ComboBox x:Name="ActividadComboBox"
+                  HorizontalAlignment="Stretch"/>
+
+        <!-- Objetivo del usuario -->
+        <ComboBox x:Name="ObjetivoComboBox"
+                  HorizontalAlignment="Stretch"/>
+
+        <!-- Tipo de dieta -->
+        <ComboBox x:Name="TipoDietaComboBox"
+                  HorizontalAlignment="Stretch"/>
+
+        <!-- ===================================================== -->
+        <!-- SEGURIDAD -->
+        <!-- ===================================================== -->
+
+        <!-- Contraseña -->
         <TextBox x:Name="PasswordTextBox"
                  Watermark="Crear contraseña"
                  PasswordChar="*"/>
 
-        <Button x:Name="GuardarRegistroButton"
-                Content="Crear Usuario"
-                Width="150"/>
+        <!-- Confirmación de contraseña -->
+        <TextBox x:Name="ConfirmarPasswordTextBox"
+                 Watermark="Confirmar contraseña"
+                 PasswordChar="*"/>
 
+        <!-- ===================================================== -->
+        <!-- ACCIONES -->
+        <!-- ===================================================== -->
+
+        <!-- Botón para crear usuario -->
+        <Button x:Name="CrearUsuarioButton"
+                Content="Crear Usuario"
+                Width="180"
+                HorizontalAlignment="Left"/>
+
+        <!-- ===================================================== -->
+        <!-- MENSAJES -->
+        <!-- ===================================================== -->
+
+        <!-- Mensaje de éxito o error -->
         <TextBlock x:Name="MensajeTextBlock"
-                   Foreground="Green"
+                   Foreground="LimeGreen"
                    TextWrapping="Wrap"/>
+
     </StackPanel>
 </Window>

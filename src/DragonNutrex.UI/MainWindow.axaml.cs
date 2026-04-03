@@ -25,87 +25,110 @@ public partial class MainWindow : Window
     private MenuModel? _menuActual;
     private RegistroComida? _registroSeleccionado;
 
-    public MainWindow()
+public MainWindow()
+{
+    InitializeComponent();
+
+    _usuarioController = new UsuarioController(new UsuarioService(new UsuarioRepository()));
+    _productoController = new ProductoController(new ProductoService(new ProductoRepository()));
+    _menuController = new MenuController(
+        new MenuService(
+            new MenuRepository(),
+            new UsuarioRepository(),
+            new ProductoRepository()
+        )
+    );
+    _estadisticasNutricionController = new EstadisticasNutricionController(
+        new EstadisticasNutricionService(
+            new UsuarioRepository(),
+            new MenuRepository()
+        )
+    );
+
+    // =========================
+    // EVENTOS UI
+    // =========================
+
+    GuardarButton.Click += GuardarUsuario;
+    EliminarButton.Click += EliminarUsuario;
+    LimpiarButton.Click += (_, _) => LimpiarUsuario();
+
+    GuardarProductoButton.Click += GuardarProducto;
+    EliminarProductoButton.Click += EliminarProducto;
+    LimpiarProductoButton.Click += (_, _) => LimpiarProducto();
+
+    UsuariosDataGrid.SelectionChanged += UsuariosDataGrid_SelectionChanged;
+    ProductosDataGrid.SelectionChanged += ProductosDataGrid_SelectionChanged;
+
+    UsuariosModuloButton.Click += (_, _) => MostrarSoloPanelUsuarios();
+    ProductosModuloButton.Click += (_, _) => MostrarSoloPanelProductos();
+
+    MenusModuloButton.Click += (_, _) =>
     {
-        InitializeComponent();
-
-        _usuarioController = new UsuarioController(new UsuarioService(new UsuarioRepository()));
-        _productoController = new ProductoController(new ProductoService(new ProductoRepository()));
-        _menuController = new MenuController(
-            new MenuService(
-                new MenuRepository(),
-                new UsuarioRepository(),
-                new ProductoRepository()
-            )
-        );
-        _estadisticasNutricionController = new EstadisticasNutricionController(
-            new EstadisticasNutricionService(
-                new UsuarioRepository(),
-                new MenuRepository()
-            )
-        );
-
-        GuardarButton.Click += GuardarUsuario;
-        EliminarButton.Click += EliminarUsuario;
-        LimpiarButton.Click += (_, _) => LimpiarUsuario();
-
-        GuardarProductoButton.Click += GuardarProducto;
-        EliminarProductoButton.Click += EliminarProducto;
-        LimpiarProductoButton.Click += (_, _) => LimpiarProducto();
-
-        UsuariosDataGrid.SelectionChanged += UsuariosDataGrid_SelectionChanged;
-        ProductosDataGrid.SelectionChanged += ProductosDataGrid_SelectionChanged;
-
-        UsuariosModuloButton.Click += (_, _) => MostrarSoloPanelUsuarios();
-        ProductosModuloButton.Click += (_, _) => MostrarSoloPanelProductos();
-
-        MenusModuloButton.Click += (_, _) =>
-        {
-            MostrarSoloPanelMenus();
-            CargarUsuariosEnCombo();
-            CargarProductosEnCombo();
-            CargarMenus();
-        };
-
-        EstadisticasNutricionModuloButton.Click += (_, _) =>
-        {
-            MostrarSoloPanelEstadisticasNutricion();
-            CargarUsuariosEnComboEstadistica();
-            CargarDietasEnComboEstadistica();
-            LimpiarResumenEstadisticaNutricion();
-        };
-
-        NuevoMenuButton.Click += NuevoMenu;
-        AgregarProductoMenuButton.Click += AgregarProductoAlMenu;
-        GuardarMenuButton.Click += GuardarMenu;
-        ActualizarRegistroMenuButton.Click += ActualizarRegistroMenu;
-        EliminarRegistroMenuButton.Click += EliminarRegistroMenu;
-        EliminarMenuButton.Click += EliminarMenuCompleto;
-        LimpiarMenuButton.Click += (_, _) => LimpiarMenu();
-
-        RegistrosMenuDataGrid.SelectionChanged += RegistrosMenuDataGrid_SelectionChanged;
-        MenusDataGrid.SelectionChanged += MenusDataGrid_SelectionChanged;
-
-        CalcularEstadisticaNutricionButton.Click += CalcularEstadisticasNutricion;
-        UsuariosEstadisticaComboBox.SelectionChanged += UsuariosEstadisticaComboBox_SelectionChanged;
-
-        CargarDietasEnComboUsuarios();
-
-        AplicarPermisosPorSesion();
-        AplicarPermisosEstadisticas();
-        MostrarSesionActual();
-
-        CargarUsuarios();
-        CargarProductos();
+        MostrarSoloPanelMenus();
         CargarUsuariosEnCombo();
         CargarProductosEnCombo();
         CargarMenus();
+    };
+
+    EstadisticasNutricionModuloButton.Click += (_, _) =>
+    {
+        MostrarSoloPanelEstadisticasNutricion();
         CargarUsuariosEnComboEstadistica();
         CargarDietasEnComboEstadistica();
-
-        LimpiarMenu();
         LimpiarResumenEstadisticaNutricion();
-    }
+    };
+
+    // 🔥 LOGOUT
+    LogoutButton.Click += Logout;
+
+    // MENÚS
+    NuevoMenuButton.Click += NuevoMenu;
+    AgregarProductoMenuButton.Click += AgregarProductoAlMenu;
+    GuardarMenuButton.Click += GuardarMenu;
+    ActualizarRegistroMenuButton.Click += ActualizarRegistroMenu;
+    EliminarRegistroMenuButton.Click += EliminarRegistroMenu;
+    EliminarMenuButton.Click += EliminarMenuCompleto;
+    LimpiarMenuButton.Click += (_, _) => LimpiarMenu();
+
+    RegistrosMenuDataGrid.SelectionChanged += RegistrosMenuDataGrid_SelectionChanged;
+    MenusDataGrid.SelectionChanged += MenusDataGrid_SelectionChanged;
+
+    // ESTADÍSTICAS
+    CalcularEstadisticaNutricionButton.Click += CalcularEstadisticasNutricion;
+    UsuariosEstadisticaComboBox.SelectionChanged += UsuariosEstadisticaComboBox_SelectionChanged;
+
+    // =========================
+    // CARGA INICIAL
+    // =========================
+
+    CargarDietasEnComboUsuarios();
+
+    AplicarPermisosPorSesion();
+    AplicarPermisosEstadisticas();
+    MostrarSesionActual();
+
+    CargarUsuarios();
+    CargarProductos();
+    CargarUsuariosEnCombo();
+    CargarProductosEnCombo();
+    CargarMenus();
+    CargarUsuariosEnComboEstadistica();
+    CargarDietasEnComboEstadistica();
+
+    LimpiarMenu();
+    LimpiarResumenEstadisticaNutricion();
+}
+
+private void Logout(object? sender, RoutedEventArgs e)
+{
+    AuthSession.CerrarSesion();
+
+    var login = new LoginWindow();
+    login.Show();
+
+    Close();
+}
 
     // =========================
     // SESION / PERMISOS
