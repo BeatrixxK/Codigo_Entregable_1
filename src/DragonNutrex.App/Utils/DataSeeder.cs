@@ -49,7 +49,8 @@ public static class DataSeeder
                 Altura = Math.Round((decimal)(1.45 + random.NextDouble() * 0.55), 2),
                 Actividad = Actividades[random.Next(Actividades.Length)],
                 Objetivo = Objetivos[random.Next(Objetivos.Length)],
-                TipoDieta = Dietas[random.Next(Dietas.Length)]
+                TipoDieta = Dietas[random.Next(Dietas.Length)],
+                Password = "Upi.2025"
             });
         }
 
