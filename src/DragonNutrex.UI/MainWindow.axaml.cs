@@ -87,6 +87,13 @@ public partial class MainWindow : Window
         MenusDataGrid.SelectionChanged += MenusDataGrid_SelectionChanged;
 
         CalcularEstadisticaNutricionButton.Click += CalcularEstadisticasNutricion;
+        UsuariosEstadisticaComboBox.SelectionChanged += UsuariosEstadisticaComboBox_SelectionChanged;
+
+        CargarDietasEnComboUsuarios();
+
+        AplicarPermisosPorSesion();
+        AplicarPermisosEstadisticas();
+        MostrarSesionActual();
 
         CargarUsuarios();
         CargarProductos();
@@ -95,15 +102,67 @@ public partial class MainWindow : Window
         CargarMenus();
         CargarUsuariosEnComboEstadistica();
         CargarDietasEnComboEstadistica();
-        CargarDietasEnComboUsuarios();
 
         LimpiarMenu();
         LimpiarResumenEstadisticaNutricion();
-        MostrarSoloPanelUsuarios();
+    }
+
+    // =========================
+    // SESION / PERMISOS
+    // =========================
+
+    private void AplicarPermisosPorSesion()
+    {
+        if (AuthSession.EsAdmin)
+        {
+            MostrarSoloPanelUsuarios();
+            return;
+        }
+
+        UsuariosModuloButton.IsVisible = false;
+        ProductosModuloButton.IsVisible = false;
+
+        MenusModuloButton.IsVisible = true;
+        EstadisticasNutricionModuloButton.IsVisible = true;
+
+        UsuariosPanel.IsVisible = false;
+        ProductosPanel.IsVisible = false;
+        MenusPanel.IsVisible = true;
+        EstadisticasNutricionPanel.IsVisible = false;
+
+        GuardarButton.IsVisible = false;
+        EliminarButton.IsVisible = false;
+        LimpiarButton.IsVisible = false;
+
+        GuardarProductoButton.IsVisible = false;
+        EliminarProductoButton.IsVisible = false;
+        LimpiarProductoButton.IsVisible = false;
+    }
+
+    private void AplicarPermisosEstadisticas()
+    {
+        if (AuthSession.EsAdmin)
+        {
+            UsuarioFiltroPanel.IsVisible = true;
+            return;
+        }
+
+        UsuarioFiltroPanel.IsVisible = false;
+    }
+
+    private void MostrarSesionActual()
+    {
+        if (AuthSession.EsAdmin)
+            SesionTextBlock.Text = "Sesión: Administrador";
+        else
+            SesionTextBlock.Text = $"Sesión: {AuthSession.NombreUsuario}";
     }
 
     private void MostrarSoloPanelUsuarios()
     {
+        if (!AuthSession.EsAdmin)
+            return;
+
         UsuariosPanel.IsVisible = true;
         ProductosPanel.IsVisible = false;
         MenusPanel.IsVisible = false;
@@ -112,6 +171,9 @@ public partial class MainWindow : Window
 
     private void MostrarSoloPanelProductos()
     {
+        if (!AuthSession.EsAdmin)
+            return;
+
         UsuariosPanel.IsVisible = false;
         ProductosPanel.IsVisible = true;
         MenusPanel.IsVisible = false;
@@ -151,7 +213,8 @@ public partial class MainWindow : Window
                     Altura = decimal.TryParse(AlturaTextBox.Text, out var altura) ? altura : 0,
                     Actividad = ActividadTextBox.Text ?? "",
                     Objetivo = ObjetivoTextBox.Text ?? "",
-                    TipoDieta = ObtenerTipoDietaUsuarioSeleccionada()
+                    TipoDieta = ObtenerTipoDietaUsuarioSeleccionada(),
+                    Password = "Upi.2025"
                 };
 
                 _usuarioController.CrearUsuario(usuario);
@@ -214,8 +277,13 @@ public partial class MainWindow : Window
 
     private void CargarUsuarios()
     {
+        var usuarios = _usuarioController.ObtenerUsuarios();
+
+        if (!AuthSession.EsAdmin)
+            usuarios = usuarios.Where(u => u.Id == AuthSession.UsuarioId).ToList();
+
         UsuariosDataGrid.ItemsSource = null;
-        UsuariosDataGrid.ItemsSource = _usuarioController.ObtenerUsuarios();
+        UsuariosDataGrid.ItemsSource = usuarios;
     }
 
     private void LimpiarUsuario()
@@ -439,6 +507,7 @@ public partial class MainWindow : Window
             ActualizarTotalesMenu();
 
             CantidadProductoTextBox.Text = "";
+            ProductosMenuComboBox.SelectedIndex = 0;
         }
         catch (Exception ex)
         {
@@ -505,6 +574,7 @@ public partial class MainWindow : Window
 
             CantidadProductoTextBox.Text = "";
             _registroSeleccionado = null;
+            ProductosMenuComboBox.SelectedIndex = 0;
 
             await MostrarMensaje("Cantidad actualizada correctamente.");
         }
@@ -542,6 +612,7 @@ public partial class MainWindow : Window
 
             CantidadProductoTextBox.Text = "";
             _registroSeleccionado = null;
+            ProductosMenuComboBox.SelectedIndex = 0;
         }
         catch (Exception ex)
         {
@@ -593,6 +664,9 @@ public partial class MainWindow : Window
             if (menu == null)
                 return;
 
+            if (!AuthSession.EsAdmin && menu.UsuarioId != AuthSession.UsuarioId)
+                return;
+
             _menuActual = menu;
 
             SeleccionarUsuarioEnCombo(menu.UsuarioId);
@@ -603,6 +677,7 @@ public partial class MainWindow : Window
 
             CantidadProductoTextBox.Text = "";
             _registroSeleccionado = null;
+            ProductosMenuComboBox.SelectedIndex = 0;
 
             ActualizarTotalesMenu();
         }
@@ -612,6 +687,9 @@ public partial class MainWindow : Window
     {
         var usuarios = _usuarioController.ObtenerUsuarios();
         var menus = _menuController.ObtenerMenus();
+
+        if (!AuthSession.EsAdmin)
+            menus = menus.Where(m => m.UsuarioId == AuthSession.UsuarioId).ToList();
 
         var vista = menus.Select(m =>
         {
@@ -637,6 +715,9 @@ public partial class MainWindow : Window
     {
         var usuarios = _usuarioController.ObtenerUsuarios();
 
+        if (!AuthSession.EsAdmin)
+            usuarios = usuarios.Where(u => u.Id == AuthSession.UsuarioId).ToList();
+
         UsuariosMenuComboBox.Items.Clear();
 
         foreach (var usuario in usuarios)
@@ -647,6 +728,9 @@ public partial class MainWindow : Window
                 Tag = usuario.Id
             });
         }
+
+        if (UsuariosMenuComboBox.ItemCount > 0)
+            UsuariosMenuComboBox.SelectedIndex = 0;
     }
 
     private void CargarProductosEnCombo()
@@ -654,6 +738,13 @@ public partial class MainWindow : Window
         var productos = _productoController.ObtenerProductos();
 
         ProductosMenuComboBox.Items.Clear();
+
+        ProductosMenuComboBox.Items.Add(new ComboBoxItem
+        {
+            Content = "Producto",
+            Tag = Guid.Empty,
+            IsEnabled = false
+        });
 
         foreach (var producto in productos)
         {
@@ -663,10 +754,15 @@ public partial class MainWindow : Window
                 Tag = producto.Id
             });
         }
+
+        ProductosMenuComboBox.SelectedIndex = 0;
     }
 
     private Guid ObtenerUsuarioIdSeleccionado()
     {
+        if (!AuthSession.EsAdmin)
+            return AuthSession.UsuarioId;
+
         if (UsuariosMenuComboBox.SelectedItem is ComboBoxItem item && item.Tag is Guid id)
             return id;
 
@@ -716,14 +812,19 @@ public partial class MainWindow : Window
         _registroSeleccionado = null;
 
         UsuariosMenuComboBox.SelectedItem = null;
-        ProductosMenuComboBox.SelectedItem = null;
         CantidadProductoTextBox.Text = "";
         FechaMenuDatePicker.SelectedDate = DateTime.Today;
 
         RegistrosMenuDataGrid.ItemsSource = null;
         MenusDataGrid.SelectedItem = null;
 
+        if (ProductosMenuComboBox.ItemCount > 0)
+            ProductosMenuComboBox.SelectedIndex = 0;
+
         ActualizarTotalesMenu();
+
+        if (UsuariosMenuComboBox.ItemCount > 0)
+            UsuariosMenuComboBox.SelectedIndex = 0;
     }
 
     // =========================
@@ -733,6 +834,9 @@ public partial class MainWindow : Window
     private void CargarUsuariosEnComboEstadistica()
     {
         var usuarios = _usuarioController.ObtenerUsuarios();
+
+        if (!AuthSession.EsAdmin)
+            usuarios = usuarios.Where(u => u.Id == AuthSession.UsuarioId).ToList();
 
         UsuariosEstadisticaComboBox.Items.Clear();
 
@@ -744,6 +848,9 @@ public partial class MainWindow : Window
                 Tag = usuario.Id
             });
         }
+
+        if (UsuariosEstadisticaComboBox.ItemCount > 0)
+            UsuariosEstadisticaComboBox.SelectedIndex = 0;
 
         FechaInicioEstadisticaDatePicker.SelectedDate = DateTime.Today;
         FechaFinEstadisticaDatePicker.SelectedDate = DateTime.Today;
@@ -763,10 +870,26 @@ public partial class MainWindow : Window
                 Tag = dieta.Nombre
             });
         }
+
+        if (!AuthSession.EsAdmin)
+        {
+            var usuario = _usuarioController.ObtenerUsuarios()
+                .FirstOrDefault(u => u.Id == AuthSession.UsuarioId);
+
+            if (usuario != null)
+                SeleccionarDietaEstadistica(usuario.TipoDieta);
+        }
+        else if (DietaEstadisticaComboBox.ItemCount > 0)
+        {
+            DietaEstadisticaComboBox.SelectedIndex = 0;
+        }
     }
 
     private Guid ObtenerUsuarioIdEstadisticaSeleccionado()
     {
+        if (!AuthSession.EsAdmin)
+            return AuthSession.UsuarioId;
+
         if (UsuariosEstadisticaComboBox.SelectedItem is ComboBoxItem item && item.Tag is Guid id)
             return id;
 
@@ -797,6 +920,9 @@ public partial class MainWindow : Window
 
     private void UsuariosEstadisticaComboBox_SelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
+        if (!AuthSession.EsAdmin)
+            return;
+
         var usuarioId = ObtenerUsuarioIdEstadisticaSeleccionado();
         if (usuarioId == Guid.Empty)
             return;
@@ -818,6 +944,12 @@ public partial class MainWindow : Window
             if (usuarioId == Guid.Empty)
             {
                 await MostrarMensaje("Seleccione un usuario.");
+                return;
+            }
+
+            if (!AuthSession.EsAdmin && usuarioId != AuthSession.UsuarioId)
+            {
+                await MostrarMensaje("No tiene permiso para consultar estadísticas de otro usuario.");
                 return;
             }
 
@@ -878,9 +1010,9 @@ public partial class MainWindow : Window
             ColorTextoImc(EstadisticaImcTextBlock, resumen.CategoriaImc);
             ColorTextoImc(EstadisticaCategoriaImcTextBlock, resumen.CategoriaImc);
 
-            if (resumen.EstadoCalorico.Contains("Por debajo"))
+            if (resumen.EstadoCalorico.Contains("Por debajo", StringComparison.OrdinalIgnoreCase))
                 EstadisticaEstadoCaloricoTextBlock.Foreground = Brushes.Orange;
-            else if (resumen.EstadoCalorico.Contains("Dentro"))
+            else if (resumen.EstadoCalorico.Contains("Dentro", StringComparison.OrdinalIgnoreCase))
                 EstadisticaEstadoCaloricoTextBlock.Foreground = Brushes.Green;
             else
                 EstadisticaEstadoCaloricoTextBlock.Foreground = Brushes.Red;

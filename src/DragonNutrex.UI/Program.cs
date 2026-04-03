@@ -9,10 +9,19 @@ internal static class Program
     [STAThread]
     public static void Main(string[] args)
     {
-        DataSeeder.GenerarDatos();
+        try
+        {
+            // DataSeeder.GenerarDatos(); // solo si ocupas regenerar datos una vez
 
-        BuildAvaloniaApp()
-            .StartWithClassicDesktopLifetime(args);
+            BuildAvaloniaApp()
+                .StartWithClassicDesktopLifetime(args);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("ERROR FATAL EN PROGRAM:");
+            Console.WriteLine(ex.ToString());
+            throw;
+        }
     }
 
     public static AppBuilder BuildAvaloniaApp()

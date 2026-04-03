@@ -1,0 +1,35 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="DragonNutrex.UI.LoginWindow"
+        Width="420"
+        Height="280"
+        Title="Login DragonNutrex">
+
+    <StackPanel Margin="20" Spacing="12">
+
+        <TextBlock Text="Iniciar Sesión"
+                   FontSize="24"
+                   FontWeight="Bold"/>
+
+        <TextBox x:Name="UsuarioTextBox"
+                 Watermark="Usuario"/>
+
+        <TextBox x:Name="PasswordTextBox"
+                 Watermark="Contraseña"
+                 PasswordChar="*"/>
+
+        <StackPanel Orientation="Horizontal" Spacing="10">
+            <Button x:Name="LoginButton"
+                    Content="Ingresar"
+                    Width="120"/>
+
+            <Button x:Name="RegistrarseButton"
+                    Content="Registrarse"
+                    Width="120"/>
+        </StackPanel>
+
+        <TextBlock x:Name="ErrorTextBlock"
+                   Foreground="Red"
+                   TextWrapping="Wrap"/>
+    </StackPanel>
+</Window>

@@ -1,0 +1,34 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="DragonNutrex.UI.RegistroUsuarioWindow"
+        Width="500"
+        Height="460"
+        Title="Registro de Usuario">
+
+    <StackPanel Margin="20" Spacing="10">
+
+        <TextBlock Text="Registro de Usuario"
+                   FontSize="24"
+                   FontWeight="Bold"/>
+
+        <TextBox x:Name="NombreTextBox" Watermark="Nombre"/>
+        <TextBox x:Name="PesoTextBox" Watermark="Peso"/>
+        <TextBox x:Name="AlturaTextBox" Watermark="Altura"/>
+        <TextBox x:Name="ActividadTextBox" Watermark="Actividad"/>
+        <TextBox x:Name="ObjetivoTextBox" Watermark="Objetivo"/>
+
+        <ComboBox x:Name="TipoDietaComboBox"/>
+
+        <TextBox x:Name="PasswordTextBox"
+                 Watermark="Crear contraseña"
+                 PasswordChar="*"/>
+
+        <Button x:Name="GuardarRegistroButton"
+                Content="Crear Usuario"
+                Width="150"/>
+
+        <TextBlock x:Name="MensajeTextBlock"
+                   Foreground="Green"
+                   TextWrapping="Wrap"/>
+    </StackPanel>
+</Window>

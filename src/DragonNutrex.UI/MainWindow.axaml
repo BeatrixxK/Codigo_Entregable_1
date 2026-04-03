@@ -22,10 +22,18 @@
                 Padding="10"
                 CornerRadius="6"
                 Margin="0,0,0,10">
-            <TextBlock Text="Seleccione un módulo para agregar, visualizar, editar o eliminar datos y realizar cálculos."
-                       FontSize="24"
-                       Foreground="#CCCCCC"
-                       TextWrapping="Wrap"/>
+            <StackPanel Spacing="6">
+                <TextBlock Text="Seleccione un módulo para agregar, visualizar, editar o eliminar datos y realizar cálculos."
+                           FontSize="24"
+                           Foreground="#CCCCCC"
+                           TextWrapping="Wrap"/>
+
+                <TextBlock x:Name="SesionTextBlock"
+                           Text="Sesión iniciada"
+                           FontSize="14"
+                           Foreground="#AAAAAA"
+                           TextWrapping="Wrap"/>
+            </StackPanel>
         </Border>
 
         <StackPanel Orientation="Horizontal" Spacing="10">
@@ -35,9 +43,7 @@
             <Button x:Name="EstadisticasNutricionModuloButton" Content="Estadísticas de Nutrición" Width="220"/>
         </StackPanel>
 
-        <!-- ========================= -->
         <!-- PANEL USUARIOS -->
-        <!-- ========================= -->
         <StackPanel x:Name="UsuariosPanel" Spacing="10">
             <TextBlock Text="Gestión de Usuarios" FontSize="24"/>
 
@@ -66,7 +72,7 @@
                                    GridLinesVisibility="All"
                                    AutoGenerateColumns="False"
                                    IsReadOnly="True"
-                                   HorizontalAlignment="Left">
+                                   HorizontalAlignment="Stretch">
                     <controls:DataGrid.Columns>
                         <controls:DataGridTextColumn Header="Nombre" Binding="{Binding Nombre}"/>
                         <controls:DataGridTextColumn Header="Peso" Binding="{Binding Peso}"/>
@@ -79,9 +85,7 @@
             </Border>
         </StackPanel>
 
-        <!-- ========================= -->
         <!-- PANEL PRODUCTOS -->
-        <!-- ========================= -->
         <StackPanel x:Name="ProductosPanel" IsVisible="False" Spacing="10">
             <TextBlock Text="Gestión de Productos" FontSize="24"/>
 
@@ -105,7 +109,7 @@
                                    GridLinesVisibility="All"
                                    AutoGenerateColumns="False"
                                    IsReadOnly="True"
-                                   HorizontalAlignment="Left">
+                                   HorizontalAlignment="Stretch">
                     <controls:DataGrid.Columns>
                         <controls:DataGridTextColumn Header="Nombre" Binding="{Binding Nombre}"/>
                         <controls:DataGridTextColumn Header="Calorías" Binding="{Binding Calorias}"/>
@@ -117,9 +121,7 @@
             </Border>
         </StackPanel>
 
-        <!-- ========================= -->
         <!-- PANEL MENUS -->
-        <!-- ========================= -->
         <StackPanel x:Name="MenusPanel" IsVisible="False" Spacing="10">
             <TextBlock Text="Gestión de Menús" FontSize="24"/>
 
@@ -181,7 +183,7 @@
                                    GridLinesVisibility="All"
                                    AutoGenerateColumns="False"
                                    IsReadOnly="True"
-                                   HorizontalAlignment="Left">
+                                   HorizontalAlignment="Stretch">
                     <controls:DataGrid.Columns>
                         <controls:DataGridTextColumn Header="Producto" Binding="{Binding NombreProducto}"/>
                         <controls:DataGridTextColumn Header="Cantidad" Binding="{Binding Cantidad}"/>
@@ -210,7 +212,7 @@
                                    GridLinesVisibility="All"
                                    AutoGenerateColumns="False"
                                    IsReadOnly="True"
-                                   HorizontalAlignment="Left">
+                                   HorizontalAlignment="Stretch">
                     <controls:DataGrid.Columns>
                         <controls:DataGridTextColumn Header="Usuario" Binding="{Binding UsuarioNombre}"/>
                         <controls:DataGridTextColumn Header="Fecha" Binding="{Binding Fecha}"/>
@@ -223,35 +225,42 @@
             </Border>
         </StackPanel>
 
-        <!-- ========================= -->
         <!-- PANEL ESTADISTICAS NUTRICION -->
-        <!-- ========================= -->
         <StackPanel x:Name="EstadisticasNutricionPanel" IsVisible="False" Spacing="10">
             <TextBlock Text="Estadísticas de Nutrición" FontSize="24"/>
 
             <Grid ColumnDefinitions="*,*,*,*" RowDefinitions="Auto,Auto">
-                <ComboBox x:Name="UsuariosEstadisticaComboBox"
-                          Grid.Row="0"
-                          Grid.Column="0"
-                          Margin="0,0,10,10"
-                          HorizontalAlignment="Stretch"
-                          SelectionChanged="UsuariosEstadisticaComboBox_SelectionChanged"/>
 
-                <ComboBox x:Name="DietaEstadisticaComboBox"
-                          Grid.Row="0"
-                          Grid.Column="1"
-                          Margin="0,0,10,10"
-                          HorizontalAlignment="Stretch"/>
-
-                <DatePicker x:Name="FechaInicioEstadisticaDatePicker"
+                <StackPanel x:Name="UsuarioFiltroPanel"
                             Grid.Row="0"
+                            Grid.Column="0"
+                            Margin="0,0,10,10">
+                    <TextBlock Text="Usuario" Margin="0,0,0,4"/>
+                    <ComboBox x:Name="UsuariosEstadisticaComboBox"
+                              HorizontalAlignment="Stretch"/>
+                </StackPanel>
+
+                <StackPanel Grid.Row="0"
+                            Grid.Column="1"
+                            Margin="0,0,10,10">
+                    <TextBlock Text="Dieta" Margin="0,0,0,4"/>
+                    <ComboBox x:Name="DietaEstadisticaComboBox"
+                              HorizontalAlignment="Stretch"/>
+                </StackPanel>
+
+                <StackPanel Grid.Row="0"
                             Grid.Column="2"
-                            Margin="0,0,10,10"/>
+                            Margin="0,0,10,10">
+                    <TextBlock Text="Fecha inicio" Margin="0,0,0,4"/>
+                    <DatePicker x:Name="FechaInicioEstadisticaDatePicker"/>
+                </StackPanel>
 
-                <DatePicker x:Name="FechaFinEstadisticaDatePicker"
-                            Grid.Row="0"
+                <StackPanel Grid.Row="0"
                             Grid.Column="3"
-                            Margin="0,0,0,10"/>
+                            Margin="0,0,0,10">
+                    <TextBlock Text="Fecha fin" Margin="0,0,0,4"/>
+                    <DatePicker x:Name="FechaFinEstadisticaDatePicker"/>
+                </StackPanel>
 
                 <Button x:Name="CalcularEstadisticaNutricionButton"
                         Grid.Row="1"
@@ -267,7 +276,6 @@
 
                     <StackPanel Grid.Column="0" Spacing="8">
                         <TextBlock Text="Resumen general" FontSize="20" FontWeight="Bold"/>
-
                         <TextBlock x:Name="EstadisticaNombreUsuarioTextBlock" Text="Usuario: -" FontSize="16"/>
                         <TextBlock x:Name="EstadisticaTipoDietaTextBlock" Text="Dieta seleccionada: -" FontSize="16"/>
                         <TextBlock x:Name="EstadisticaFechaInicioTextBlock" Text="Fecha inicio: -" FontSize="16"/>
