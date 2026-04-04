@@ -15,125 +15,158 @@ namespace DragonNutrex.UI;
 
 public partial class MainWindow : Window
 {
+    // =====================================================
+    // CONTROLADORES
+    // =====================================================
+    // Estos controladores conectan la interfaz con la lógica
+    // de negocio y los repositorios de datos.
     private readonly UsuarioController _usuarioController;
     private readonly ProductoController _productoController;
     private readonly MenuController _menuController;
     private readonly EstadisticasNutricionController _estadisticasNutricionController;
 
+    // =====================================================
+    // OBJETOS SELECCIONADOS EN LA UI
+    // =====================================================
+    // Se usan para saber qué registro está siendo editado
+    // o seleccionado actualmente en cada módulo.
     private Usuario? _usuarioSeleccionado;
     private Producto? _productoSeleccionado;
     private MenuModel? _menuActual;
     private RegistroComida? _registroSeleccionado;
 
-public MainWindow()
-{
-    InitializeComponent();
-
-    _usuarioController = new UsuarioController(new UsuarioService(new UsuarioRepository()));
-    _productoController = new ProductoController(new ProductoService(new ProductoRepository()));
-    _menuController = new MenuController(
-        new MenuService(
-            new MenuRepository(),
-            new UsuarioRepository(),
-            new ProductoRepository()
-        )
-    );
-    _estadisticasNutricionController = new EstadisticasNutricionController(
-        new EstadisticasNutricionService(
-            new UsuarioRepository(),
-            new MenuRepository()
-        )
-    );
-
-    // =========================
-    // EVENTOS UI
-    // =========================
-
-    GuardarButton.Click += GuardarUsuario;
-    EliminarButton.Click += EliminarUsuario;
-    LimpiarButton.Click += (_, _) => LimpiarUsuario();
-
-    GuardarProductoButton.Click += GuardarProducto;
-    EliminarProductoButton.Click += EliminarProducto;
-    LimpiarProductoButton.Click += (_, _) => LimpiarProducto();
-
-    UsuariosDataGrid.SelectionChanged += UsuariosDataGrid_SelectionChanged;
-    ProductosDataGrid.SelectionChanged += ProductosDataGrid_SelectionChanged;
-
-    UsuariosModuloButton.Click += (_, _) => MostrarSoloPanelUsuarios();
-    ProductosModuloButton.Click += (_, _) => MostrarSoloPanelProductos();
-
-    MenusModuloButton.Click += (_, _) =>
+    // =====================================================
+    // CONSTRUCTOR
+    // =====================================================
+    // Inicializa la ventana, crea controladores, registra eventos
+    // y carga datos iniciales.
+    public MainWindow()
     {
-        MostrarSoloPanelMenus();
+        InitializeComponent();
+
+        // Cargar combos del módulo de usuarios
+        CargarObjetivosEnCombo();
+        CargarActividadesEnCombo();
+
+        // Inicializar controladores
+        _usuarioController = new UsuarioController(new UsuarioService(new UsuarioRepository()));
+        _productoController = new ProductoController(new ProductoService(new ProductoRepository()));
+        _menuController = new MenuController(
+            new MenuService(
+                new MenuRepository(),
+                new UsuarioRepository(),
+                new ProductoRepository()
+            )
+        );
+        _estadisticasNutricionController = new EstadisticasNutricionController(
+            new EstadisticasNutricionService(
+                new UsuarioRepository(),
+                new MenuRepository()
+            )
+        );
+
+        // =====================================================
+        // EVENTOS UI
+        // =====================================================
+
+        // ---------- Usuarios ----------
+        GuardarButton.Click += GuardarUsuario;
+        EliminarButton.Click += EliminarUsuario;
+        LimpiarButton.Click += (_, _) => LimpiarUsuario();
+
+        // ---------- Productos ----------
+        GuardarProductoButton.Click += GuardarProducto;
+        EliminarProductoButton.Click += EliminarProducto;
+        LimpiarProductoButton.Click += (_, _) => LimpiarProducto();
+
+        // ---------- Selección en DataGrid ----------
+        UsuariosDataGrid.SelectionChanged += UsuariosDataGrid_SelectionChanged;
+        ProductosDataGrid.SelectionChanged += ProductosDataGrid_SelectionChanged;
+        RegistrosMenuDataGrid.SelectionChanged += RegistrosMenuDataGrid_SelectionChanged;
+        MenusDataGrid.SelectionChanged += MenusDataGrid_SelectionChanged;
+
+        // ---------- Navegación entre módulos ----------
+        UsuariosModuloButton.Click += (_, _) => MostrarSoloPanelUsuarios();
+        ProductosModuloButton.Click += (_, _) => MostrarSoloPanelProductos();
+
+        MenusModuloButton.Click += (_, _) =>
+        {
+            MostrarSoloPanelMenus();
+            CargarUsuariosEnCombo();
+            CargarProductosEnCombo();
+            CargarMenus();
+        };
+
+        EstadisticasNutricionModuloButton.Click += (_, _) =>
+        {
+            MostrarSoloPanelEstadisticasNutricion();
+            CargarUsuariosEnComboEstadistica();
+            CargarDietasEnComboEstadistica();
+            LimpiarResumenEstadisticaNutricion();
+        };
+
+        // ---------- Logout ----------
+        LogoutButton.Click += Logout;
+
+        // ---------- Menús ----------
+        NuevoMenuButton.Click += NuevoMenu;
+        AgregarProductoMenuButton.Click += AgregarProductoAlMenu;
+        GuardarMenuButton.Click += GuardarMenu;
+        ActualizarRegistroMenuButton.Click += ActualizarRegistroMenu;
+        EliminarRegistroMenuButton.Click += EliminarRegistroMenu;
+        EliminarMenuButton.Click += EliminarMenuCompleto;
+        LimpiarMenuButton.Click += (_, _) => LimpiarMenu();
+
+        // ---------- Estadísticas ----------
+        CalcularEstadisticaNutricionButton.Click += CalcularEstadisticasNutricion;
+        UsuariosEstadisticaComboBox.SelectionChanged += UsuariosEstadisticaComboBox_SelectionChanged;
+
+        // =====================================================
+        // CARGA INICIAL
+        // =====================================================
+        CargarDietasEnComboUsuarios();
+
+        AplicarPermisosPorSesion();
+        AplicarPermisosEstadisticas();
+        MostrarSesionActual();
+
+        CargarUsuarios();
+        CargarProductos();
         CargarUsuariosEnCombo();
         CargarProductosEnCombo();
         CargarMenus();
-    };
-
-    EstadisticasNutricionModuloButton.Click += (_, _) =>
-    {
-        MostrarSoloPanelEstadisticasNutricion();
         CargarUsuariosEnComboEstadistica();
         CargarDietasEnComboEstadistica();
+
+        LimpiarUsuario();
+        LimpiarProducto();
+        LimpiarMenu();
         LimpiarResumenEstadisticaNutricion();
-    };
+    }
 
-    // 🔥 LOGOUT
-    LogoutButton.Click += Logout;
+    // =====================================================
+    // SESIÓN / LOGOUT
+    // =====================================================
 
-    // MENÚS
-    NuevoMenuButton.Click += NuevoMenu;
-    AgregarProductoMenuButton.Click += AgregarProductoAlMenu;
-    GuardarMenuButton.Click += GuardarMenu;
-    ActualizarRegistroMenuButton.Click += ActualizarRegistroMenu;
-    EliminarRegistroMenuButton.Click += EliminarRegistroMenu;
-    EliminarMenuButton.Click += EliminarMenuCompleto;
-    LimpiarMenuButton.Click += (_, _) => LimpiarMenu();
+    // Cierra la sesión actual, abre la ventana de login
+    // y cierra la ventana principal.
+    private void Logout(object? sender, RoutedEventArgs e)
+    {
+        AuthSession.CerrarSesion();
 
-    RegistrosMenuDataGrid.SelectionChanged += RegistrosMenuDataGrid_SelectionChanged;
-    MenusDataGrid.SelectionChanged += MenusDataGrid_SelectionChanged;
+        var login = new LoginWindow();
+        login.Show();
 
-    // ESTADÍSTICAS
-    CalcularEstadisticaNutricionButton.Click += CalcularEstadisticasNutricion;
-    UsuariosEstadisticaComboBox.SelectionChanged += UsuariosEstadisticaComboBox_SelectionChanged;
+        Close();
+    }
 
-    // =========================
-    // CARGA INICIAL
-    // =========================
+    // =====================================================
+    // SESIÓN / PERMISOS
+    // =====================================================
 
-    CargarDietasEnComboUsuarios();
-
-    AplicarPermisosPorSesion();
-    AplicarPermisosEstadisticas();
-    MostrarSesionActual();
-
-    CargarUsuarios();
-    CargarProductos();
-    CargarUsuariosEnCombo();
-    CargarProductosEnCombo();
-    CargarMenus();
-    CargarUsuariosEnComboEstadistica();
-    CargarDietasEnComboEstadistica();
-
-    LimpiarMenu();
-    LimpiarResumenEstadisticaNutricion();
-}
-
-private void Logout(object? sender, RoutedEventArgs e)
-{
-    AuthSession.CerrarSesion();
-
-    var login = new LoginWindow();
-    login.Show();
-
-    Close();
-}
-
-    // =========================
-    // SESION / PERMISOS
-    // =========================
-
+    // Aplica permisos según el tipo de usuario que inició sesión.
+    // Si es admin, puede ver todos los módulos.
+    // Si no es admin, solo ve menús y estadísticas.
     private void AplicarPermisosPorSesion()
     {
         if (AuthSession.EsAdmin)
@@ -162,17 +195,14 @@ private void Logout(object? sender, RoutedEventArgs e)
         LimpiarProductoButton.IsVisible = false;
     }
 
+    // En estadísticas, el admin puede seleccionar cualquier usuario.
+    // Un usuario normal solo puede ver sus propias estadísticas.
     private void AplicarPermisosEstadisticas()
     {
-        if (AuthSession.EsAdmin)
-        {
-            UsuarioFiltroPanel.IsVisible = true;
-            return;
-        }
-
-        UsuarioFiltroPanel.IsVisible = false;
+        UsuarioFiltroPanel.IsVisible = AuthSession.EsAdmin;
     }
 
+    // Muestra en pantalla quién tiene la sesión activa.
     private void MostrarSesionActual()
     {
         if (AuthSession.EsAdmin)
@@ -181,6 +211,7 @@ private void Logout(object? sender, RoutedEventArgs e)
             SesionTextBlock.Text = $"Sesión: {AuthSession.NombreUsuario}";
     }
 
+    // Muestra solo el panel de usuarios.
     private void MostrarSoloPanelUsuarios()
     {
         if (!AuthSession.EsAdmin)
@@ -192,6 +223,7 @@ private void Logout(object? sender, RoutedEventArgs e)
         EstadisticasNutricionPanel.IsVisible = false;
     }
 
+    // Muestra solo el panel de productos.
     private void MostrarSoloPanelProductos()
     {
         if (!AuthSession.EsAdmin)
@@ -203,6 +235,7 @@ private void Logout(object? sender, RoutedEventArgs e)
         EstadisticasNutricionPanel.IsVisible = false;
     }
 
+    // Muestra solo el panel de menús.
     private void MostrarSoloPanelMenus()
     {
         UsuariosPanel.IsVisible = false;
@@ -211,6 +244,7 @@ private void Logout(object? sender, RoutedEventArgs e)
         EstadisticasNutricionPanel.IsVisible = false;
     }
 
+    // Muestra solo el panel de estadísticas nutricionales.
     private void MostrarSoloPanelEstadisticasNutricion()
     {
         UsuariosPanel.IsVisible = false;
@@ -219,10 +253,11 @@ private void Logout(object? sender, RoutedEventArgs e)
         EstadisticasNutricionPanel.IsVisible = true;
     }
 
-    // =========================
-    // USUARIOS
-    // =========================
+    // =====================================================
+    // PANEL USUARIOS
+    // =====================================================
 
+    // Guarda un usuario nuevo o actualiza uno existente.
     private async void GuardarUsuario(object? sender, RoutedEventArgs e)
     {
         try
@@ -234,8 +269,8 @@ private void Logout(object? sender, RoutedEventArgs e)
                     Nombre = NombreTextBox.Text ?? "",
                     Peso = decimal.TryParse(PesoTextBox.Text, out var peso) ? peso : 0,
                     Altura = decimal.TryParse(AlturaTextBox.Text, out var altura) ? altura : 0,
-                    Actividad = ActividadTextBox.Text ?? "",
-                    Objetivo = ObjetivoTextBox.Text ?? "",
+                    Actividad = ObtenerActividadSeleccionada(),
+                    Objetivo = ObtenerObjetivoSeleccionado(),
                     TipoDieta = ObtenerTipoDietaUsuarioSeleccionada(),
                     Password = "Upi.2025"
                 };
@@ -247,8 +282,8 @@ private void Logout(object? sender, RoutedEventArgs e)
                 _usuarioSeleccionado.Nombre = NombreTextBox.Text ?? "";
                 _usuarioSeleccionado.Peso = decimal.TryParse(PesoTextBox.Text, out var peso) ? peso : 0;
                 _usuarioSeleccionado.Altura = decimal.TryParse(AlturaTextBox.Text, out var altura) ? altura : 0;
-                _usuarioSeleccionado.Actividad = ActividadTextBox.Text ?? "";
-                _usuarioSeleccionado.Objetivo = ObjetivoTextBox.Text ?? "";
+                _usuarioSeleccionado.Actividad = ObtenerActividadSeleccionada();
+                _usuarioSeleccionado.Objetivo = ObtenerObjetivoSeleccionado();
                 _usuarioSeleccionado.TipoDieta = ObtenerTipoDietaUsuarioSeleccionada();
 
                 _usuarioController.ActualizarUsuario(_usuarioSeleccionado);
@@ -261,10 +296,13 @@ private void Logout(object? sender, RoutedEventArgs e)
         }
         catch (Exception ex)
         {
-            await MostrarMensaje(string.IsNullOrWhiteSpace(ex.Message) ? "Nada que guardar." : ex.Message);
+            await MostrarMensaje(
+                string.IsNullOrWhiteSpace(ex.Message) ? "Nada que guardar." : ex.Message
+            );
         }
     }
 
+    // Elimina el usuario seleccionado, previa confirmación.
     private async void EliminarUsuario(object? sender, RoutedEventArgs e)
     {
         if (UsuariosDataGrid.SelectedItem is Usuario usuario)
@@ -281,6 +319,8 @@ private void Logout(object? sender, RoutedEventArgs e)
         }
     }
 
+    // Cuando se selecciona un usuario en la tabla,
+    // se cargan sus datos en el formulario.
     private void UsuariosDataGrid_SelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
         if (UsuariosDataGrid.SelectedItem is Usuario usuario)
@@ -290,14 +330,15 @@ private void Logout(object? sender, RoutedEventArgs e)
             NombreTextBox.Text = usuario.Nombre;
             PesoTextBox.Text = usuario.Peso.ToString();
             AlturaTextBox.Text = usuario.Altura.ToString();
-            ActividadTextBox.Text = usuario.Actividad;
-            ObjetivoTextBox.Text = usuario.Objetivo;
+            SeleccionarActividad(usuario.Actividad);
+            SeleccionarObjetivo(usuario.Objetivo);
             SeleccionarDietaUsuario(usuario.TipoDieta);
 
             GuardarButton.Content = "Actualizar";
         }
     }
 
+    // Carga la lista de usuarios en el DataGrid.
     private void CargarUsuarios()
     {
         var usuarios = _usuarioController.ObtenerUsuarios();
@@ -309,6 +350,7 @@ private void Logout(object? sender, RoutedEventArgs e)
         UsuariosDataGrid.ItemsSource = usuarios;
     }
 
+    // Limpia el formulario del módulo de usuarios.
     private void LimpiarUsuario()
     {
         _usuarioSeleccionado = null;
@@ -316,17 +358,31 @@ private void Logout(object? sender, RoutedEventArgs e)
         NombreTextBox.Text = "";
         PesoTextBox.Text = "";
         AlturaTextBox.Text = "";
-        ActividadTextBox.Text = "";
-        ObjetivoTextBox.Text = "";
-        TipoDietaComboBox.SelectedItem = null;
+
+        if (ActividadComboBox.ItemCount > 0)
+            ActividadComboBox.SelectedIndex = 0;
+
+        if (ObjetivoComboBox.ItemCount > 0)
+            ObjetivoComboBox.SelectedIndex = 0;
+
+        if (TipoDietaComboBox.ItemCount > 0)
+            TipoDietaComboBox.SelectedIndex = 0;
 
         UsuariosDataGrid.SelectedItem = null;
         GuardarButton.Content = "Guardar";
     }
 
+    // Carga las dietas disponibles en el ComboBox del formulario de usuarios.
     private void CargarDietasEnComboUsuarios()
     {
         TipoDietaComboBox.Items.Clear();
+
+        TipoDietaComboBox.Items.Add(new ComboBoxItem
+        {
+            Content = "Seleccione dieta",
+            Tag = "",
+            IsEnabled = false
+        });
 
         var dietas = _estadisticasNutricionController.ObtenerDietasDisponibles();
 
@@ -338,8 +394,11 @@ private void Logout(object? sender, RoutedEventArgs e)
                 Tag = dieta.Nombre
             });
         }
+
+        TipoDietaComboBox.SelectedIndex = 0;
     }
 
+    // Devuelve la dieta seleccionada en el formulario de usuarios.
     private string ObtenerTipoDietaUsuarioSeleccionada()
     {
         if (TipoDietaComboBox.SelectedItem is ComboBoxItem item && item.Tag is string nombre)
@@ -348,6 +407,7 @@ private void Logout(object? sender, RoutedEventArgs e)
         return string.Empty;
     }
 
+    // Selecciona en el ComboBox la dieta del usuario.
     private void SeleccionarDietaUsuario(string tipoDieta)
     {
         foreach (var item in TipoDietaComboBox.Items)
@@ -362,10 +422,102 @@ private void Logout(object? sender, RoutedEventArgs e)
         }
     }
 
-    // =========================
-    // PRODUCTOS
-    // =========================
+    // Carga las actividades en el ComboBox.
+    private void CargarActividadesEnCombo()
+    {
+        ActividadComboBox.Items.Clear();
 
+        ActividadComboBox.Items.Add(new ComboBoxItem
+        {
+            Content = "Seleccione actividad",
+            Tag = "",
+            IsEnabled = false
+        });
+
+        ActividadComboBox.Items.Add(new ComboBoxItem { Content = "Sedentaria", Tag = "Sedentaria" });
+        ActividadComboBox.Items.Add(new ComboBoxItem { Content = "Ligera", Tag = "Ligera" });
+        ActividadComboBox.Items.Add(new ComboBoxItem { Content = "Moderada", Tag = "Moderada" });
+        ActividadComboBox.Items.Add(new ComboBoxItem { Content = "Alta", Tag = "Alta" });
+        ActividadComboBox.Items.Add(new ComboBoxItem { Content = "Muy alta", Tag = "Muy alta" });
+
+        ActividadComboBox.SelectedIndex = 0;
+    }
+
+    // Devuelve la actividad seleccionada en el ComboBox.
+    private string ObtenerActividadSeleccionada()
+    {
+        if (ActividadComboBox.SelectedItem is ComboBoxItem item && item.Tag is string actividad)
+            return actividad;
+
+        return string.Empty;
+    }
+
+    // Selecciona la actividad del usuario en el ComboBox.
+    private void SeleccionarActividad(string actividad)
+    {
+        foreach (var item in ActividadComboBox.Items)
+        {
+            if (item is ComboBoxItem comboItem &&
+                comboItem.Tag is string valor &&
+                valor.Equals(actividad, StringComparison.OrdinalIgnoreCase))
+            {
+                ActividadComboBox.SelectedItem = comboItem;
+                break;
+            }
+        }
+    }
+
+    // Carga los objetivos en el ComboBox.
+    private void CargarObjetivosEnCombo()
+    {
+        ObjetivoComboBox.Items.Clear();
+
+        ObjetivoComboBox.Items.Add(new ComboBoxItem
+        {
+            Content = "Seleccione objetivo",
+            Tag = "",
+            IsEnabled = false
+        });
+
+        ObjetivoComboBox.Items.Add(new ComboBoxItem { Content = "Perder peso", Tag = "Perder peso" });
+        ObjetivoComboBox.Items.Add(new ComboBoxItem { Content = "Quemar grasa", Tag = "Quemar grasa" });
+        ObjetivoComboBox.Items.Add(new ComboBoxItem { Content = "Mantener peso", Tag = "Mantener peso" });
+        ObjetivoComboBox.Items.Add(new ComboBoxItem { Content = "Ganar masa muscular", Tag = "Ganar masa muscular" });
+        ObjetivoComboBox.Items.Add(new ComboBoxItem { Content = "Mejorar resistencia", Tag = "Mejorar resistencia" });
+        ObjetivoComboBox.Items.Add(new ComboBoxItem { Content = "Mejorar salud", Tag = "Mejorar salud" });
+
+        ObjetivoComboBox.SelectedIndex = 0;
+    }
+
+    // Devuelve el objetivo seleccionado.
+    private string ObtenerObjetivoSeleccionado()
+    {
+        if (ObjetivoComboBox.SelectedItem is ComboBoxItem item && item.Tag is string objetivo)
+            return objetivo;
+
+        return string.Empty;
+    }
+
+    // Selecciona el objetivo del usuario en el ComboBox.
+    private void SeleccionarObjetivo(string objetivo)
+    {
+        foreach (var item in ObjetivoComboBox.Items)
+        {
+            if (item is ComboBoxItem comboItem &&
+                comboItem.Tag is string valor &&
+                valor.Equals(objetivo, StringComparison.OrdinalIgnoreCase))
+            {
+                ObjetivoComboBox.SelectedItem = comboItem;
+                break;
+            }
+        }
+    }
+
+    // =====================================================
+    // PANEL PRODUCTOS
+    // =====================================================
+
+    // Guarda un producto nuevo o actualiza uno existente.
     private async void GuardarProducto(object? sender, RoutedEventArgs e)
     {
         try
@@ -400,10 +552,13 @@ private void Logout(object? sender, RoutedEventArgs e)
         }
         catch (Exception ex)
         {
-            await MostrarMensaje(string.IsNullOrWhiteSpace(ex.Message) ? "Nada que guardar." : ex.Message);
+            await MostrarMensaje(
+                string.IsNullOrWhiteSpace(ex.Message) ? "Nada que guardar." : ex.Message
+            );
         }
     }
 
+    // Elimina el producto seleccionado.
     private async void EliminarProducto(object? sender, RoutedEventArgs e)
     {
         if (ProductosDataGrid.SelectedItem is Producto producto)
@@ -419,6 +574,7 @@ private void Logout(object? sender, RoutedEventArgs e)
         }
     }
 
+    // Carga el producto seleccionado en el formulario.
     private void ProductosDataGrid_SelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
         if (ProductosDataGrid.SelectedItem is Producto producto)
@@ -435,12 +591,14 @@ private void Logout(object? sender, RoutedEventArgs e)
         }
     }
 
+    // Carga los productos en el DataGrid.
     private void CargarProductos()
     {
         ProductosDataGrid.ItemsSource = null;
         ProductosDataGrid.ItemsSource = _productoController.ObtenerProductos();
     }
 
+    // Limpia el formulario del módulo productos.
     private void LimpiarProducto()
     {
         _productoSeleccionado = null;
@@ -455,10 +613,11 @@ private void Logout(object? sender, RoutedEventArgs e)
         GuardarProductoButton.Content = "Guardar Producto";
     }
 
-    // =========================
-    // MENUS
-    // =========================
+    // =====================================================
+    // PANEL MENÚS
+    // =====================================================
 
+    // Crea un nuevo menú en memoria.
     private async void NuevoMenu(object? sender, RoutedEventArgs e)
     {
         try
@@ -491,6 +650,7 @@ private void Logout(object? sender, RoutedEventArgs e)
         }
     }
 
+    // Agrega un producto al menú actual.
     private async void AgregarProductoAlMenu(object? sender, RoutedEventArgs e)
     {
         try
@@ -534,10 +694,13 @@ private void Logout(object? sender, RoutedEventArgs e)
         }
         catch (Exception ex)
         {
-            await MostrarMensaje(string.IsNullOrWhiteSpace(ex.Message) ? "Nada que guardar." : ex.Message);
+            await MostrarMensaje(
+                string.IsNullOrWhiteSpace(ex.Message) ? "Nada que guardar." : ex.Message
+            );
         }
     }
 
+    // Guarda el menú actual en la base de datos o repositorio.
     private async void GuardarMenu(object? sender, RoutedEventArgs e)
     {
         try
@@ -568,6 +731,7 @@ private void Logout(object? sender, RoutedEventArgs e)
         }
     }
 
+    // Actualiza la cantidad de un registro dentro del menú.
     private async void ActualizarRegistroMenu(object? sender, RoutedEventArgs e)
     {
         try
@@ -607,6 +771,7 @@ private void Logout(object? sender, RoutedEventArgs e)
         }
     }
 
+    // Elimina un registro del menú actual.
     private async void EliminarRegistroMenu(object? sender, RoutedEventArgs e)
     {
         try
@@ -643,6 +808,7 @@ private void Logout(object? sender, RoutedEventArgs e)
         }
     }
 
+    // Elimina el menú completo.
     private async void EliminarMenuCompleto(object? sender, RoutedEventArgs e)
     {
         try
@@ -670,6 +836,7 @@ private void Logout(object? sender, RoutedEventArgs e)
         }
     }
 
+    // Carga en pantalla el registro seleccionado del menú.
     private void RegistrosMenuDataGrid_SelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
         if (RegistrosMenuDataGrid.SelectedItem is RegistroComida registro)
@@ -679,6 +846,7 @@ private void Logout(object? sender, RoutedEventArgs e)
         }
     }
 
+    // Carga en pantalla un menú seleccionado del historial.
     private void MenusDataGrid_SelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
         if (MenusDataGrid.SelectedItem is MenuVista menuVista)
@@ -706,6 +874,7 @@ private void Logout(object? sender, RoutedEventArgs e)
         }
     }
 
+    // Carga los menús guardados en el DataGrid resumen.
     private void CargarMenus()
     {
         var usuarios = _usuarioController.ObtenerUsuarios();
@@ -734,6 +903,7 @@ private void Logout(object? sender, RoutedEventArgs e)
         MenusDataGrid.ItemsSource = vista;
     }
 
+    // Carga usuarios en el ComboBox del módulo menús.
     private void CargarUsuariosEnCombo()
     {
         var usuarios = _usuarioController.ObtenerUsuarios();
@@ -756,6 +926,7 @@ private void Logout(object? sender, RoutedEventArgs e)
             UsuariosMenuComboBox.SelectedIndex = 0;
     }
 
+    // Carga productos en el ComboBox del módulo menús.
     private void CargarProductosEnCombo()
     {
         var productos = _productoController.ObtenerProductos();
@@ -781,6 +952,7 @@ private void Logout(object? sender, RoutedEventArgs e)
         ProductosMenuComboBox.SelectedIndex = 0;
     }
 
+    // Devuelve el usuario seleccionado para trabajar con menús.
     private Guid ObtenerUsuarioIdSeleccionado()
     {
         if (!AuthSession.EsAdmin)
@@ -792,6 +964,7 @@ private void Logout(object? sender, RoutedEventArgs e)
         return Guid.Empty;
     }
 
+    // Devuelve el producto seleccionado para el menú.
     private Guid ObtenerProductoIdSeleccionado()
     {
         if (ProductosMenuComboBox.SelectedItem is ComboBoxItem item && item.Tag is Guid id)
@@ -800,6 +973,7 @@ private void Logout(object? sender, RoutedEventArgs e)
         return Guid.Empty;
     }
 
+    // Selecciona el usuario del menú en el ComboBox.
     private void SeleccionarUsuarioEnCombo(Guid usuarioId)
     {
         foreach (var item in UsuariosMenuComboBox.Items)
@@ -812,6 +986,7 @@ private void Logout(object? sender, RoutedEventArgs e)
         }
     }
 
+    // Actualiza en pantalla los totales nutricionales del menú actual.
     private void ActualizarTotalesMenu()
     {
         if (_menuActual == null)
@@ -829,6 +1004,7 @@ private void Logout(object? sender, RoutedEventArgs e)
         TotalGrasasTextBlock.Text = $"Grasas: {_menuActual.TotalGrasas}";
     }
 
+    // Limpia el estado del módulo menús.
     private void LimpiarMenu()
     {
         _menuActual = null;
@@ -850,10 +1026,11 @@ private void Logout(object? sender, RoutedEventArgs e)
             UsuariosMenuComboBox.SelectedIndex = 0;
     }
 
-    // =========================
-    // ESTADISTICAS DE NUTRICION
-    // =========================
+    // =====================================================
+    // PANEL ESTADÍSTICAS DE NUTRICIÓN
+    // =====================================================
 
+    // Carga usuarios en el ComboBox de estadísticas.
     private void CargarUsuariosEnComboEstadistica()
     {
         var usuarios = _usuarioController.ObtenerUsuarios();
@@ -879,6 +1056,7 @@ private void Logout(object? sender, RoutedEventArgs e)
         FechaFinEstadisticaDatePicker.SelectedDate = DateTime.Today;
     }
 
+    // Carga dietas en el ComboBox de estadísticas.
     private void CargarDietasEnComboEstadistica()
     {
         var dietas = _estadisticasNutricionController.ObtenerDietasDisponibles();
@@ -908,6 +1086,7 @@ private void Logout(object? sender, RoutedEventArgs e)
         }
     }
 
+    // Devuelve el usuario seleccionado para calcular estadísticas.
     private Guid ObtenerUsuarioIdEstadisticaSeleccionado()
     {
         if (!AuthSession.EsAdmin)
@@ -919,6 +1098,7 @@ private void Logout(object? sender, RoutedEventArgs e)
         return Guid.Empty;
     }
 
+    // Devuelve la dieta seleccionada para estadísticas.
     private string ObtenerDietaEstadisticaSeleccionada()
     {
         if (DietaEstadisticaComboBox.SelectedItem is ComboBoxItem item && item.Tag is string nombre)
@@ -927,6 +1107,7 @@ private void Logout(object? sender, RoutedEventArgs e)
         return string.Empty;
     }
 
+    // Selecciona una dieta en el ComboBox de estadísticas.
     private void SeleccionarDietaEstadistica(string tipoDieta)
     {
         foreach (var item in DietaEstadisticaComboBox.Items)
@@ -941,6 +1122,7 @@ private void Logout(object? sender, RoutedEventArgs e)
         }
     }
 
+    // Si cambia el usuario en estadísticas, actualiza la dieta mostrada.
     private void UsuariosEstadisticaComboBox_SelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
         if (!AuthSession.EsAdmin)
@@ -959,6 +1141,8 @@ private void Logout(object? sender, RoutedEventArgs e)
         SeleccionarDietaEstadistica(usuario.TipoDieta);
     }
 
+    // Calcula y muestra el resumen nutricional del usuario
+    // en el rango de fechas seleccionado.
     private async void CalcularEstadisticasNutricion(object? sender, RoutedEventArgs e)
     {
         try
@@ -1046,6 +1230,7 @@ private void Logout(object? sender, RoutedEventArgs e)
         }
     }
 
+    // Colorea el texto según la diferencia contra el objetivo.
     private void ColorTextoMacro(TextBlock textBlock, decimal diferencia)
     {
         if (Math.Abs(diferencia) <= 10m)
@@ -1056,6 +1241,7 @@ private void Logout(object? sender, RoutedEventArgs e)
             textBlock.Foreground = Brushes.Orange;
     }
 
+    // Colorea el texto del IMC según la categoría.
     private void ColorTextoImc(TextBlock textBlock, string categoriaImc)
     {
         switch ((categoriaImc ?? "").Trim().ToLowerInvariant())
@@ -1076,6 +1262,7 @@ private void Logout(object? sender, RoutedEventArgs e)
         }
     }
 
+    // Limpia todos los labels del resumen de estadísticas.
     private void LimpiarResumenEstadisticaNutricion()
     {
         EstadisticaNombreUsuarioTextBlock.Text = "Usuario: -";
@@ -1119,10 +1306,11 @@ private void Logout(object? sender, RoutedEventArgs e)
         EstadisticaCategoriaImcTextBlock.Foreground = Brushes.White;
     }
 
-    // =========================
+    // =====================================================
     // UTILIDADES UI
-    // =========================
+    // =====================================================
 
+    // Muestra una ventana modal simple con un mensaje.
     private async Task MostrarMensaje(string mensaje)
     {
         var ventana = new Window
@@ -1150,7 +1338,7 @@ private void Logout(object? sender, RoutedEventArgs e)
                 new TextBlock
                 {
                     Text = mensaje,
-                    TextWrapping = TextWrapping.Wrap
+                    TextWrapping = Avalonia.Media.TextWrapping.Wrap
                 },
                 okButton
             }
@@ -1159,6 +1347,7 @@ private void Logout(object? sender, RoutedEventArgs e)
         await ventana.ShowDialog(this);
     }
 
+    // Muestra una ventana de confirmación y devuelve true o false.
     private async Task<bool> Confirmar(string mensaje)
     {
         var tcs = new TaskCompletionSource<bool>();
@@ -1194,7 +1383,7 @@ private void Logout(object? sender, RoutedEventArgs e)
                 new TextBlock
                 {
                     Text = mensaje,
-                    TextWrapping = TextWrapping.Wrap
+                    TextWrapping = Avalonia.Media.TextWrapping.Wrap
                 },
                 new StackPanel
                 {
@@ -1210,6 +1399,11 @@ private void Logout(object? sender, RoutedEventArgs e)
         return await tcs.Task;
     }
 
+    // =====================================================
+    // CLASE AUXILIAR
+    // =====================================================
+    // Se usa para mostrar una vista resumida de los menús
+    // en el DataGrid del historial.
     private class MenuVista
     {
         public Guid Id { get; set; }

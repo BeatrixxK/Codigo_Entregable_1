@@ -22,4 +22,9 @@
   <ItemGroup>
     <ProjectReference Include="..\DragonNutrex.App\DragonNutrex.App.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <AvaloniaResource Include="Images/**" />
+  </ItemGroup>
+
 </Project>
