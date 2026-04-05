@@ -10,35 +10,35 @@
         Title="DragonNutrex"
         Background="White">
 
-    <!-- ===================================================== -->
-    <!-- ESTILOS GENERALES -->
-    <!-- ===================================================== -->
     <Window.Styles>
 
-        <!-- Texto general -->
+        <Style Selector="TextBox, ComboBox, DatePicker, Button">
+            <Setter Property="Height" Value="35"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+
         <Style Selector="TextBlock">
             <Setter Property="Foreground" Value="#1F5E2E"/>
         </Style>
 
-        <!-- TextBox -->
         <Style Selector="TextBox">
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
             <Setter Property="Background" Value="#EAEAEA"/>
-            <Setter Property="Foreground" Value="White"/>
-            <Setter Property="BorderBrush" Value="#CCCCCC"/>
-            <Setter Property="Padding" Value="8"/>
+            <Setter Property="Foreground" Value="#1F5E2E"/>
+            <Setter Property="BorderBrush" Value="#2E9E44"/>
+            <Setter Property="BorderThickness" Value="1"/>
         </Style>
 
         <Style Selector="TextBox:focus">
-            <Setter Property="Background" Value="#EAEAEA"/>
-            <Setter Property="Foreground" Value="White"/>
-            <Setter Property="BorderBrush" Value="#2E9E44"/>
+            <Setter Property="BorderBrush" Value="#1F5E2E"/>
         </Style>
 
-        <!-- ComboBox -->
         <Style Selector="ComboBox">
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
             <Setter Property="Background" Value="#EAEAEA"/>
-            <Setter Property="Foreground" Value="White"/>
-            <Setter Property="BorderBrush" Value="#CCCCCC"/>
+            <Setter Property="BorderBrush" Value="#2E9E44"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
         </Style>
 
         <Style Selector="ComboBox:focus">
@@ -47,16 +47,21 @@
             <Setter Property="BorderBrush" Value="#2E9E44"/>
         </Style>
 
-        <!-- DatePicker -->
         <Style Selector="DatePicker">
             <Setter Property="Background" Value="#EAEAEA"/>
-            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderBrush" Value="#2E9E44"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="4"/>
+            <Setter Property="MinHeight" Value="35"/>
+            <Setter Property="MaxHeight" Value="35"/>
         </Style>
 
-        <!-- Botones normales -->
         <Style Selector="Button">
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
             <Setter Property="Background" Value="#2E9E44"/>
             <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Padding" Value="5,0"/>
         </Style>
 
         <Style Selector="Button:pointerover">
@@ -64,7 +69,6 @@
             <Setter Property="Foreground" Value="#1F5E2E"/>
         </Style>
 
-        <!-- Botón danger -->
         <Style Selector="Button.danger">
             <Setter Property="Background" Value="#D32F2F"/>
             <Setter Property="Foreground" Value="White"/>
@@ -75,13 +79,11 @@
             <Setter Property="Foreground" Value="#B71C1C"/>
         </Style>
 
-        <!-- Fila seleccionada -->
         <Style Selector="DataGridRow:selected">
             <Setter Property="Background" Value="#2D6CDF"/>
             <Setter Property="Foreground" Value="White"/>
         </Style>
 
-        <!-- Header del DataGrid -->
         <Style Selector="DataGridColumnHeader">
             <Setter Property="Background" Value="#2E9E44"/>
             <Setter Property="Foreground" Value="White"/>
@@ -90,7 +92,6 @@
             <Setter Property="BorderThickness" Value="1"/>
         </Style>
 
-        <!-- Celdas del DataGrid -->
         <Style Selector="DataGridCell">
             <Setter Property="BorderBrush" Value="#D0D0D0"/>
             <Setter Property="BorderThickness" Value="1"/>
@@ -98,15 +99,9 @@
 
     </Window.Styles>
 
-    <!-- ===================================================== -->
-    <!-- CONTENEDOR PRINCIPAL -->
-    <!-- ===================================================== -->
     <Grid Margin="10"
           RowDefinitions="Auto,*">
 
-        <!-- ===================================================== -->
-        <!-- LOGO -->
-        <!-- ===================================================== -->
         <Grid Grid.Row="0"
               Height="300"
               Margin="0,0,0,0">
@@ -118,16 +113,12 @@
                    VerticalAlignment="Bottom"/>
         </Grid>
 
-        <!-- ===================================================== -->
-        <!-- CONTENIDO -->
-        <!-- ===================================================== -->
         <StackPanel Grid.Row="1"
                     Spacing="8"
                     HorizontalAlignment="Center"
                     Width="980"
                     Margin="0,-100,0,0">
 
-            <!-- Encabezado -->
             <Border Background="#DFF5E1"
                     Padding="10"
                     CornerRadius="6"
@@ -151,7 +142,6 @@
                 </StackPanel>
             </Border>
 
-            <!-- Módulos -->
             <StackPanel Orientation="Horizontal"
                         Spacing="10"
                         HorizontalAlignment="Center">
@@ -177,9 +167,6 @@
                         Width="220"/>
             </StackPanel>
 
-            <!-- ===================================================== -->
-            <!-- PANEL USUARIOS -->
-            <!-- ===================================================== -->
             <StackPanel x:Name="UsuariosPanel"
                         Spacing="10"
                         HorizontalAlignment="Center"
@@ -189,7 +176,6 @@
                            FontSize="24"
                            FontWeight="Bold"/>
 
-                <!-- Formulario -->
                 <Grid ColumnDefinitions="485,485"
                       RowDefinitions="Auto,Auto,Auto">
 
@@ -230,7 +216,6 @@
                               HorizontalAlignment="Stretch"/>
                 </Grid>
 
-                <!-- Botones -->
                 <StackPanel Orientation="Horizontal" Spacing="10">
                     <Button x:Name="GuardarButton"
                             Content="Guardar"
@@ -245,7 +230,6 @@
                             Width="120"/>
                 </StackPanel>
 
-                <!-- Tabla de usuarios -->
                 <Border BorderThickness="2"
                         BorderBrush="#BDBDBD"
                         CornerRadius="4">
@@ -275,9 +259,6 @@
 
             </StackPanel>
 
-            <!-- ===================================================== -->
-            <!-- PANEL PRODUCTOS -->
-            <!-- ===================================================== -->
             <StackPanel x:Name="ProductosPanel"
                         IsVisible="False"
                         Spacing="10">
@@ -362,9 +343,6 @@
 
             </StackPanel>
 
-            <!-- ===================================================== -->
-            <!-- PANEL MENÚS -->
-            <!-- ===================================================== -->
             <StackPanel x:Name="MenusPanel"
                         IsVisible="False"
                         Spacing="10">
@@ -373,43 +351,36 @@
                            FontSize="24"
                            FontWeight="Bold"/>
 
-                <Grid ColumnDefinitions="*,*,*"
-                      RowDefinitions="Auto,Auto">
-
+                <Grid ColumnDefinitions="*,*,180" RowDefinitions="Auto,Auto" Margin="0,0,0,10">
                     <ComboBox x:Name="UsuariosMenuComboBox"
-                              Grid.Row="0"
-                              Grid.Column="0"
-                              Margin="0,0,10,10"
-                              HorizontalAlignment="Stretch"/>
+                              Grid.Row="0" Grid.Column="0"
+                              Margin="0,0,10,10"/>
 
                     <DatePicker x:Name="FechaMenuDatePicker"
-                                Grid.Row="0"
-                                Grid.Column="1"
-                                Margin="0,0,10,10"/>
+                                Grid.Row="0" Grid.Column="1"
+                                Margin="0,0,10,10"
+                                HorizontalAlignment="Stretch"/>
 
                     <Button x:Name="NuevoMenuButton"
-                            Grid.Row="0"
-                            Grid.Column="2"
+                            Grid.Row="0" Grid.Column="2"
                             Content="Nuevo Menú"
-                            Width="140"/>
+                            Margin="0,0,0,10"
+                            HorizontalAlignment="Stretch"/>
 
                     <ComboBox x:Name="ProductosMenuComboBox"
-                              Grid.Row="1"
-                              Grid.Column="0"
-                              Margin="0,0,10,10"
-                              HorizontalAlignment="Stretch"/>
+                              Grid.Row="1" Grid.Column="0"
+                              Margin="0,0,10,10"/>
 
                     <TextBox x:Name="CantidadProductoTextBox"
-                             Grid.Row="1"
-                             Grid.Column="1"
+                             Grid.Row="1" Grid.Column="1"
                              Margin="0,0,10,10"
                              Watermark="Cantidad"/>
 
                     <Button x:Name="AgregarProductoMenuButton"
-                            Grid.Row="1"
-                            Grid.Column="2"
+                            Grid.Row="1" Grid.Column="2"
                             Content="Agregar Producto"
-                            Width="160"/>
+                            Margin="0,0,0,10"
+                            HorizontalAlignment="Stretch"/>
                 </Grid>
 
                 <StackPanel Orientation="Horizontal" Spacing="20">
@@ -419,7 +390,10 @@
                     <TextBlock x:Name="TotalGrasasTextBlock" Text="Grasas: 0" FontSize="16"/>
                 </StackPanel>
 
-                <StackPanel Orientation="Horizontal" Spacing="10">
+                <StackPanel Orientation="Horizontal" 
+                            Spacing="10" 
+                            HorizontalAlignment="Center" 
+                            Margin="0,10">
                     <Button x:Name="GuardarMenuButton"
                             Content="Guardar Menú"
                             Width="140"/>
@@ -505,9 +479,6 @@
 
             </StackPanel>
 
-            <!-- ===================================================== -->
-            <!-- PANEL ESTADÍSTICAS -->
-            <!-- ===================================================== -->
             <StackPanel x:Name="EstadisticasNutricionPanel"
                         IsVisible="False"
                         Spacing="10">
@@ -540,14 +511,14 @@
                                 Grid.Column="2"
                                 Margin="0,0,10,10">
                         <TextBlock Text="Fecha inicio" Margin="0,0,0,4"/>
-                        <DatePicker x:Name="FechaInicioEstadisticaDatePicker"/>
+                        <DatePicker x:Name="FechaInicioEstadisticaDatePicker" HorizontalAlignment="Stretch"/>
                     </StackPanel>
 
                     <StackPanel Grid.Row="0"
                                 Grid.Column="3"
                                 Margin="0,0,0,10">
                         <TextBlock Text="Fecha fin" Margin="0,0,0,4"/>
-                        <DatePicker x:Name="FechaFinEstadisticaDatePicker"/>
+                        <DatePicker x:Name="FechaFinEstadisticaDatePicker" HorizontalAlignment="Stretch"/>
                     </StackPanel>
 
                     <Button x:Name="CalcularEstadisticaNutricionButton"
