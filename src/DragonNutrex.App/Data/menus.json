@@ -25,16 +25,6 @@
         "Grasas": 44
       },
       {
-        "Id": "8647ed00-581e-4d93-9aca-345135c5a4ee",
-        "ProductoId": "927dc528-5438-4ccc-bac4-a41f120c84d3",
-        "NombreProducto": "Pan Integral 75",
-        "Cantidad": 3,
-        "Calorias": 225,
-        "Proteinas": 99,
-        "Carbohidratos": 0,
-        "Grasas": 42
-      },
-      {
         "Id": "f23fc24a-8f9f-4d5e-9e3c-9f9991ed838c",
         "ProductoId": "ab6a4194-a718-487c-9188-6286f820fb00",
         "NombreProducto": "Yogurt 50",
@@ -45,10 +35,10 @@
         "Grasas": 48
       }
     ],
-    "TotalCalorias": 3751,
-    "TotalProteinas": 241,
+    "TotalCalorias": 3526,
+    "TotalProteinas": 142,
     "TotalCarbohidratos": 550,
-    "TotalGrasas": 174
+    "TotalGrasas": 132
   },
   {
     "Id": "9f924335-24ea-4415-b109-92d604d7612f",

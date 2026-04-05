@@ -107,6 +107,7 @@ public partial class MainWindow : Window
 
         // ---------- Logout ----------
         LogoutButton.Click += Logout;
+        LogoutButtonEstadisticas.Click += Logout;
 
         // ---------- Menús ----------
         NuevoMenuButton.Click += NuevoMenu;
