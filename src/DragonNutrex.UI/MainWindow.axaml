@@ -8,9 +8,8 @@
         Width="1250"
         Height="950"
         Title="DragonNutrex"
-        Background="White">
-
-    <Window.Styles>
+        Background="White"
+        RequestedThemeVariant="Light"> <Window.Styles>
 
         <Style Selector="TextBox, ComboBox, DatePicker, Button">
             <Setter Property="Height" Value="35"/>
@@ -43,7 +42,7 @@
 
         <Style Selector="ComboBox:focus">
             <Setter Property="Background" Value="#EAEAEA"/>
-            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Foreground" Value="#1F5E2E"/>
             <Setter Property="BorderBrush" Value="#2E9E44"/>
         </Style>
 
@@ -54,6 +53,51 @@
             <Setter Property="CornerRadius" Value="4"/>
             <Setter Property="MinHeight" Value="35"/>
             <Setter Property="MaxHeight" Value="35"/>
+        </Style>
+
+        <Style Selector="DatePickerPresenter">
+            <Setter Property="Background" Value="#EAF6EC"/>
+            <Setter Property="BorderBrush" Value="#2E9E44"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="4"/>
+        </Style>
+
+        <Style Selector="DateTimePickerPanel > ListBoxItem">
+            <Setter Property="Foreground" Value="#1F5E2E"/>
+        </Style>
+
+        <Style Selector="DateTimePickerPanel > ListBoxItem:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#CBEAD1"/>
+            <Setter Property="Foreground" Value="#1F5E2E"/>
+        </Style>
+
+        <Style Selector="DateTimePickerPanel > ListBoxItem:selected /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#2E9E44"/>
+            <Setter Property="Foreground" Value="White"/>
+        </Style>
+        
+        <Style Selector="DatePickerPresenter Button">
+            <Setter Property="Background" Value="#2E9E44"/>
+            <Setter Property="Foreground" Value="White"/>
+        </Style>
+        
+        <Style Selector="DatePickerPresenter Button:pointerover">
+            <Setter Property="Background" Value="#1F5E2E"/>
+        </Style>
+
+        <Style Selector="ComboBoxItem">
+            <Setter Property="Foreground" Value="#1F5E2E"/>
+            <Setter Property="Background" Value="#EAF6EC"/>
+        </Style>
+
+        <Style Selector="ComboBoxItem:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#CBEAD1"/>
+            <Setter Property="Foreground" Value="#1F5E2E"/>
+        </Style>
+
+        <Style Selector="ComboBoxItem:selected /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#2E9E44"/>
+            <Setter Property="Foreground" Value="White"/>
         </Style>
 
         <Style Selector="Button">
@@ -487,48 +531,42 @@
                            FontSize="24"
                            FontWeight="Bold"/>
 
-                <Grid ColumnDefinitions="*,*,*,*"
-                      RowDefinitions="Auto,Auto">
+                <StackPanel Orientation="Vertical" Spacing="15" Margin="0,10,0,15">
+                    
+                    <StackPanel Orientation="Horizontal" 
+                                HorizontalAlignment="Center">
 
-                    <StackPanel x:Name="UsuarioFiltroPanel"
-                                Grid.Row="0"
-                                Grid.Column="0"
-                                Margin="0,0,10,10">
-                        <TextBlock Text="Usuario" Margin="0,0,0,4"/>
-                        <ComboBox x:Name="UsuariosEstadisticaComboBox"
-                                  HorizontalAlignment="Stretch"/>
-                    </StackPanel>
+                        <StackPanel x:Name="UsuarioFiltroPanel" Width="220" Margin="0,0,25,0">
+                            <TextBlock Text="Usuario" Margin="0,0,0,4"/>
+                            <ComboBox x:Name="UsuariosEstadisticaComboBox"
+                                      HorizontalAlignment="Stretch"/>
+                        </StackPanel>
 
-                    <StackPanel Grid.Row="0"
-                                Grid.Column="1"
-                                Margin="0,0,10,10">
-                        <TextBlock Text="Dieta" Margin="0,0,0,4"/>
-                        <ComboBox x:Name="DietaEstadisticaComboBox"
-                                  HorizontalAlignment="Stretch"/>
-                    </StackPanel>
+                        <StackPanel MinWidth="230" Margin="0,0,25,0">   
+                            <TextBlock Text="Dieta" Margin="0,0,0,4"/>
+                            <ComboBox x:Name="DietaEstadisticaComboBox"
+                                      HorizontalAlignment="Stretch"/>
+                        </StackPanel>
 
-                    <StackPanel Grid.Row="0"
-                                Grid.Column="2"
-                                Margin="0,0,10,10">
-                        <TextBlock Text="Fecha inicio" Margin="0,0,0,4"/>
-                        <DatePicker x:Name="FechaInicioEstadisticaDatePicker" HorizontalAlignment="Stretch"/>
-                    </StackPanel>
+                        <StackPanel MinWidth="230" Margin="0,0,25,0">
+                            <TextBlock Text="Fecha inicio" Margin="0,0,0,4"/>
+                            <DatePicker x:Name="FechaInicioEstadisticaDatePicker" 
+                                        HorizontalAlignment="Stretch"/>
+                        </StackPanel>
 
-                    <StackPanel Grid.Row="0"
-                                Grid.Column="3"
-                                Margin="0,0,0,10">
-                        <TextBlock Text="Fecha fin" Margin="0,0,0,4"/>
-                        <DatePicker x:Name="FechaFinEstadisticaDatePicker" HorizontalAlignment="Stretch"/>
+                        <StackPanel MinWidth="230">
+                            <TextBlock Text="Fecha fin" Margin="0,0,0,4"/>
+                            <DatePicker x:Name="FechaFinEstadisticaDatePicker" 
+                                        HorizontalAlignment="Stretch"/>
+                        </StackPanel>
+
                     </StackPanel>
 
                     <Button x:Name="CalcularEstadisticaNutricionButton"
-                            Grid.Row="1"
-                            Grid.Column="0"
-                            Grid.ColumnSpan="4"
                             Content="Calcular Estadísticas de Nutrición"
-                            Width="260"
-                            HorizontalAlignment="Left"/>
-                </Grid>
+                            Width="300"
+                            HorizontalAlignment="Center"/>
+                </StackPanel>
 
                 <Border BorderThickness="2"
                         BorderBrush="#BDBDBD"
