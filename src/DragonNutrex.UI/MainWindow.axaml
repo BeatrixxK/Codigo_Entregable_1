@@ -119,7 +119,11 @@
 
             <Grid Grid.Row="0" Height="300" Margin="0,0,0,0">
                 <Image Source="avares://DragonNutrex.UI/Images/logosecundario.png" Width="600" Height="400" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Bottom"/>
-                <Button x:Name="LogoutGlobalButton" Content="Cerrar sesión" Classes="danger" Width="140" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,20,20,0"/>
+                
+                <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,20,20,0">
+                    <Button x:Name="ContactoButton" Content="Ayuda / Contacto" Width="140" Background="#2D6CDF"/>
+                    <Button x:Name="LogoutGlobalButton" Content="Cerrar sesión" Classes="danger" Width="140"/>
+                </StackPanel>
             </Grid>
 
             <StackPanel Grid.Row="1" Spacing="8" HorizontalAlignment="Center" Width="980" Margin="0,-100,0,40">
@@ -256,6 +260,7 @@
                             </StackPanel>
                         </Grid>
                     </Border>
+
                     <TextBlock Text="Gestión de Menús" FontSize="24" FontWeight="Bold"/>
                     
                     <Grid ColumnDefinitions="*,*,180" RowDefinitions="Auto,Auto" Margin="0,0,0,10">

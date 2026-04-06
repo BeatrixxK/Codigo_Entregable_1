@@ -83,6 +83,10 @@ public partial class MainWindow : Window
         var btnLogoutGlobal = this.FindControl<Button>("LogoutGlobalButton");
         if (btnLogoutGlobal != null) btnLogoutGlobal.Click += Logout;
 
+        // EVENTO DEL BOTÓN DE CONTACTO
+        var btnContacto = this.FindControl<Button>("ContactoButton");
+        if (btnContacto != null) btnContacto.Click += AbrirFormularioContacto;
+
         NuevoMenuButton.Click += NuevoMenu;
         AgregarProductoMenuButton.Click += AgregarProductoAlMenu;
         GuardarMenuButton.Click += GuardarMenu;
@@ -315,7 +319,7 @@ public partial class MainWindow : Window
     {
         ObjetivoComboBox.Items.Clear();
         ObjetivoComboBox.Items.Add(new ComboBoxItem { Content = "Seleccione objetivo", Tag = "", IsEnabled = false });
-        ObjetivoComboBox.Items.Add(new ComboBoxItem { Content = "Bajar peso", Tag = "Bajar peso" }); // <-- CORRECCIÓN AQUÍ
+        ObjetivoComboBox.Items.Add(new ComboBoxItem { Content = "Bajar peso", Tag = "Bajar peso" }); 
         ObjetivoComboBox.Items.Add(new ComboBoxItem { Content = "Quemar grasa", Tag = "Quemar grasa" });
         ObjetivoComboBox.Items.Add(new ComboBoxItem { Content = "Mantener peso", Tag = "Mantener peso" });
         ObjetivoComboBox.Items.Add(new ComboBoxItem { Content = "Ganar masa muscular", Tag = "Ganar masa muscular" });
@@ -772,7 +776,6 @@ public partial class MainWindow : Window
 
         if (cbObjetivo != null) {
             cbObjetivo.Items.Clear();
-            // CORRECCIÓN AQUÍ TAMBIÉN: "Bajar peso" en lugar de "Perder peso"
             cbObjetivo.Items.Add(new ComboBoxItem { Content = "Bajar peso", Tag = "Bajar peso" }); 
             cbObjetivo.Items.Add(new ComboBoxItem { Content = "Quemar grasa", Tag = "Quemar grasa" });
             cbObjetivo.Items.Add(new ComboBoxItem { Content = "Mantener peso", Tag = "Mantener peso" });
@@ -964,4 +967,59 @@ public partial class MainWindow : Window
     }
 
     private class MenuVista { public Guid Id { get; set; } public string UsuarioNombre { get; set; } = ""; public DateTime Fecha { get; set; } public decimal TotalCalorias { get; set; } public decimal TotalProteinas { get; set; } public decimal TotalCarbohidratos { get; set; } public decimal TotalGrasas { get; set; } }
+
+    // =====================================================
+    // FORMULARIO DE CONTACTO
+    // =====================================================
+    private async void AbrirFormularioContacto(object? sender, RoutedEventArgs e)
+    {
+        var ventanaContacto = new Window
+        {
+            Title = "Ayuda y Contacto",
+            Width = 400,
+            Height = 300,
+            WindowStartupLocation = WindowStartupLocation.CenterOwner
+        };
+
+        var tbMensaje = new TextBox
+        {
+            Height = 150,
+            AcceptsReturn = true,
+            TextWrapping = Avalonia.Media.TextWrapping.Wrap,
+            Watermark = "Escribe tu duda o retroalimentación aquí..."
+        };
+
+        var btnEnviar = new Button
+        {
+            Content = "Enviar",
+            HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center,
+            Width = 120
+        };
+
+        btnEnviar.Click += async (_, _) =>
+        {
+            if (string.IsNullOrWhiteSpace(tbMensaje.Text))
+            {
+                await MostrarMensaje("Por favor, escribe un mensaje antes de enviar.");
+                return;
+            }
+
+            ventanaContacto.Close();
+            await MostrarMensaje("Hemos recibido tu mensaje, pronto estaremos en contacto.");
+        };
+
+        ventanaContacto.Content = new StackPanel
+        {
+            Margin = new Avalonia.Thickness(20),
+            Spacing = 15,
+            Children =
+            {
+                new TextBlock { Text = "Envíanos tus comentarios o dudas:", FontWeight = FontWeight.Bold, FontSize = 16 },
+                tbMensaje,
+                btnEnviar
+            }
+        };
+
+        await ventanaContacto.ShowDialog(this);
+    }
 }

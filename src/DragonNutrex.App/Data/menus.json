@@ -216,17 +216,17 @@
   {
     "Id": "78f14b42-2364-4973-a048-5f8f5e6e1d3a",
     "UsuarioId": "4fb7c277-7811-488f-9218-a0e8b939db65",
-    "Fecha": "2026-03-23T00:00:00-06:00",
+    "Fecha": "2026-03-23T00:00:00",
     "Registros": [
       {
         "Id": "a370981b-6aad-4007-9c42-03811fa83f44",
         "ProductoId": "f579964f-acce-4396-9fa0-437751ed42f4",
         "NombreProducto": "Almendras 29",
-        "Cantidad": 4,
-        "Calorias": 1268,
-        "Proteinas": 68,
-        "Carbohidratos": 296,
-        "Grasas": 24
+        "Cantidad": 15,
+        "Calorias": 4755,
+        "Proteinas": 255,
+        "Carbohidratos": 1110,
+        "Grasas": 90
       },
       {
         "Id": "c032dde5-15d0-472a-9d34-17aec447068a",
@@ -259,10 +259,10 @@
         "Grasas": 8
       }
     ],
-    "TotalCalorias": 4399,
-    "TotalProteinas": 277,
-    "TotalCarbohidratos": 799,
-    "TotalGrasas": 171
+    "TotalCalorias": 7886,
+    "TotalProteinas": 464,
+    "TotalCarbohidratos": 1613,
+    "TotalGrasas": 237
   },
   {
     "Id": "cd89d9a3-eca6-430c-9820-e37fb5520e53",
@@ -19126,5 +19126,26 @@
     "TotalProteinas": 421,
     "TotalCarbohidratos": 2262,
     "TotalGrasas": 583
+  },
+  {
+    "Id": "2afaef49-1b76-4966-baec-dffb3455d860",
+    "UsuarioId": "4fb7c277-7811-488f-9218-a0e8b939db65",
+    "Fecha": "2026-04-06T00:00:00",
+    "Registros": [
+      {
+        "Id": "6e42f96d-d12b-4a06-a9b0-871add2ef18e",
+        "ProductoId": "487b5b7e-bcfe-4ddc-b5fe-4d9db0028495",
+        "NombreProducto": "Banano 17",
+        "Cantidad": 10,
+        "Calorias": 1380,
+        "Proteinas": 310,
+        "Carbohidratos": 180,
+        "Grasas": 20
+      }
+    ],
+    "TotalCalorias": 1380,
+    "TotalProteinas": 310,
+    "TotalCarbohidratos": 180,
+    "TotalGrasas": 20
   }
 ]
