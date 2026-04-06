@@ -22,6 +22,9 @@ public partial class LoginWindow : Window
 
         LoginButton.Click += Login;
         RegistrarseButton.Click += AbrirRegistro;
+        
+        // Conectamos el nuevo botón a su método
+        OlvidastePasswordButton.Click += AbrirCambiarPassword;
     }
 
     private async void Login(object? sender, RoutedEventArgs e)
@@ -73,6 +76,21 @@ public partial class LoginWindow : Window
         catch (Exception ex)
         {
             ErrorTextBlock.Text = $"Error al abrir registro: {ex.Message}";
+        }
+    }
+
+    // NUEVO: Método para abrir tu ventana de Cambiar Contraseña
+    private async void AbrirCambiarPassword(object? sender, RoutedEventArgs e)
+    {
+        try
+        {
+            // Instanciamos la ventana que ya tenías creada
+            var ventanaPassword = new CambiarPasswordWindow();
+            await ventanaPassword.ShowDialog(this);
+        }
+        catch (Exception ex)
+        {
+            ErrorTextBlock.Text = $"Error al abrir recuperación: {ex.Message}";
         }
     }
 }
