@@ -8,11 +8,11 @@
         "Id": "5394cd4e-2490-47cf-b81c-6cb8984b6ff9",
         "ProductoId": "780cba5d-f9ee-40a0-84fb-cccc8ba1230c",
         "NombreProducto": "Avena 78",
-        "Cantidad": 2,
-        "Calorias": 938,
-        "Proteinas": 48,
-        "Carbohidratos": 152,
-        "Grasas": 40
+        "Cantidad": 5,
+        "Calorias": 2345,
+        "Proteinas": 120,
+        "Carbohidratos": 380,
+        "Grasas": 100
       },
       {
         "Id": "32c2dfd4-6f23-453d-be32-9e447266f809",
@@ -45,10 +45,10 @@
         "Grasas": 20
       }
     ],
-    "TotalCalorias": 5861,
-    "TotalProteinas": 157,
-    "TotalCarbohidratos": 590,
-    "TotalGrasas": 152
+    "TotalCalorias": 7268,
+    "TotalProteinas": 229,
+    "TotalCarbohidratos": 818,
+    "TotalGrasas": 212
   },
   {
     "Id": "9f924335-24ea-4415-b109-92d604d7612f",
@@ -19075,5 +19075,56 @@
     "TotalProteinas": 409,
     "TotalCarbohidratos": 318,
     "TotalGrasas": 238
+  },
+  {
+    "Id": "718ab335-ce17-4ad5-b559-6f568cb5051f",
+    "UsuarioId": "c714e3db-9aae-45c5-a580-c02d4eada13a",
+    "Fecha": "2026-04-06T00:00:00",
+    "Registros": [
+      {
+        "Id": "51753e56-ebf1-4188-bc62-b791aa0bab9f",
+        "ProductoId": "2a96ce6c-506f-41c1-87f1-3af08a98f156",
+        "NombreProducto": "Almendras 5",
+        "Cantidad": 50,
+        "Calorias": 21650,
+        "Proteinas": 200,
+        "Carbohidratos": 2150,
+        "Grasas": 450
+      },
+      {
+        "Id": "4f4983b6-dbb3-4ad6-9b30-f15e8726ae57",
+        "ProductoId": "00d1981d-1337-4db0-9883-ea924ac1070f",
+        "NombreProducto": "Aguacate 2",
+        "Cantidad": 2,
+        "Calorias": 846,
+        "Proteinas": 78,
+        "Carbohidratos": 56,
+        "Grasas": 44
+      },
+      {
+        "Id": "ae80fc31-98da-4544-890a-49c28bc48de6",
+        "ProductoId": "5c03a256-85f0-4f34-9c47-410c872a93e9",
+        "NombreProducto": "Queso 9",
+        "Cantidad": 5,
+        "Calorias": 1295,
+        "Proteinas": 105,
+        "Carbohidratos": 30,
+        "Grasas": 65
+      },
+      {
+        "Id": "87186c19-0cd1-4f14-b63e-53eb5380e181",
+        "ProductoId": "43093773-e4a1-4512-80b6-35a6a4e47d88",
+        "NombreProducto": "Granola 24",
+        "Cantidad": 2,
+        "Calorias": 238,
+        "Proteinas": 38,
+        "Carbohidratos": 26,
+        "Grasas": 24
+      }
+    ],
+    "TotalCalorias": 24029,
+    "TotalProteinas": 421,
+    "TotalCarbohidratos": 2262,
+    "TotalGrasas": 583
   }
 ]

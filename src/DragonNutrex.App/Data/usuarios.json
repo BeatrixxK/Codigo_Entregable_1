@@ -2,7 +2,7 @@
   {
     "Id": "4fb7c277-7811-488f-9218-a0e8b939db65",
     "Nombre": "Usuario 1",
-    "Peso": 66,
+    "Peso": 80,
     "Altura": 1.74,
     "Actividad": "Sedentaria",
     "Objetivo": "Bajar peso",
@@ -24,10 +24,10 @@
   {
     "Id": "8cc2549e-d98c-496f-9436-8913eccf3e39",
     "Nombre": "Usuario 3",
-    "Peso": 62,
+    "Peso": 66,
     "Altura": 1.93,
     "Actividad": "Moderada",
-    "Objetivo": "Resistencia",
+    "Objetivo": "Quemar grasa",
     "TipoDieta": "Balanceada",
     "Password": "Upi.2025",
     "Correo": ""
@@ -35,10 +35,10 @@
   {
     "Id": "d3b192c3-df4b-4a0b-b693-68e076a8f69f",
     "Nombre": "Usuario 4",
-    "Peso": 103,
+    "Peso": 123,
     "Altura": 1.51,
     "Actividad": "Ligera",
-    "Objetivo": "Mantener",
+    "Objetivo": "Mantener peso",
     "TipoDieta": "Keto",
     "Password": "Upi.2025",
     "Correo": ""
@@ -295,5 +295,16 @@
     "TipoDieta": "Alta prote\u00EDna",
     "Password": "Upi.2025",
     "Correo": "micorreo@correo.com"
+  },
+  {
+    "Id": "c714e3db-9aae-45c5-a580-c02d4eada13a",
+    "Nombre": "Andres Rojas",
+    "Peso": 70,
+    "Altura": 1.90,
+    "Actividad": "Sedentaria",
+    "Objetivo": "Bajar peso",
+    "TipoDieta": "Vegetariana",
+    "Password": "Upi.2025",
+    "Correo": ""
   }
 ]
