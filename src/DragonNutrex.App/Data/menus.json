@@ -33,12 +33,22 @@
         "Proteinas": 28,
         "Carbohidratos": 244,
         "Grasas": 48
+      },
+      {
+        "Id": "22bddbee-d968-48f4-a913-380e4caf1447",
+        "ProductoId": "cca06a9d-b2ff-49eb-94b9-bdc59350fb7e",
+        "NombreProducto": "Avena 14",
+        "Cantidad": 5,
+        "Calorias": 2335,
+        "Proteinas": 15,
+        "Carbohidratos": 40,
+        "Grasas": 20
       }
     ],
-    "TotalCalorias": 3526,
-    "TotalProteinas": 142,
-    "TotalCarbohidratos": 550,
-    "TotalGrasas": 132
+    "TotalCalorias": 5861,
+    "TotalProteinas": 157,
+    "TotalCarbohidratos": 590,
+    "TotalGrasas": 152
   },
   {
     "Id": "9f924335-24ea-4415-b109-92d604d7612f",
@@ -19049,11 +19059,21 @@
         "Proteinas": 390,
         "Carbohidratos": 280,
         "Grasas": 220
+      },
+      {
+        "Id": "7eeb2023-2655-4ade-b790-3eff8abc8198",
+        "ProductoId": "753057cc-5842-48fd-b720-6bf89310eaf0",
+        "NombreProducto": "Papa 44",
+        "Cantidad": 1,
+        "Calorias": 481,
+        "Proteinas": 19,
+        "Carbohidratos": 38,
+        "Grasas": 18
       }
     ],
-    "TotalCalorias": 4230,
-    "TotalProteinas": 390,
-    "TotalCarbohidratos": 280,
-    "TotalGrasas": 220
+    "TotalCalorias": 4711,
+    "TotalProteinas": 409,
+    "TotalCarbohidratos": 318,
+    "TotalGrasas": 238
   }
 ]

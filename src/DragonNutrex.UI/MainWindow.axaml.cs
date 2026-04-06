@@ -105,9 +105,10 @@ public partial class MainWindow : Window
             LimpiarResumenEstadisticaNutricion();
         };
 
-        // ---------- Logout ----------
-        LogoutButton.Click += Logout;
-        LogoutButtonEstadisticas.Click += Logout;
+        // ---------- Logout Global ----------
+        var btnLogoutGlobal = this.FindControl<Button>("LogoutGlobalButton");
+        if (btnLogoutGlobal != null) btnLogoutGlobal.Click += Logout;
+
 
         // ---------- Menús ----------
         NuevoMenuButton.Click += NuevoMenu;

@@ -165,6 +165,14 @@
                        Stretch="Uniform"
                        HorizontalAlignment="Center"
                        VerticalAlignment="Bottom"/>
+                
+                <Button x:Name="LogoutGlobalButton"
+                        Content="Cerrar sesión"
+                        Classes="danger"
+                        Width="140"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Top"
+                        Margin="0,20,20,0"/>
             </Grid>
 
             <StackPanel Grid.Row="1"
@@ -203,17 +211,17 @@
                     <Button x:Name="UsuariosModuloButton"
                             Content="Usuarios"
                             HorizontalAlignment="Center"
-                            Width="140"/>
+                            Width="220"/>
 
                     <Button x:Name="ProductosModuloButton"
                             Content="Productos"
                             HorizontalAlignment="Center"
-                            Width="140"/>
+                            Width="220"/>
 
                     <Button x:Name="MenusModuloButton"
                             Content="Menús"
                             HorizontalAlignment="Center"
-                            Width="140"/>
+                            Width="220"/>
 
                     <Button x:Name="EstadisticasNutricionModuloButton"
                             Content="Estadísticas de Nutrición"
@@ -328,9 +336,6 @@
                             </controls:DataGrid.Columns>
                         </controls:DataGrid>
                     </Border>
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,10,0,0">
-                        <Button x:Name="LogoutButton" Content="Cerrar sesión" Width="180" Classes="danger"/>
-                    </StackPanel>
                 </StackPanel>
 
                 <StackPanel x:Name="EstadisticasNutricionPanel"
@@ -344,27 +349,28 @@
                     <StackPanel Orientation="Vertical" Spacing="15" Margin="0,10,0,15">
                         
                         <StackPanel Orientation="Horizontal" 
-                                    HorizontalAlignment="Center">
+                                    HorizontalAlignment="Center"
+                                    Spacing="20">
 
-                            <StackPanel x:Name="UsuarioFiltroPanel" MinWidth="230" Margin="0,0,25,0">
+                            <StackPanel x:Name="UsuarioFiltroPanel" Width="220" Margin="0,0,20,0">
                                 <TextBlock Text="Usuario" Margin="0,0,0,4"/>
                                 <ComboBox x:Name="UsuariosEstadisticaComboBox"
                                           HorizontalAlignment="Stretch"/>
                             </StackPanel>
 
-                            <StackPanel MinWidth="230" Margin="0,0,25,0">   
+                            <StackPanel Width="220" Margin="0,0,20,0">   
                                 <TextBlock Text="Dieta" Margin="0,0,0,4"/>
                                 <ComboBox x:Name="DietaEstadisticaComboBox"
                                           HorizontalAlignment="Stretch"/>
                             </StackPanel>
 
-                            <StackPanel MinWidth="230" Margin="0,0,25,0">
+                            <StackPanel Width="300">
                                 <TextBlock Text="Fecha inicio" Margin="0,0,0,4"/>
                                 <DatePicker x:Name="FechaInicioEstadisticaDatePicker" 
                                             HorizontalAlignment="Stretch"/>
                             </StackPanel>
 
-                            <StackPanel MinWidth="230">
+                            <StackPanel Width="300">
                                 <TextBlock Text="Fecha fin" Margin="0,0,0,4"/>
                                 <DatePicker x:Name="FechaFinEstadisticaDatePicker" 
                                             HorizontalAlignment="Stretch"/>
@@ -458,16 +464,6 @@
 
                         </Grid>
                     </Border>
-
-                    <StackPanel Orientation="Horizontal"
-                                HorizontalAlignment="Center"
-                                Margin="0,10,0,0">
-                        <Button x:Name="LogoutButtonEstadisticas"
-                                Content="Cerrar sesión"
-                                Width="180"
-                                Classes="danger"/>
-                    </StackPanel>
-
                 </StackPanel>
 
             </StackPanel>

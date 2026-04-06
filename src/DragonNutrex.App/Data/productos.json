@@ -798,5 +798,13 @@
     "Proteinas": 12,
     "Carbohidratos": 16,
     "Grasas": 23
+  },
+  {
+    "Id": "7f654916-5353-4f64-aa66-27f238d6a24b",
+    "Nombre": "Ensure",
+    "Calorias": 150,
+    "Proteinas": 150,
+    "Carbohidratos": 0,
+    "Grasas": 0
   }
 ]
