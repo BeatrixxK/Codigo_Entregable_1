@@ -63,11 +63,11 @@
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="CornerRadius" Value="4"/>
         </Style>
-
+        
         <Style Selector="DateTimePickerPanel > ListBoxItem">
             <Setter Property="Foreground" Value="#1F5E2E"/>
         </Style>
-
+        
         <Style Selector="DateTimePickerPanel > ListBoxItem:pointerover /template/ ContentPresenter#PART_ContentPresenter">
             <Setter Property="Background" Value="#CBEAD1"/>
             <Setter Property="Foreground" Value="#1F5E2E"/>
@@ -76,22 +76,6 @@
         <Style Selector="DateTimePickerPanel > ListBoxItem:selected /template/ ContentPresenter#PART_ContentPresenter">
             <Setter Property="Background" Value="#2E9E44"/>
             <Setter Property="Foreground" Value="White"/>
-        </Style>
-        
-        <Style Selector="DatePickerPresenter Button">
-            <Setter Property="Background" Value="#2E9E44"/>
-            <Setter Property="Foreground" Value="White"/>
-        </Style>
-        
-        <Style Selector="DatePickerPresenter Button:pointerover">
-            <Setter Property="Background" Value="#1F5E2E"/>
-        </Style>
-
-        <Style Selector="PopupRoot > Border">
-            <Setter Property="Background" Value="#EAF6EC"/>
-            <Setter Property="BorderBrush" Value="#2E9E44"/>
-            <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="CornerRadius" Value="4"/>
         </Style>
 
         <Style Selector="ComboBoxItem">
@@ -103,7 +87,7 @@
             <Setter Property="Background" Value="#CBEAD1"/>
             <Setter Property="Foreground" Value="#1F5E2E"/>
         </Style>
-
+        
         <Style Selector="ComboBoxItem:selected /template/ ContentPresenter#PART_ContentPresenter">
             <Setter Property="Background" Value="#2E9E44"/>
             <Setter Property="Foreground" Value="White"/>
@@ -116,7 +100,7 @@
             <Setter Property="Foreground" Value="White"/>
             <Setter Property="Padding" Value="5,0"/>
         </Style>
-
+        
         <Style Selector="Button:pointerover">
             <Setter Property="Background" Value="#EAEAEA"/>
             <Setter Property="Foreground" Value="#1F5E2E"/>
@@ -126,7 +110,7 @@
             <Setter Property="Background" Value="#D32F2F"/>
             <Setter Property="Foreground" Value="White"/>
         </Style>
-
+        
         <Style Selector="Button.danger:pointerover">
             <Setter Property="Background" Value="#FDEAEA"/>
             <Setter Property="Foreground" Value="#B71C1C"/>
@@ -136,7 +120,7 @@
             <Setter Property="Background" Value="#2D6CDF"/>
             <Setter Property="Foreground" Value="White"/>
         </Style>
-
+        
         <Style Selector="DataGridColumnHeader">
             <Setter Property="Background" Value="#2E9E44"/>
             <Setter Property="Foreground" Value="White"/>
@@ -144,7 +128,7 @@
             <Setter Property="BorderBrush" Value="#D0D0D0"/>
             <Setter Property="BorderThickness" Value="1"/>
         </Style>
-
+        
         <Style Selector="DataGridCell">
             <Setter Property="BorderBrush" Value="#D0D0D0"/>
             <Setter Property="BorderThickness" Value="1"/>
@@ -153,12 +137,14 @@
     </Window.Styles>
 
     <ScrollViewer VerticalScrollBarVisibility="Auto">
+        
         <Grid Margin="10"
               RowDefinitions="Auto,*">
 
             <Grid Grid.Row="0"
                   Height="300"
                   Margin="0,0,0,0">
+                
                 <Image Source="avares://DragonNutrex.UI/Images/logosecundario.png"
                        Width="600"
                        Height="400"
@@ -188,7 +174,7 @@
                         Width="980"
                         HorizontalAlignment="Center">
                     <StackPanel Spacing="4">
-
+                        
                         <TextBlock Text="Seleccione un módulo para agregar, visualizar, editar o eliminar datos y realizar cálculos."
                                    FontSize="24"
                                    Foreground="#1F5E2E"
@@ -200,7 +186,6 @@
                                    FontSize="14"
                                    Foreground="#1F5E2E"
                                    TextWrapping="Wrap"/>
-
                     </StackPanel>
                 </Border>
 
@@ -231,6 +216,7 @@
 
                 <StackPanel x:Name="UsuariosPanel" Spacing="10" HorizontalAlignment="Center" Width="980">
                     <TextBlock Text="Gestión de Usuarios" FontSize="24" FontWeight="Bold"/>
+                    
                     <Grid ColumnDefinitions="485,485" RowDefinitions="Auto,Auto,Auto">
                         <TextBox x:Name="NombreTextBox" Grid.Row="0" Grid.Column="0" Margin="0,0,10,10" Watermark="Nombre"/>
                         <TextBox x:Name="PesoTextBox" Grid.Row="0" Grid.Column="1" Margin="0,0,0,10" Watermark="Peso"/>
@@ -239,11 +225,13 @@
                         <ComboBox x:Name="ObjetivoComboBox" Grid.Row="2" Grid.Column="0" Margin="0,0,10,10" HorizontalAlignment="Stretch"/>
                         <ComboBox x:Name="TipoDietaComboBox" Grid.Row="2" Grid.Column="1" Margin="0,0,0,10" HorizontalAlignment="Stretch"/>
                     </Grid>
+                    
                     <StackPanel Orientation="Horizontal" Spacing="10">
                         <Button x:Name="GuardarButton" Content="Guardar" Width="140"/>
                         <Button x:Name="EliminarButton" Content="Eliminar seleccionado" Width="180"/>
                         <Button x:Name="LimpiarButton" Content="Limpiar" Width="120"/>
                     </StackPanel>
+                    
                     <Border BorderThickness="2" BorderBrush="#BDBDBD" CornerRadius="4">
                         <controls:DataGrid x:Name="UsuariosDataGrid" Height="420" Width="980" GridLinesVisibility="All" AutoGenerateColumns="False" IsReadOnly="True" HorizontalAlignment="Center">
                             <controls:DataGrid.Columns>
@@ -260,6 +248,7 @@
 
                 <StackPanel x:Name="ProductosPanel" IsVisible="False" Spacing="10">
                     <TextBlock Text="Gestión de Productos" FontSize="24" FontWeight="Bold"/>
+                    
                     <Grid ColumnDefinitions="485,485" RowDefinitions="Auto,Auto,Auto">
                         <TextBox x:Name="ProductoNombreTextBox" Grid.Row="0" Grid.Column="0" Margin="0,0,10,10" Watermark="Nombre"/>
                         <TextBox x:Name="CaloriasTextBox" Grid.Row="0" Grid.Column="1" Margin="0,0,0,10" Watermark="Calorías"/>
@@ -267,11 +256,13 @@
                         <TextBox x:Name="CarbohidratosTextBox" Grid.Row="1" Grid.Column="1" Margin="0,0,0,10" Watermark="Carbohidratos"/>
                         <TextBox x:Name="GrasasTextBox" Grid.Row="2" Grid.Column="0" Margin="0,0,10,10" Watermark="Grasas"/>
                     </Grid>
+                    
                     <StackPanel Orientation="Horizontal" Spacing="10">
                         <Button x:Name="GuardarProductoButton" Content="Guardar Producto" Width="160"/>
                         <Button x:Name="EliminarProductoButton" Content="Eliminar seleccionado" Width="180"/>
                         <Button x:Name="LimpiarProductoButton" Content="Limpiar" Width="120"/>
                     </StackPanel>
+                    
                     <Border BorderThickness="2" BorderBrush="#BDBDBD" CornerRadius="4">
                         <controls:DataGrid x:Name="ProductosDataGrid" Height="420" Width="980" GridLinesVisibility="All" AutoGenerateColumns="False" IsReadOnly="True" HorizontalAlignment="Center">
                             <controls:DataGrid.Columns>
@@ -287,20 +278,24 @@
 
                 <StackPanel x:Name="MenusPanel" IsVisible="False" Spacing="10">
                     <TextBlock Text="Gestión de Menús" FontSize="24" FontWeight="Bold"/>
+                    
                     <Grid ColumnDefinitions="*,*,180" RowDefinitions="Auto,Auto" Margin="0,0,0,10">
                         <ComboBox x:Name="UsuariosMenuComboBox" Grid.Row="0" Grid.Column="0" Margin="0,0,10,10"/>
                         <DatePicker x:Name="FechaMenuDatePicker" Grid.Row="0" Grid.Column="1" Margin="0,0,10,10" HorizontalAlignment="Stretch"/>
                         <Button x:Name="NuevoMenuButton" Grid.Row="0" Grid.Column="2" Content="Nuevo Menú" Margin="0,0,0,10" HorizontalAlignment="Stretch"/>
+                        
                         <ComboBox x:Name="ProductosMenuComboBox" Grid.Row="1" Grid.Column="0" Margin="0,0,10,10"/>
                         <TextBox x:Name="CantidadProductoTextBox" Grid.Row="1" Grid.Column="1" Margin="0,0,10,10" Watermark="Cantidad"/>
                         <Button x:Name="AgregarProductoMenuButton" Grid.Row="1" Grid.Column="2" Content="Agregar Producto" Margin="0,0,0,10" HorizontalAlignment="Stretch"/>
                     </Grid>
+                    
                     <StackPanel Orientation="Horizontal" Spacing="20">
                         <TextBlock x:Name="TotalCaloriasTextBlock" Text="Calorías: 0" FontSize="16"/>
                         <TextBlock x:Name="TotalProteinasTextBlock" Text="Proteínas: 0" FontSize="16"/>
                         <TextBlock x:Name="TotalCarbohidratosTextBlock" Text="Carbohidratos: 0" FontSize="16"/>
                         <TextBlock x:Name="TotalGrasasTextBlock" Text="Grasas: 0" FontSize="16"/>
                     </StackPanel>
+                    
                     <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Center" Margin="0,10">
                         <Button x:Name="GuardarMenuButton" Content="Guardar Menú" Width="140"/>
                         <Button x:Name="ActualizarRegistroMenuButton" Content="Actualizar Cantidad" Width="170"/>
@@ -308,6 +303,7 @@
                         <Button x:Name="EliminarMenuButton" Content="Eliminar Menú" Width="140"/>
                         <Button x:Name="LimpiarMenuButton" Content="Limpiar" Width="120"/>
                     </StackPanel>
+                    
                     <Border BorderThickness="2" BorderBrush="#BDBDBD" CornerRadius="4">
                         <controls:DataGrid x:Name="RegistrosMenuDataGrid" Height="180" Width="980" GridLinesVisibility="All" AutoGenerateColumns="False" IsReadOnly="True" HorizontalAlignment="Center">
                             <controls:DataGrid.Columns>
@@ -320,10 +316,12 @@
                             </controls:DataGrid.Columns>
                         </controls:DataGrid>
                     </Border>
+                    
                     <StackPanel>
                         <TextBlock Text="Menús guardados" FontSize="20" FontWeight="Bold"/>
                         <TextBlock Text="Para editar, seleccione un menú y luego use los botones para agregar, limpiar o eliminar registros y haga clic en Guardar Menú" FontSize="14" Foreground="#1F5E2E" TextWrapping="Wrap"/>
                     </StackPanel>
+                    
                     <Border BorderThickness="2" BorderBrush="#BDBDBD" CornerRadius="4">
                         <controls:DataGrid x:Name="MenusDataGrid" Height="180" Width="980" GridLinesVisibility="All" AutoGenerateColumns="False" IsReadOnly="True" HorizontalAlignment="Center">
                             <controls:DataGrid.Columns>
@@ -349,31 +347,26 @@
                     <StackPanel Orientation="Vertical" Spacing="15" Margin="0,10,0,15">
                         
                         <StackPanel Orientation="Horizontal" 
-                                    HorizontalAlignment="Center"
-                                    Spacing="20">
+                                    HorizontalAlignment="Center">
 
-                            <StackPanel x:Name="UsuarioFiltroPanel" Width="220" Margin="0,0,20,0">
+                            <StackPanel x:Name="UsuarioFiltroPanel" Width="160" Margin="0,0,15,0">
                                 <TextBlock Text="Usuario" Margin="0,0,0,4"/>
-                                <ComboBox x:Name="UsuariosEstadisticaComboBox"
-                                          HorizontalAlignment="Stretch"/>
+                                <ComboBox x:Name="UsuariosEstadisticaComboBox" HorizontalAlignment="Stretch"/>
                             </StackPanel>
 
-                            <StackPanel Width="220" Margin="0,0,20,0">   
+                            <StackPanel Width="160" Margin="0,0,25,0">   
                                 <TextBlock Text="Dieta" Margin="0,0,0,4"/>
-                                <ComboBox x:Name="DietaEstadisticaComboBox"
-                                          HorizontalAlignment="Stretch"/>
+                                <ComboBox x:Name="DietaEstadisticaComboBox" HorizontalAlignment="Stretch"/>
                             </StackPanel>
 
-                            <StackPanel Width="300">
+                            <StackPanel Width="280" Margin="0,0,30,0">
                                 <TextBlock Text="Fecha inicio" Margin="0,0,0,4"/>
-                                <DatePicker x:Name="FechaInicioEstadisticaDatePicker" 
-                                            HorizontalAlignment="Stretch"/>
+                                <DatePicker x:Name="FechaInicioEstadisticaDatePicker" HorizontalAlignment="Stretch"/>
                             </StackPanel>
 
-                            <StackPanel Width="300">
+                            <StackPanel Width="280">
                                 <TextBlock Text="Fecha fin" Margin="0,0,0,4"/>
-                                <DatePicker x:Name="FechaFinEstadisticaDatePicker" 
-                                            HorizontalAlignment="Stretch"/>
+                                <DatePicker x:Name="FechaFinEstadisticaDatePicker" HorizontalAlignment="Stretch"/>
                             </StackPanel>
 
                         </StackPanel>
