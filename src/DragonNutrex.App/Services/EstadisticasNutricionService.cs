@@ -1,13 +1,32 @@
+// =====================================================
+// IMPORTACIONES
+// =====================================================
+
+// Interfaz del repositorio genérico
 using DragonNutrex.App.Interfaces;
+
+// Modelos de la aplicación
 using DragonNutrex.App.Models;
 
 namespace DragonNutrex.App.Services;
 
+// =====================================================
+// CLASE ESTADISTICAS NUTRICION SERVICE
+// =====================================================
+// Maneja la lógica de negocio para estadísticas nutricionales
+// Calcula resúmenes por rango de fechas y por tipo de dieta
 public class EstadisticasNutricionService
 {
+    // Repositorio de usuarios
     private readonly IRepository<Usuario> _usuarioRepository;
+
+    // Repositorio de menús
     private readonly IRepository<Menu> _menuRepository;
 
+    // =====================================================
+    // CONSTRUCTOR
+    // =====================================================
+    // Recibe los repositorios necesarios para consultar datos
     public EstadisticasNutricionService(
         IRepository<Usuario> usuarioRepository,
         IRepository<Menu> menuRepository)
@@ -16,6 +35,10 @@ public class EstadisticasNutricionService
         _menuRepository = menuRepository;
     }
 
+    // =====================================================
+    // MÉTODO OBTENER DIETAS DISPONIBLES
+    // =====================================================
+    // Devuelve la lista de dietas con sus metas nutricionales base
     public List<TipoDietaMeta> ObtenerDietasDisponibles()
     {
         return new List<TipoDietaMeta>
@@ -63,25 +86,35 @@ public class EstadisticasNutricionService
         };
     }
 
+    // =====================================================
+    // MÉTODO OBTENER RESUMEN
+    // =====================================================
+    // Genera un resumen estadístico nutricional para un usuario
+    // en un rango de fechas y según un tipo de dieta
     public ResumenEstadisticaNutricional ObtenerResumen(
         Guid usuarioId,
         DateTime fechaInicio,
         DateTime fechaFin,
         string tipoDieta)
     {
+        // Valida que la fecha inicial no sea mayor a la final
         if (fechaInicio.Date > fechaFin.Date)
             throw new Exception("La fecha inicio no puede ser mayor que la fecha fin.");
 
+        // Busca el usuario por ID
         var usuario = _usuarioRepository.GetById(usuarioId);
         if (usuario == null)
             throw new Exception("Usuario no encontrado.");
 
+        // Busca la dieta seleccionada dentro de las disponibles
         var dieta = ObtenerDietasDisponibles()
             .FirstOrDefault(d => d.Nombre.Equals(tipoDieta, StringComparison.OrdinalIgnoreCase));
 
+        // Si no existe la dieta, lanza error
         if (dieta == null)
             throw new Exception("Tipo de dieta no válido.");
 
+        // Obtiene todos los menús del usuario dentro del rango de fechas
         var menus = _menuRepository.GetAll()
             .Where(m => m.UsuarioId == usuarioId
                      && m.Fecha.Date >= fechaInicio.Date
@@ -89,32 +122,50 @@ public class EstadisticasNutricionService
             .OrderBy(m => m.Fecha)
             .ToList();
 
+        // Si no hay menús en el rango, lanza error
         if (menus.Count == 0)
             throw new Exception("No hay registros de menús para ese usuario en ese rango de fechas.");
 
+        // Cantidad total de menús encontrados
         var cantidadMenus = menus.Count;
 
+        // =====================================================
+        // CÁLCULO DE TOTALES CONSUMIDOS
+        // =====================================================
         var caloriasTotales = menus.Sum(m => m.TotalCalorias);
         var proteinasTotales = menus.Sum(m => m.TotalProteinas);
         var carbohidratosTotales = menus.Sum(m => m.TotalCarbohidratos);
         var grasasTotales = menus.Sum(m => m.TotalGrasas);
 
+        // =====================================================
+        // CÁLCULO DE PROMEDIOS
+        // =====================================================
         var caloriasPromedio = Math.Round(caloriasTotales / cantidadMenus, 2);
         var proteinasPromedio = Math.Round(proteinasTotales / cantidadMenus, 2);
         var carbohidratosPromedio = Math.Round(carbohidratosTotales / cantidadMenus, 2);
         var grasasPromedio = Math.Round(grasasTotales / cantidadMenus, 2);
 
+        // =====================================================
+        // CÁLCULO DE IMC
+        // =====================================================
         var imc = CalcularImc(usuario);
         var categoriaImc = ObtenerCategoriaImc(imc);
 
+        // =====================================================
+        // CÁLCULO DE OBJETIVOS DE MACRONUTRIENTES
+        // =====================================================
         var (proteinasObjetivo, carbohidratosObjetivo, grasasObjetivo) =
             CalcularDistribucionMacros(usuario.Peso, dieta.CaloriasObjetivo, dieta.Nombre);
 
+        // =====================================================
+        // CÁLCULO DE DIFERENCIAS ENTRE PROMEDIO Y OBJETIVO
+        // =====================================================
         var diferenciaCalorias = Math.Round(caloriasPromedio - dieta.CaloriasObjetivo, 2);
         var diferenciaProteinas = Math.Round(proteinasPromedio - proteinasObjetivo, 2);
         var diferenciaCarbohidratos = Math.Round(carbohidratosPromedio - carbohidratosObjetivo, 2);
         var diferenciaGrasas = Math.Round(grasasPromedio - grasasObjetivo, 2);
 
+        // Devuelve el resumen completo
         return new ResumenEstadisticaNutricional
         {
             NombreUsuario = usuario.Nombre,
@@ -151,14 +202,24 @@ public class EstadisticasNutricionService
         };
     }
 
+    // =====================================================
+    // MÉTODO CALCULAR IMC
+    // =====================================================
+    // Calcula el índice de masa corporal del usuario
     private decimal CalcularImc(Usuario usuario)
     {
+        // Si la altura no es válida, retorna 0
         if (usuario.Altura <= 0)
             return 0;
 
+        // Fórmula IMC = peso / altura²
         return Math.Round(usuario.Peso / (usuario.Altura * usuario.Altura), 2);
     }
 
+    // =====================================================
+    // MÉTODO OBTENER CATEGORÍA IMC
+    // =====================================================
+    // Clasifica el IMC del usuario
     private string ObtenerCategoriaImc(decimal imc)
     {
         if (imc < 18.5m) return "Bajo peso";
@@ -167,6 +228,11 @@ public class EstadisticasNutricionService
         return "Obesidad";
     }
 
+    // =====================================================
+    // MÉTODO CALCULAR DISTRIBUCIÓN DE MACROS
+    // =====================================================
+    // Calcula proteínas, carbohidratos y grasas objetivo
+    // según el tipo de dieta y el peso del usuario
     private (decimal proteinas, decimal carbohidratos, decimal grasas) CalcularDistribucionMacros(
         decimal peso,
         decimal caloriasObjetivo,
@@ -176,6 +242,7 @@ public class EstadisticasNutricionService
         decimal grasas;
         decimal carbohidratos;
 
+        // Ajusta la distribución según la dieta
         switch (tipoDieta.ToLowerInvariant())
         {
             case "keto":
@@ -204,9 +271,11 @@ public class EstadisticasNutricionService
                 break;
         }
 
+        // Evita carbohidratos negativos
         if (carbohidratos < 0)
             carbohidratos = 0;
 
+        // Retorna los valores redondeados
         return (
             Math.Round(proteinas, 2),
             Math.Round(carbohidratos, 2),
@@ -214,6 +283,10 @@ public class EstadisticasNutricionService
         );
     }
 
+    // =====================================================
+    // MÉTODO OBTENER ESTADO CALÓRICO
+    // =====================================================
+    // Compara el promedio consumido con el objetivo de calorías
     private string ObtenerEstadoCalorico(decimal caloriasPromedio, decimal caloriasObjetivo)
     {
         if (caloriasPromedio < caloriasObjetivo * 0.9m)
@@ -225,6 +298,10 @@ public class EstadisticasNutricionService
         return "Dentro del rango recomendado";
     }
 
+    // =====================================================
+    // MÉTODO OBTENER RECOMENDACIÓN
+    // =====================================================
+    // Genera una recomendación según el promedio calórico
     private string ObtenerRecomendacion(decimal caloriasPromedio, decimal caloriasObjetivo, string tipoDieta)
     {
         if (caloriasPromedio < caloriasObjetivo * 0.9m)

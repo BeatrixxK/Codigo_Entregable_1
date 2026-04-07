@@ -1,11 +1,25 @@
+<!-- ===================================================== -->
+<!-- CONFIGURACIÓN GLOBAL DE LA APLICACIÓN -->
+<!-- Define estilos, temas y apariencia general -->
+<!-- ===================================================== -->
+
 <Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="DragonNutrex.UI.App"
-             RequestedThemeVariant="Default">
+             RequestedThemeVariant="Default"> <!-- Tema por defecto (claro/oscuro según sistema) -->
 
+  <!-- ===================================================== -->
+  <!-- ESTILOS GLOBALES -->
+  <!-- Se aplican a toda la aplicación -->
+  <!-- ===================================================== -->
   <Application.Styles>
+    
+    <!-- Tema visual Fluent (estilo moderno de Microsoft) -->
     <FluentTheme />
+    
+    <!-- Incluye estilos para el control DataGrid -->
     <StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Fluent.xaml"/>
+  
   </Application.Styles>
 
 </Application>

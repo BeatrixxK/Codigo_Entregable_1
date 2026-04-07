@@ -1,0 +1,87 @@
+Sprint 5
+UI Avalonia → LoginWindow / MainWindow / CambiarPasswordWindow
+            → UsuarioController + ProductoController + MenuController
+            → NutricionController + EstadisticasNutricionController
+            → UsuarioService + ProductoService + MenuService
+            → NutricionService + EstadisticasNutricionService
+            → UsuarioRepository + ProductoRepository + MenuRepository
+            → usuarios.json + productos.json + menus.json
+
+Sprint 5 incorpora:
+- autenticación de usuarios y administrador
+- manejo de sesión con AuthSession
+- recuperación / cambio de contraseña
+- gestión CRUD de usuarios
+- gestión CRUD de productos
+- gestión CRUD de menús
+- resumen nutricional diario
+- estadísticas nutricionales por rango de fechas
+- persistencia en archivos JSON con Repository Pattern
+- arquitectura por capas: UI → Controller → Service → Repository
+
+
+            Codigo_Entregable_1
+│
+├── docs
+├── entregables
+├── src
+│   ├── DragonNutrex.App
+│   │   ├── Controllers
+│   │   │   ├── UsuarioController.cs
+│   │   │   ├── ProductoController.cs
+│   │   │   ├── MenuController.cs
+│   │   │   ├── NutricionController.cs
+│   │   │   └── EstadisticasNutricionController.cs
+│   │   │
+│   │   ├── Data
+│   │   │   ├── usuarios.json
+│   │   │   ├── productos.json
+│   │   │   └── menus.json
+│   │   │
+│   │   ├── Interfaces
+│   │   │   └── IRepository.cs
+│   │   │
+│   │   ├── Models
+│   │   │   ├── Usuario.cs
+│   │   │   ├── Producto.cs
+│   │   │   ├── Menu.cs
+│   │   │   ├── RegistroComida.cs
+│   │   │   ├── TipoDietaMeta.cs
+│   │   │   ├── ResumenNutricional.cs
+│   │   │   └── ResumenEstadisticaNutricional.cs
+│   │   │
+│   │   ├── Repositories
+│   │   │   ├── UsuarioRepository.cs
+│   │   │   ├── ProductoRepository.cs
+│   │   │   └── MenuRepository.cs
+│   │   │
+│   │   ├── Services
+│   │   │   ├── UsuarioService.cs
+│   │   │   ├── ProductoService.cs
+│   │   │   ├── MenuService.cs
+│   │   │   ├── NutricionService.cs
+│   │   │   └── EstadisticasNutricionService.cs
+│   │   │
+│   │   ├── Utils
+│   │   │   ├── FileStorage.cs
+│   │   │   └── DataSeeder.cs
+│   │   │
+│   │   └── DragonNutrex.App.csproj
+│   │
+│   ├── DragonNutrex.UI
+│   │   ├── App.axaml
+│   │   ├── App.axaml.cs
+│   │   ├── Program.cs
+│   │   ├── MainWindow.axaml
+│   │   ├── MainWindow.axaml.cs
+│   │   ├── LoginWindow.axaml
+│   │   ├── LoginWindow.axaml.cs
+│   │   ├── CambiarPasswordWindow.axaml
+│   │   ├── CambiarPasswordWindow.axaml.cs
+│   │   ├── AuthSession.cs
+│   │   ├── app.manifest
+│   │   └── DragonNutrex.UI.csproj
+│   │
+│   └── DragonNutrex.slnx
+│
+└── .gitignore

@@ -1,13 +1,5 @@
 [
   {
-    "Id": "c0151248-c5ef-4da3-840f-da3ada9be8f4",
-    "Nombre": "Avena 1",
-    "Calorias": 472,
-    "Proteinas": 16,
-    "Carbohidratos": 63,
-    "Grasas": 20
-  },
-  {
     "Id": "00d1981d-1337-4db0-9883-ea924ac1070f",
     "Nombre": "Aguacate 2",
     "Calorias": 423,
@@ -248,14 +240,6 @@
     "Grasas": 13
   },
   {
-    "Id": "9a7dfe5e-c96b-48a2-b680-61aea35c9fa5",
-    "Nombre": "Banano 32",
-    "Calorias": 120,
-    "Proteinas": 28,
-    "Carbohidratos": 44,
-    "Grasas": 20
-  },
-  {
     "Id": "3edad30e-5281-469d-8bdf-06ef35e91d31",
     "Nombre": "At\u00FAn 33",
     "Calorias": 221,
@@ -382,14 +366,6 @@
     "Proteinas": 9,
     "Carbohidratos": 27,
     "Grasas": 8
-  },
-  {
-    "Id": "56f68939-8349-4794-bfa9-c5bc44e7bb7e",
-    "Nombre": "Huevo 49",
-    "Calorias": 325,
-    "Proteinas": 4,
-    "Carbohidratos": 53,
-    "Grasas": 2
   },
   {
     "Id": "ab6a4194-a718-487c-9188-6286f820fb00",
@@ -806,5 +782,29 @@
     "Proteinas": 150,
     "Carbohidratos": 0,
     "Grasas": 0
+  },
+  {
+    "Id": "72b0efca-a9c8-4f49-bf80-187d064b9aac",
+    "Nombre": "Cerdo",
+    "Calorias": 1500,
+    "Proteinas": 100,
+    "Carbohidratos": 150,
+    "Grasas": 200
+  },
+  {
+    "Id": "74b08785-f989-4d71-929f-5f7d5f24737c",
+    "Nombre": "Galleta Soda",
+    "Calorias": 50,
+    "Proteinas": 0,
+    "Carbohidratos": 10,
+    "Grasas": 0
+  },
+  {
+    "Id": "2a3572a9-8a47-4a2d-b080-5443e2d7807c",
+    "Nombre": "Papas fritas",
+    "Calorias": 500,
+    "Proteinas": 10,
+    "Carbohidratos": 500,
+    "Grasas": 10000
   }
 ]

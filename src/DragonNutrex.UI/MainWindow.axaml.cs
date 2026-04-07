@@ -1,3 +1,8 @@
+// =====================================================
+// LIBRERÍAS E IMPORTACIONES
+// =====================================================
+// Importación de componentes del sistema, elementos visuales de Avalonia 
+// y las capas de lógica/datos de DragonNutrex.
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,8 +18,17 @@ using MenuModel = DragonNutrex.App.Models.Menu;
 
 namespace DragonNutrex.UI;
 
+// =====================================================
+// CLASE PRINCIPAL DE LA VENTANA (MAIN)
+// =====================================================
+// Maneja toda la lógica visual de la ventana principal y sus distintos paneles/módulos.
 public partial class MainWindow : Window
 {
+    // =====================================================
+    // CONTROLADORES Y ESTADO DE LA VISTA
+    // =====================================================
+    // Dependencias para acceder a la base de datos y variables temporales 
+    // para saber qué elementos tiene seleccionados el usuario en la interfaz.
     private readonly UsuarioController _usuarioController;
     private readonly ProductoController _productoController;
     private readonly MenuController _menuController;
@@ -25,6 +39,11 @@ public partial class MainWindow : Window
     private MenuModel? _menuActual;
     private RegistroComida? _registroSeleccionado;
 
+    // =====================================================
+    // CONSTRUCTOR PRINCIPAL
+    // =====================================================
+    // Inicializa componentes, inyecta dependencias, enlaza los clics de botones 
+    // a sus funciones y carga los datos iniciales al abrir la app.
     public MainWindow()
     {
         InitializeComponent();
@@ -32,6 +51,7 @@ public partial class MainWindow : Window
         CargarObjetivosEnCombo();
         CargarActividadesEnCombo();
 
+        // Inicialización de controladores
         _usuarioController = new UsuarioController(new UsuarioService(new UsuarioRepository()));
         _productoController = new ProductoController(new ProductoService(new ProductoRepository()));
         _menuController = new MenuController(
@@ -48,6 +68,7 @@ public partial class MainWindow : Window
             )
         );
 
+        // Enlace de eventos (Click de botones y cambio de selección en tablas)
         GuardarButton.Click += GuardarUsuario;
         EliminarButton.Click += EliminarUsuario;
         LimpiarButton.Click += (_, _) => LimpiarUsuario();
@@ -61,6 +82,7 @@ public partial class MainWindow : Window
         RegistrosMenuDataGrid.SelectionChanged += RegistrosMenuDataGrid_SelectionChanged;
         MenusDataGrid.SelectionChanged += MenusDataGrid_SelectionChanged;
 
+        // Botones de navegación del menú lateral
         UsuariosModuloButton.Click += (_, _) => MostrarSoloPanelUsuarios();
         ProductosModuloButton.Click += (_, _) => MostrarSoloPanelProductos();
 
@@ -99,11 +121,19 @@ public partial class MainWindow : Window
         {
             CambiarModoEdicionMenu(false); 
             ActualizarPanelInfoUsuario();
+
+            // =====================================================
+            // CAMBIO: RECARGAR TABLA AL CAMBIAR DE USUARIO
+            // =====================================================
+            // Obliga a la tabla inferior a actualizarse instantáneamente
+            // para mostrar solo los menús del nuevo usuario seleccionado.
+            CargarMenus(); 
         };
 
         CalcularEstadisticaNutricionButton.Click += CalcularEstadisticasNutricion;
         UsuariosEstadisticaComboBox.SelectionChanged += UsuariosEstadisticaComboBox_SelectionChanged;
 
+        // Ejecución de tareas iniciales de carga y permisos
         CargarDietasEnComboUsuarios();
         AplicarPermisosPorSesion();
         AplicarPermisosEstadisticas();
@@ -122,6 +152,12 @@ public partial class MainWindow : Window
         LimpiarMenu();
         LimpiarResumenEstadisticaNutricion();
     }
+
+    // =====================================================
+    // AUTENTICACIÓN Y SESIÓN
+    // =====================================================
+    // Cierra sesión o restringe qué botones y paneles se ven dependiendo
+    // de si entró un Administrador o un Usuario normal.
 
     private void Logout(object? sender, RoutedEventArgs e)
     {
@@ -177,10 +213,20 @@ public partial class MainWindow : Window
             SesionTextBlock.Text = $"Sesión: {AuthSession.NombreUsuario}";
     }
 
+    // =====================================================
+    // NAVEGACIÓN ENTRE MÓDULOS
+    // =====================================================
+    // Muestra un solo panel a la vez (Usuarios, Productos, Menús, etc.)
+
     private void MostrarSoloPanelUsuarios() { if (!AuthSession.EsAdmin) return; UsuariosPanel.IsVisible = true; ProductosPanel.IsVisible = false; MenusPanel.IsVisible = false; EstadisticasNutricionPanel.IsVisible = false; }
     private void MostrarSoloPanelProductos() { if (!AuthSession.EsAdmin) return; UsuariosPanel.IsVisible = false; ProductosPanel.IsVisible = true; MenusPanel.IsVisible = false; EstadisticasNutricionPanel.IsVisible = false; }
     private void MostrarSoloPanelMenus() { UsuariosPanel.IsVisible = false; ProductosPanel.IsVisible = false; MenusPanel.IsVisible = true; EstadisticasNutricionPanel.IsVisible = false; }
     private void MostrarSoloPanelEstadisticasNutricion() { UsuariosPanel.IsVisible = false; ProductosPanel.IsVisible = false; MenusPanel.IsVisible = false; EstadisticasNutricionPanel.IsVisible = true; }
+
+    // =====================================================
+    // MÓDULO: USUARIOS (CRUD)
+    // =====================================================
+    // Guardar, eliminar, cargar listas y gestionar los datos del perfil de los usuarios.
 
     private async void GuardarUsuario(object? sender, RoutedEventArgs e)
     {
@@ -274,6 +320,11 @@ public partial class MainWindow : Window
         GuardarButton.Content = "Guardar";
     }
 
+    // =====================================================
+    // MÓDULO: CONFIGURACIÓN DE LISTAS DESPLEGABLES
+    // =====================================================
+    // Llena los ComboBox (Objetivos, Dietas, Actividades) con información predefinida.
+
     private void CargarDietasEnComboUsuarios()
     {
         TipoDietaComboBox.Items.Clear();
@@ -337,6 +388,11 @@ public partial class MainWindow : Window
             { ObjetivoComboBox.SelectedItem = cItem; break; }
         }
     }
+
+    // =====================================================
+    // MÓDULO: PRODUCTOS (ALIMENTOS)
+    // =====================================================
+    // Guardar, actualizar o eliminar alimentos de la base de datos central.
 
     private async void GuardarProducto(object? sender, RoutedEventArgs e)
     {
@@ -410,6 +466,11 @@ public partial class MainWindow : Window
         ProductosDataGrid.SelectedItem = null;
         GuardarProductoButton.Content = "Guardar Producto";
     }
+
+    // =====================================================
+    // MÓDULO: GESTIÓN DE MENÚS (DIETAS DIARIAS)
+    // =====================================================
+    // Permite registrar qué alimentos come un usuario en una fecha específica y ver totales.
 
     private async void NuevoMenu(object? sender, RoutedEventArgs e)
     {
@@ -548,7 +609,20 @@ public partial class MainWindow : Window
     {
         var usuarios = _usuarioController.ObtenerUsuarios();
         var menus = _menuController.ObtenerMenus();
-        if (!AuthSession.EsAdmin) menus = menus.Where(m => m.UsuarioId == AuthSession.UsuarioId).ToList();
+
+        // =====================================================
+        // CAMBIO: FILTRO DE HISTORIAL DE MENÚS POR USUARIO
+        // =====================================================
+        // Obtenemos el ID del usuario seleccionado en el ComboBox 
+        // (si es Admin) o el ID de la sesión (si es paciente).
+        var usuarioId = ObtenerUsuarioIdSeleccionado();
+        
+        // Filtramos la lista global de menús para mostrar SOLAMENTE 
+        // los que le pertenecen a ese usuario específico.
+        if (usuarioId != Guid.Empty)
+        {
+            menus = menus.Where(m => m.UsuarioId == usuarioId).ToList();
+        }
 
         var vista = menus.Select(m =>
         {
@@ -614,6 +688,12 @@ public partial class MainWindow : Window
         if (UsuariosMenuComboBox.ItemCount > 0) UsuariosMenuComboBox.SelectedIndex = 0;
         ActualizarPanelInfoUsuario();
     }
+
+    // =====================================================
+    // EDICIÓN DE PERFIL EN PANEL DE MENÚS
+    // =====================================================
+    // Lógica para que el usuario pueda editar sus datos rápidos (peso, altura)
+    // directamente desde el creador de menús sin cambiar de pestaña.
 
     private void CambiarModoEdicionMenu(bool enEdicion)
     {
@@ -801,6 +881,12 @@ public partial class MainWindow : Window
         }
     }
 
+    // =====================================================
+    // MÓDULO: ESTADÍSTICAS Y RESUMEN NUTRICIONAL
+    // =====================================================
+    // Muestra los avances, calcula IMC, diferencias entre lo consumido vs objetivo, 
+    // y pinta de colores (Rojo/Verde) los resultados.
+
     private void CargarUsuariosEnComboEstadistica()
     {
         var usuarios = _usuarioController.ObtenerUsuarios();
@@ -833,6 +919,7 @@ public partial class MainWindow : Window
 
     private Guid ObtenerUsuarioIdEstadisticaSeleccionado() { if (!AuthSession.EsAdmin) return AuthSession.UsuarioId; if (UsuariosEstadisticaComboBox.SelectedItem is ComboBoxItem item && item.Tag is Guid id) return id; return Guid.Empty; }
     private string ObtenerDietaEstadisticaSeleccionada() { if (DietaEstadisticaComboBox.SelectedItem is ComboBoxItem item && item.Tag is string nombre) return nombre; return string.Empty; }
+    
     private void SeleccionarDietaEstadistica(string tipoDieta)
     {
         foreach (var item in DietaEstadisticaComboBox.Items)
@@ -945,6 +1032,11 @@ public partial class MainWindow : Window
         EstadisticaEstadoCaloricoTextBlock.Foreground = Brushes.White; EstadisticaDiferenciaCaloriasTextBlock.Foreground = Brushes.White; EstadisticaDiferenciaProteinasTextBlock.Foreground = Brushes.White; EstadisticaDiferenciaCarbohidratosTextBlock.Foreground = Brushes.White; EstadisticaDiferenciaGrasasTextBlock.Foreground = Brushes.White; EstadisticaImcTextBlock.Foreground = Brushes.White; EstadisticaCategoriaImcTextBlock.Foreground = Brushes.White;
     }
 
+    // =====================================================
+    // VENTANAS MODALES Y ALERTAS
+    // =====================================================
+    // Métodos para construir y mostrar ventanas emergentes de error, éxito o confirmación.
+
     private async Task MostrarMensaje(string mensaje)
     {
         var ventana = new Window { Title = "Mensaje", Width = 380, Height = 180 };
@@ -966,11 +1058,14 @@ public partial class MainWindow : Window
         return await tcs.Task;
     }
 
+    // Clase interna usada únicamente para moldear la vista en la tabla de Menús
     private class MenuVista { public Guid Id { get; set; } public string UsuarioNombre { get; set; } = ""; public DateTime Fecha { get; set; } public decimal TotalCalorias { get; set; } public decimal TotalProteinas { get; set; } public decimal TotalCarbohidratos { get; set; } public decimal TotalGrasas { get; set; } }
 
     // =====================================================
     // FORMULARIO DE CONTACTO
     // =====================================================
+    // Levanta un modal donde el usuario puede escribir un mensaje de soporte.
+    
     private async void AbrirFormularioContacto(object? sender, RoutedEventArgs e)
     {
         var ventanaContacto = new Window

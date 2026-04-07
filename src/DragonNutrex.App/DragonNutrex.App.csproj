@@ -1,7 +1,24 @@
-<Project Sdk="Microsoft.NET.Sdk">
+<!-- ===================================================== -->
+<!-- CONFIGURACIÓN DEL PROYECTO (.csproj) -->
+<!-- Define cómo se compila este proyecto -->
+<!-- ===================================================== -->
+
+<Project Sdk="Microsoft.NET.Sdk"> <!-- SDK base de .NET -->
+
+  <!-- ===================================================== -->
+  <!-- PROPIEDADES GENERALES -->
+  <!-- ===================================================== -->
   <PropertyGroup>
+    
+    <!-- Framework objetivo (.NET 10) -->
     <TargetFramework>net10.0</TargetFramework>
+    
+    <!-- Habilita using automáticos (no necesitas escribirlos manualmente) -->
     <ImplicitUsings>enable</ImplicitUsings>
+    
+    <!-- Habilita validaciones de null (evita errores en tiempo de ejecución) -->
     <Nullable>enable</Nullable>
+  
   </PropertyGroup>
+
 </Project>

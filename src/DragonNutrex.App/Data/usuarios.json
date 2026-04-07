@@ -279,8 +279,8 @@
     "Nombre": "Andrea Ramirez",
     "Peso": 75,
     "Altura": 1.70,
-    "Actividad": "Crossfit",
-    "Objetivo": "Bajar Peso",
+    "Actividad": "Sedentaria",
+    "Objetivo": "Bajar peso",
     "TipoDieta": "Alta prote\u00EDna",
     "Password": "Upi.2025",
     "Correo": ""
@@ -304,6 +304,17 @@
     "Actividad": "Sedentaria",
     "Objetivo": "Bajar peso",
     "TipoDieta": "Vegetariana",
+    "Password": "Upi.2025",
+    "Correo": ""
+  },
+  {
+    "Id": "831d5970-973c-46c5-a36b-c64a8336e15c",
+    "Nombre": "Usuario 26",
+    "Peso": 150,
+    "Altura": 150,
+    "Actividad": "Sedentaria",
+    "Objetivo": "Bajar peso",
+    "TipoDieta": "Keto",
     "Password": "Upi.2025",
     "Correo": ""
   }

@@ -19126,26 +19126,5 @@
     "TotalProteinas": 421,
     "TotalCarbohidratos": 2262,
     "TotalGrasas": 583
-  },
-  {
-    "Id": "2afaef49-1b76-4966-baec-dffb3455d860",
-    "UsuarioId": "4fb7c277-7811-488f-9218-a0e8b939db65",
-    "Fecha": "2026-04-06T00:00:00",
-    "Registros": [
-      {
-        "Id": "6e42f96d-d12b-4a06-a9b0-871add2ef18e",
-        "ProductoId": "487b5b7e-bcfe-4ddc-b5fe-4d9db0028495",
-        "NombreProducto": "Banano 17",
-        "Cantidad": 10,
-        "Calorias": 1380,
-        "Proteinas": 310,
-        "Carbohidratos": 180,
-        "Grasas": 20
-      }
-    ],
-    "TotalCalorias": 1380,
-    "TotalProteinas": 310,
-    "TotalCarbohidratos": 180,
-    "TotalGrasas": 20
   }
 ]

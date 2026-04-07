@@ -1,30 +1,84 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<!-- ===================================================== -->
+<!-- CONFIGURACIÓN DEL PROYECTO (.csproj) -->
+<!-- Define cómo se compila y qué dependencias usa la app -->
+<!-- ===================================================== -->
+
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- ===================================================== -->
+  <!-- PROPIEDADES GENERALES DEL PROYECTO -->
+  <!-- ===================================================== -->
   <PropertyGroup>
+    
+    <!-- Tipo de salida: aplicación de escritorio (sin consola visible) -->
     <OutputType>WinExe</OutputType>
+    
+    <!-- Framework objetivo (.NET 10) -->
     <TargetFramework>net10.0</TargetFramework>
+    
+    <!-- Habilita validaciones de null (mejor calidad de código) -->
     <Nullable>enable</Nullable>
+    
+    <!-- Archivo de manifiesto de la aplicación -->
     <ApplicationManifest>app.manifest</ApplicationManifest>
+    
+    <!-- Configuración de bindings en Avalonia -->
+    <!-- false = bindings normales (no compilados) -->
     <AvaloniaUseCompiledBindingsByDefault>false</AvaloniaUseCompiledBindingsByDefault>
+  
   </PropertyGroup>
 
+  <!-- ===================================================== -->
+  <!-- DEPENDENCIAS (LIBRERÍAS EXTERNAS) -->
+  <!-- ===================================================== -->
   <ItemGroup>
+    
+    <!-- Framework principal de UI -->
     <PackageReference Include="Avalonia" Version="11.3.12" />
+    
+    <!-- Soporte para aplicaciones de escritorio -->
     <PackageReference Include="Avalonia.Desktop" Version="11.3.12" />
+    
+    <!-- Tema visual Fluent (estilo moderno) -->
     <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.12" />
+    
+    <!-- Fuente tipográfica Inter -->
     <PackageReference Include="Avalonia.Fonts.Inter" Version="11.3.12" />
+    
+    <!-- Control DataGrid (tablas de datos) -->
     <PackageReference Include="Avalonia.Controls.DataGrid" Version="11.3.12" />
+    
+    <!-- Herramientas de diagnóstico (solo en Debug) -->
     <PackageReference Include="Avalonia.Diagnostics" Version="11.3.12">
+      
+      <!-- En producción NO se incluye -->
       <IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
+      
+      <!-- No se distribuye en build final -->
       <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
+    
     </PackageReference>
+  
   </ItemGroup>
 
+  <!-- ===================================================== -->
+  <!-- REFERENCIAS A OTROS PROYECTOS -->
+  <!-- ===================================================== -->
   <ItemGroup>
+    
+    <!-- Conexión con la capa lógica (App) -->
     <ProjectReference Include="..\DragonNutrex.App\DragonNutrex.App.csproj" />
+  
   </ItemGroup>
 
+  <!-- ===================================================== -->
+  <!-- RECURSOS (IMÁGENES, ARCHIVOS, ETC) -->
+  <!-- ===================================================== -->
   <ItemGroup>
+    
+    <!-- Incluye todas las imágenes de la carpeta Images -->
     <AvaloniaResource Include="Images/**" />
+  
   </ItemGroup>
 
 </Project>

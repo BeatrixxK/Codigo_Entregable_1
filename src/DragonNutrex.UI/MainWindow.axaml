@@ -1,3 +1,11 @@
+<!-- ===================================================== -->
+<!-- VENTANA PRINCIPAL -->
+<!-- ===================================================== -->
+<!-- Aquí se define la ventana principal de la aplicación, -->
+<!-- incluyendo namespaces, tamaño, título, fondo y tema. -->
+<!-- ===================================================== -->
+
+
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -11,14 +19,28 @@
         Background="White"
         RequestedThemeVariant="Light"> 
 
+    <!-- ===================================================== -->
+    <!-- ESTILOS VISUALES GENERALES -->
+    <!-- ===================================================== -->
+    <!-- Esta sección funciona como el "CSS" de la aplicación. -->
+    <!-- Aquí se define el aspecto visual de controles como     -->
+    <!-- TextBox, ComboBox, DatePicker, Button y DataGrid.      -->
+    <!-- ===================================================== -->
+
     <Window.Styles>
+        
+        <!-- Aplica altura y alineación vertical a varios controles -->
         <Style Selector="TextBox, ComboBox, DatePicker, Button">
             <Setter Property="Height" Value="35"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
         </Style>
+        
+        <!-- Define el color de texto general para todos los TextBlock -->
         <Style Selector="TextBlock">
             <Setter Property="Foreground" Value="#1F5E2E"/>
         </Style>
+
+         <!-- Estilo general de los cuadros de texto -->
         <Style Selector="TextBox">
             <Setter Property="VerticalContentAlignment" Value="Center"/>
             <Setter Property="Background" Value="#EAEAEA"/>
@@ -26,9 +48,13 @@
             <Setter Property="BorderBrush" Value="#2E9E44"/>
             <Setter Property="BorderThickness" Value="1"/>
         </Style>
+
+        <!-- Cambia el borde del TextBox cuando recibe foco -->
         <Style Selector="TextBox:focus">
             <Setter Property="BorderBrush" Value="#1F5E2E"/>
         </Style>
+
+        <!-- Estilo general de los ComboBox -->
         <Style Selector="ComboBox">
             <Setter Property="VerticalContentAlignment" Value="Center"/>
             <Setter Property="Background" Value="#EAEAEA"/>
@@ -36,11 +62,15 @@
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="HorizontalAlignment" Value="Stretch"/>
         </Style>
+
+        <!-- Estilo del ComboBox cuando está enfocado -->
         <Style Selector="ComboBox:focus">
             <Setter Property="Background" Value="#EAEAEA"/>
             <Setter Property="Foreground" Value="White"/>
             <Setter Property="BorderBrush" Value="#2E9E44"/>
         </Style>
+
+        <!-- Estilo general del selector de fecha -->
         <Style Selector="DatePicker">
             <Setter Property="Background" Value="#EAEAEA"/>
             <Setter Property="BorderBrush" Value="#2E9E44"/>
@@ -49,35 +79,51 @@
             <Setter Property="MinHeight" Value="35"/>
             <Setter Property="MaxHeight" Value="35"/>
         </Style>
+
+        <!-- Estilo del panel interno del DatePicker -->
         <Style Selector="DatePickerPresenter">
             <Setter Property="Background" Value="#EAF6EC"/>
             <Setter Property="BorderBrush" Value="#2E9E44"/>
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="CornerRadius" Value="4"/>
         </Style>
+
+        <!-- Color del texto de las opciones del selector de fecha -->
         <Style Selector="DateTimePickerPanel > ListBoxItem">
             <Setter Property="Foreground" Value="#1F5E2E"/>
         </Style>
+
+        <!-- Efecto visual al pasar el mouse sobre una opción de fecha -->
         <Style Selector="DateTimePickerPanel > ListBoxItem:pointerover /template/ ContentPresenter#PART_ContentPresenter">
             <Setter Property="Background" Value="#CBEAD1"/>
             <Setter Property="Foreground" Value="#1F5E2E"/>
         </Style>
+
+        <!-- Efecto visual de una opción seleccionada en el selector de fecha -->
         <Style Selector="DateTimePickerPanel > ListBoxItem:selected /template/ ContentPresenter#PART_ContentPresenter">
             <Setter Property="Background" Value="#2E9E44"/>
             <Setter Property="Foreground" Value="White"/>
         </Style>
+
+        <!-- Estilo general de los items dentro de ComboBox -->
         <Style Selector="ComboBoxItem">
             <Setter Property="Foreground" Value="#1F5E2E"/>
             <Setter Property="Background" Value="Transparent"/>
         </Style>
+
+        <!-- Efecto hover en items del ComboBox -->
         <Style Selector="ComboBoxItem:pointerover /template/ ContentPresenter#PART_ContentPresenter">
             <Setter Property="Background" Value="#CBEAD1"/>
             <Setter Property="Foreground" Value="#1F5E2E"/>
         </Style>
+
+        <!-- Efecto visual del item seleccionado en ComboBox -->
         <Style Selector="ComboBoxItem:selected /template/ ContentPresenter#PART_ContentPresenter">
             <Setter Property="Background" Value="#2E9E44"/>
             <Setter Property="Foreground" Value="White"/>
         </Style>
+
+        <!-- Estilo general de los botones -->
         <Style Selector="Button">
             <Setter Property="HorizontalContentAlignment" Value="Center"/>
             <Setter Property="VerticalContentAlignment" Value="Center"/>
@@ -85,22 +131,32 @@
             <Setter Property="Foreground" Value="White"/>
             <Setter Property="Padding" Value="5,0"/>
         </Style>
+
+        <!-- Efecto hover en botones -->
         <Style Selector="Button:pointerover">
             <Setter Property="Background" Value="#EAEAEA"/>
             <Setter Property="Foreground" Value="#1F5E2E"/>
         </Style>
+
+         <!-- Estilo especial para botones de peligro o acciones destructivas -->
         <Style Selector="Button.danger">
             <Setter Property="Background" Value="#D32F2F"/>
             <Setter Property="Foreground" Value="White"/>
         </Style>
+
+        <!-- Efecto hover para botones de peligro -->
         <Style Selector="Button.danger:pointerover">
             <Setter Property="Background" Value="#FDEAEA"/>
             <Setter Property="Foreground" Value="#B71C1C"/>
         </Style>
+
+        <!-- Estilo de filas seleccionadas en tablas -->
         <Style Selector="DataGridRow:selected">
             <Setter Property="Background" Value="#2D6CDF"/>
             <Setter Property="Foreground" Value="White"/>
         </Style>
+
+        <!-- Estilo de encabezados de columnas en tablas -->
         <Style Selector="DataGridColumnHeader">
             <Setter Property="Background" Value="#2E9E44"/>
             <Setter Property="Foreground" Value="White"/>
@@ -108,32 +164,78 @@
             <Setter Property="BorderBrush" Value="#D0D0D0"/>
             <Setter Property="BorderThickness" Value="1"/>
         </Style>
+
+        <!-- Estilo de celdas de la tabla -->
         <Style Selector="DataGridCell">
             <Setter Property="BorderBrush" Value="#D0D0D0"/>
             <Setter Property="BorderThickness" Value="1"/>
         </Style>
     </Window.Styles>
 
+
+    <!-- ===================================================== -->
+        <!-- CONTENEDOR CON SCROLL -->
+        <!-- ===================================================== -->
+        <!-- Permite desplazarse verticalmente si el contenido -->
+        <!-- supera la altura visible de la ventana.            -->
+        <!-- ===================================================== -->
+
+
     <ScrollViewer VerticalScrollBarVisibility="Auto">
+
+             <!-- Grid principal con dos filas:
+             - fila 0: encabezado
+             - fila 1: contenido de módulos -->
+
+
         <Grid Margin="10" RowDefinitions="Auto,*">
 
+            <!-- ===================================================== -->
+            <!-- ENCABEZADO SUPERIOR -->
+            <!-- ===================================================== -->
+            <!-- Contiene el logo principal y botones globales como    -->
+            <!-- ayuda/contacto y cerrar sesión.                       -->
+            <!-- ===================================================== -->
             <Grid Grid.Row="0" Height="300" Margin="0,0,0,0">
+
+                <!-- Muestra el logo secundario de la aplicación -->
                 <Image Source="avares://DragonNutrex.UI/Images/logosecundario.png" Width="600" Height="400" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Bottom"/>
                 
+                <!-- Panel de botones superiores -->
                 <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,20,20,0">
+                    <!-- Botón para ayuda o contacto -->
                     <Button x:Name="ContactoButton" Content="Ayuda / Contacto" Width="140" Background="#2D6CDF"/>
+                    <!-- Botón para cerrar sesión -->
                     <Button x:Name="LogoutGlobalButton" Content="Cerrar sesión" Classes="danger" Width="140"/>
                 </StackPanel>
             </Grid>
 
-            <StackPanel Grid.Row="1" Spacing="8" HorizontalAlignment="Center" Width="980" Margin="0,-100,0,40">
 
+            <!-- ===================================================== -->
+            <!-- CONTENIDO PRINCIPAL -->
+            <!-- ===================================================== -->
+            <!-- Aquí se muestran los módulos del sistema:
+                 Usuarios, Productos, Menús y Estadísticas. -->
+            <!-- ===================================================== -->
+
+            <StackPanel Grid.Row="1" Spacing="8" HorizontalAlignment="Center" Width="980" Margin="0,-100,0,40">
+                
+                <!-- Panel informativo inicial -->
                 <Border Background="#DFF5E1" Padding="10" CornerRadius="6" Margin="0,0,0,8" Width="980" HorizontalAlignment="Center">
-                    <StackPanel Spacing="4">
+                <StackPanel Spacing="4">
+                        <!-- Mensaje principal de bienvenida/uso -->
                         <TextBlock Text="Seleccione un módulo para agregar, visualizar, editar o eliminar datos y realizar cálculos." FontSize="24" Foreground="#1F5E2E" FontWeight="Bold" TextWrapping="Wrap"/>
+                        <!-- Texto que muestra el estado de la sesión -->
                         <TextBlock x:Name="SesionTextBlock" Text="Sesión iniciada" FontSize="14" Foreground="#1F5E2E" TextWrapping="Wrap"/>
                     </StackPanel>
                 </Border>
+
+                <!-- ===================================================== -->
+                <!-- BOTONES DE NAVEGACIÓN ENTRE MÓDULOS -->
+                <!-- ===================================================== -->
+                <!-- Permiten cambiar entre los distintos paneles del
+                     sistema. -->
+                <!-- ===================================================== -->
 
                 <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Center">
                     <Button x:Name="UsuariosModuloButton" Content="Usuarios" HorizontalAlignment="Center" Width="220"/>
@@ -142,8 +244,17 @@
                     <Button x:Name="EstadisticasNutricionModuloButton" Content="Estadísticas de Nutrición" HorizontalAlignment="Center" Width="220"/>
                 </StackPanel>
 
+                <!-- ===================================================== -->
+                <!-- PANEL DE USUARIOS -->
+                <!-- ===================================================== -->
+                <!-- Permite agregar, editar, limpiar y visualizar
+                     usuarios del sistema. -->
+                <!-- ===================================================== -->
+
                 <StackPanel x:Name="UsuariosPanel" Spacing="10" HorizontalAlignment="Center" Width="980">
+                    <!-- Título del módulo -->
                     <TextBlock Text="Gestión de Usuarios" FontSize="24" FontWeight="Bold"/>
+                    <!-- Formulario de captura de datos del usuario -->
                     <Grid ColumnDefinitions="485,485" RowDefinitions="Auto,Auto,Auto">
                         <TextBox x:Name="NombreTextBox" Grid.Row="0" Grid.Column="0" Margin="0,0,10,10" Watermark="Nombre"/>
                         <TextBox x:Name="PesoTextBox" Grid.Row="0" Grid.Column="1" Margin="0,0,0,10" Watermark="Peso"/>
@@ -152,11 +263,13 @@
                         <ComboBox x:Name="ObjetivoComboBox" Grid.Row="2" Grid.Column="0" Margin="0,0,10,10" HorizontalAlignment="Stretch"/>
                         <ComboBox x:Name="TipoDietaComboBox" Grid.Row="2" Grid.Column="1" Margin="0,0,0,10" HorizontalAlignment="Stretch"/>
                     </Grid>
+                    <!-- Botones de acción del módulo de usuarios -->
                     <StackPanel Orientation="Horizontal" Spacing="10">
                         <Button x:Name="GuardarButton" Content="Guardar" Width="140"/>
                         <Button x:Name="EliminarButton" Content="Eliminar seleccionado" Width="180"/>
                         <Button x:Name="LimpiarButton" Content="Limpiar" Width="120"/>
                     </StackPanel>
+                    <!-- Tabla que muestra la lista de usuarios -->
                     <Border BorderThickness="2" BorderBrush="#BDBDBD" CornerRadius="4">
                         <controls:DataGrid x:Name="UsuariosDataGrid" Height="420" Width="980" GridLinesVisibility="All" AutoGenerateColumns="False" IsReadOnly="True" HorizontalAlignment="Center">
                             <controls:DataGrid.Columns>
@@ -171,8 +284,18 @@
                     </Border>
                 </StackPanel>
 
+                <!-- ===================================================== -->
+                <!-- PANEL DE PRODUCTOS -->
+                <!-- ===================================================== -->
+                <!-- Permite administrar productos alimenticios y sus
+                     valores nutricionales. -->
+                <!-- ===================================================== -->
+
                 <StackPanel x:Name="ProductosPanel" IsVisible="False" Spacing="10">
+
+                    <!-- Título del módulo -->
                     <TextBlock Text="Gestión de Productos" FontSize="24" FontWeight="Bold"/>
+                    <!-- Formulario para ingresar datos del producto -->
                     <Grid ColumnDefinitions="485,485" RowDefinitions="Auto,Auto,Auto">
                         <TextBox x:Name="ProductoNombreTextBox" Grid.Row="0" Grid.Column="0" Margin="0,0,10,10" Watermark="Nombre"/>
                         <TextBox x:Name="CaloriasTextBox" Grid.Row="0" Grid.Column="1" Margin="0,0,0,10" Watermark="Calorías"/>
@@ -180,11 +303,13 @@
                         <TextBox x:Name="CarbohidratosTextBox" Grid.Row="1" Grid.Column="1" Margin="0,0,0,10" Watermark="Carbohidratos"/>
                         <TextBox x:Name="GrasasTextBox" Grid.Row="2" Grid.Column="0" Margin="0,0,10,10" Watermark="Grasas"/>
                     </Grid>
+                    <!-- Botones de acción del módulo de productos -->
                     <StackPanel Orientation="Horizontal" Spacing="10">
                         <Button x:Name="GuardarProductoButton" Content="Guardar Producto" Width="160"/>
                         <Button x:Name="EliminarProductoButton" Content="Eliminar seleccionado" Width="180"/>
                         <Button x:Name="LimpiarProductoButton" Content="Limpiar" Width="120"/>
                     </StackPanel>
+                    <!-- Tabla de productos registrados -->
                     <Border BorderThickness="2" BorderBrush="#BDBDBD" CornerRadius="4">
                         <controls:DataGrid x:Name="ProductosDataGrid" Height="420" Width="980" GridLinesVisibility="All" AutoGenerateColumns="False" IsReadOnly="True" HorizontalAlignment="Center">
                             <controls:DataGrid.Columns>
@@ -198,12 +323,21 @@
                     </Border>
                 </StackPanel>
 
+                <!-- ===================================================== -->
+                <!-- PANEL DE MENÚS -->
+                <!-- ===================================================== -->
+                <!-- Permite crear menús nutricionales por usuario y fecha,
+                     agregando productos y calculando totales. -->
+                <!-- ===================================================== -->
+
                 <StackPanel x:Name="MenusPanel" IsVisible="False" Spacing="10">
                     
+                    <!-- Panel con información editable del usuario del menú -->
                     <Border x:Name="PanelInfoUsuarioMenu" Background="#EAF6EC" BorderBrush="#2E9E44" BorderThickness="1" CornerRadius="6" Padding="10" Margin="0,0,0,10">
                         <Grid ColumnDefinitions="*,Auto">
+                            <!-- Datos del usuario -->
                             <Grid Grid.Column="0" ColumnDefinitions="*,*,*" RowDefinitions="Auto,Auto" RowSpacing="10" ColumnSpacing="10">
-                                
+                                <!-- Nombre del usuario -->
                                 <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
                                     <TextBlock Text="Usuario: " FontWeight="Bold" VerticalAlignment="Center" Margin="0,0,5,0"/>
                                     <Panel VerticalAlignment="Center">
@@ -211,7 +345,7 @@
                                         <TextBox x:Name="EditMenuUsuarioTextBox" IsVisible="False" Width="130" Height="28" MinHeight="28" Padding="5,2" VerticalAlignment="Center"/>
                                     </Panel>
                                 </StackPanel>
-                                
+                                <!-- Peso del usuario -->
                                 <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
                                     <TextBlock Text="Peso: " FontWeight="Bold" VerticalAlignment="Center" Margin="0,0,5,0"/>
                                     <Panel VerticalAlignment="Center">
@@ -219,7 +353,7 @@
                                         <TextBox x:Name="EditMenuPesoTextBox" IsVisible="False" Width="80" Height="28" MinHeight="28" Padding="5,2" VerticalAlignment="Center"/>
                                     </Panel>
                                 </StackPanel>
-
+                                <!-- Altura del usuario -->
                                 <StackPanel Grid.Row="0" Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
                                     <TextBlock Text="Altura: " FontWeight="Bold" VerticalAlignment="Center" Margin="0,0,5,0"/>
                                     <Panel VerticalAlignment="Center">
@@ -227,7 +361,7 @@
                                         <TextBox x:Name="EditMenuAlturaTextBox" IsVisible="False" Width="80" Height="28" MinHeight="28" Padding="5,2" VerticalAlignment="Center"/>
                                     </Panel>
                                 </StackPanel>
-                                
+                                <!-- Dieta del usuario -->
                                 <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
                                     <TextBlock Text="Dieta: " FontWeight="Bold" VerticalAlignment="Center" Margin="0,0,5,0"/>
                                     <Panel VerticalAlignment="Center">
@@ -235,7 +369,7 @@
                                         <ComboBox x:Name="EditMenuDietaComboBox" IsVisible="False" Width="130" Height="28" MinHeight="28" Padding="5,2" VerticalAlignment="Center"/>
                                     </Panel>
                                 </StackPanel>
-
+                                <!-- Actividad del usuario -->
                                 <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
                                     <TextBlock Text="Actividad: " FontWeight="Bold" VerticalAlignment="Center" Margin="0,0,5,0"/>
                                     <Panel VerticalAlignment="Center">
@@ -243,7 +377,7 @@
                                         <ComboBox x:Name="EditMenuActividadComboBox" IsVisible="False" Width="130" Height="28" MinHeight="28" Padding="5,2" VerticalAlignment="Center"/>
                                     </Panel>
                                 </StackPanel>
-
+                                <!-- Objetivo del usuario -->
                                 <StackPanel Grid.Row="1" Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
                                     <TextBlock Text="Objetivo: " FontWeight="Bold" VerticalAlignment="Center" Margin="0,0,5,0"/>
                                     <Panel VerticalAlignment="Center">
@@ -252,7 +386,7 @@
                                     </Panel>
                                 </StackPanel>
                             </Grid>
-                            
+                            <!-- Botones para editar el perfil mostrado en el menú -->
                             <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center" Margin="10,0,0,0">
                                 <Button x:Name="EditarPerfilMenuButton" Click="EditarPerfilMenu_Click" Content="Editar Perfil" Width="100"/>
                                 <Button x:Name="GuardarPerfilMenuButton" Click="GuardarPerfilMenu_Click" Content="Guardar" Width="80" IsVisible="False" Background="#0A6B22"/>
@@ -260,9 +394,9 @@
                             </StackPanel>
                         </Grid>
                     </Border>
-
+                     <!-- Título del módulo -->
                     <TextBlock Text="Gestión de Menús" FontSize="24" FontWeight="Bold"/>
-                    
+                     <!-- Formulario para crear menú y agregar productos -->
                     <Grid ColumnDefinitions="*,*,180" RowDefinitions="Auto,Auto" Margin="0,0,0,10">
                         <ComboBox x:Name="UsuariosMenuComboBox" Grid.Row="0" Grid.Column="0" Margin="0,0,10,10"/>
                         <DatePicker x:Name="FechaMenuDatePicker" Grid.Row="0" Grid.Column="1" Margin="0,0,10,10" HorizontalAlignment="Stretch"/>
@@ -272,14 +406,14 @@
                         <TextBox x:Name="CantidadProductoTextBox" Grid.Row="1" Grid.Column="1" Margin="0,0,10,10" Watermark="Cantidad"/>
                         <Button x:Name="AgregarProductoMenuButton" Grid.Row="1" Grid.Column="2" Content="Agregar Producto" Margin="0,0,0,10" HorizontalAlignment="Stretch"/>
                     </Grid>
-                    
+                     <!-- Muestra los totales nutricionales del menú actual -->
                     <StackPanel Orientation="Horizontal" Spacing="20">
                         <TextBlock x:Name="TotalCaloriasTextBlock" Text="Calorías: 0" FontSize="16"/>
                         <TextBlock x:Name="TotalProteinasTextBlock" Text="Proteínas: 0" FontSize="16"/>
                         <TextBlock x:Name="TotalCarbohidratosTextBlock" Text="Carbohidratos: 0" FontSize="16"/>
                         <TextBlock x:Name="TotalGrasasTextBlock" Text="Grasas: 0" FontSize="16"/>
                     </StackPanel>
-                    
+                    <!-- Botones de acción del menú -->
                     <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Center" Margin="0,10">
                         <Button x:Name="GuardarMenuButton" Content="Guardar Menú" Width="140"/>
                         <Button x:Name="ActualizarRegistroMenuButton" Content="Actualizar Cantidad" Width="170"/>
@@ -287,7 +421,7 @@
                         <Button x:Name="EliminarMenuButton" Content="Eliminar Menú" Width="140"/>
                         <Button x:Name="LimpiarMenuButton" Content="Limpiar" Width="120"/>
                     </StackPanel>
-                    
+                    <!-- Tabla con los productos agregados al menú actual -->
                     <Border BorderThickness="2" BorderBrush="#BDBDBD" CornerRadius="4">
                         <controls:DataGrid x:Name="RegistrosMenuDataGrid" Height="115" Width="980" GridLinesVisibility="All" AutoGenerateColumns="False" IsReadOnly="True" HorizontalAlignment="Center">
                             <controls:DataGrid.Columns>
@@ -300,12 +434,12 @@
                             </controls:DataGrid.Columns>
                         </controls:DataGrid>
                     </Border>
-                    
+                    <!-- Sección informativa sobre menús guardados -->
                     <StackPanel>
                         <TextBlock Text="Menús guardados" FontSize="20" FontWeight="Bold"/>
                         <TextBlock Text="Para editar, seleccione un menú y luego use los botones para agregar, limpiar o eliminar registros y haga clic en Guardar Menú" FontSize="14" Foreground="#1F5E2E" TextWrapping="Wrap"/>
                     </StackPanel>
-                    
+                    <!-- Tabla con todos los menús almacenados -->
                     <Border BorderThickness="2" BorderBrush="#BDBDBD" CornerRadius="4">
                         <controls:DataGrid x:Name="MenusDataGrid" Height="180" Width="980" GridLinesVisibility="All" AutoGenerateColumns="False" IsReadOnly="True" HorizontalAlignment="Center">
                             <controls:DataGrid.Columns>
@@ -319,35 +453,51 @@
                         </controls:DataGrid>
                     </Border>
                 </StackPanel>
-
+                
+                <!-- ===================================================== -->
+                <!-- PANEL DE ESTADÍSTICAS DE NUTRICIÓN -->
+                <!-- ===================================================== -->
+                <!-- Permite filtrar información por usuario, dieta y rango
+                     de fechas para calcular estadísticas nutricionales. -->
+                <!-- ===================================================== -->
                 <StackPanel x:Name="EstadisticasNutricionPanel" IsVisible="False" Spacing="10">
+                    <!-- Título del módulo -->
                     <TextBlock Text="Estadísticas de Nutrición" FontSize="24" FontWeight="Bold"/>
+                    <!-- Sección de filtros -->
                     <StackPanel Orientation="Vertical" Spacing="15" Margin="0,10,0,15">
-                        
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="20">
+                      <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="20">
+                            
+                            <!-- Filtro por usuario -->
                             <StackPanel x:Name="UsuarioFiltroPanel" Width="180">
                                 <TextBlock Text="Usuario" Margin="0,0,0,4"/>
                                 <ComboBox x:Name="UsuariosEstadisticaComboBox" HorizontalAlignment="Stretch"/>
                             </StackPanel>
+                            <!-- Filtro por dieta -->
                             <StackPanel Width="180">   
                                 <TextBlock Text="Dieta" Margin="0,0,0,4"/>
                                 <ComboBox x:Name="DietaEstadisticaComboBox" HorizontalAlignment="Stretch"/>
                             </StackPanel>
+                            <!-- Filtro fecha inicial -->
                             <StackPanel Width="280">
                                 <TextBlock Text="Fecha inicio" Margin="0,0,0,4"/>
                                 <DatePicker x:Name="FechaInicioEstadisticaDatePicker" HorizontalAlignment="Stretch"/>
                             </StackPanel>
+                            <!-- Filtro fecha final -->
                             <StackPanel Width="280">
                                 <TextBlock Text="Fecha fin" Margin="0,0,0,4"/>
                                 <DatePicker x:Name="FechaFinEstadisticaDatePicker" HorizontalAlignment="Stretch"/>
                             </StackPanel>
                         </StackPanel>
 
+                        <!-- Botón que ejecuta el cálculo de estadísticas -->
                         <Button x:Name="CalcularEstadisticaNutricionButton" Content="Calcular Estadísticas de Nutrición" Width="300" HorizontalAlignment="Center"/>
                     </StackPanel>
 
+                    <!-- Panel que muestra los resultados estadísticos -->
                     <Border BorderThickness="2" BorderBrush="#BDBDBD" CornerRadius="8" Padding="20" Background="White">
                         <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto,Auto" ColumnSpacing="30" RowSpacing="20">
+                            
+                            <!-- Resumen general -->
                             <Border Grid.Row="0" Grid.Column="0" Background="#EAF6EC" CornerRadius="8" Padding="15" VerticalAlignment="Stretch">
                                 <StackPanel Spacing="6">
                                     <TextBlock Text="Resumen general" FontSize="20" FontWeight="Bold"/>
@@ -358,7 +508,8 @@
                                     <TextBlock x:Name="EstadisticaCantidadMenusTextBlock" Text="Cantidad de menús: -" FontSize="16"/>
                                 </StackPanel>
                             </Border>
-
+                            
+                            <!-- Información de IMC -->
                             <Border Grid.Row="0" Grid.Column="1" Background="#EAF6EC" CornerRadius="8" Padding="15" VerticalAlignment="Stretch">
                                 <StackPanel Spacing="6">
                                     <TextBlock Text="IMC y estado del usuario" FontSize="20" FontWeight="Bold"/>
@@ -367,6 +518,7 @@
                                 </StackPanel>
                             </Border>
 
+                            <!-- Totales del rango -->
                             <Border Grid.Row="1" Grid.Column="0" Background="#EAF6EC" CornerRadius="8" Padding="15" VerticalAlignment="Stretch">
                                 <StackPanel Spacing="6">
                                     <TextBlock Text="Totales consumidos en el rango" FontSize="20" FontWeight="Bold"/>
@@ -377,40 +529,73 @@
                                 </StackPanel>
                             </Border>
 
+                        <!-- ===================================================== -->
+                        <!-- BLOQUES DE RESULTADOS DE ESTADÍSTICAS NUTRICIONALES -->
+                        <!-- Cada Border representa una tarjeta visual con métricas -->
+                        <!-- ===================================================== -->
+
+                        <!-- Tarjeta: Objetivos según dieta -->
+                        <!-- Muestra los valores ideales de nutrientes según la dieta seleccionada -->
                             <Border Grid.Row="1" Grid.Column="1" Background="#EAF6EC" CornerRadius="8" Padding="15" VerticalAlignment="Stretch">
+                            
+                                <!-- Contenedor vertical de los datos -->
                                 <StackPanel Spacing="6">
+                                    <!-- Título de la sección -->
                                     <TextBlock Text="Objetivos según dieta" FontSize="20" FontWeight="Bold"/>
+                                    <!-- Calorías objetivo según la dieta -->
                                     <TextBlock x:Name="EstadisticaCaloriasObjetivoTextBlock" Text="Calorías objetivo dieta: -" FontSize="16"/>
+                                    <!-- Proteínas objetivo según la dieta -->
                                     <TextBlock x:Name="EstadisticaProteinasObjetivoTextBlock" Text="Proteínas objetivo dieta: -" FontSize="16"/>
+                                    <!-- Carbohidratos objetivo según la dieta -->
                                     <TextBlock x:Name="EstadisticaCarbohidratosObjetivoTextBlock" Text="Carbohidratos objetivo dieta: -" FontSize="16"/>
+                                    <!-- Grasas objetivo según la dieta -->
                                     <TextBlock x:Name="EstadisticaGrasasObjetivoTextBlock" Text="Grasas objetivo dieta: -" FontSize="16"/>
                                 </StackPanel>
                             </Border>
 
+                            <!-- Tarjeta: Promedio diario -->
+                            <!-- Muestra el consumo promedio diario del usuario en el rango de fechas -->
                             <Border Grid.Row="2" Grid.Column="0" Background="#EAF6EC" CornerRadius="8" Padding="15" VerticalAlignment="Stretch">
                                 <StackPanel Spacing="6">
+                                    <!-- Título -->
                                     <TextBlock Text="Promedio diario" FontSize="20" FontWeight="Bold"/>
+                                    <!-- Promedio de calorías consumidas -->
                                     <TextBlock x:Name="EstadisticaCaloriasPromedioTextBlock" Text="Calorías promedio: -" FontSize="16"/>
+                                    <!-- Promedio de proteínas consumidas -->
                                     <TextBlock x:Name="EstadisticaProteinasPromedioTextBlock" Text="Proteínas promedio: -" FontSize="16"/>
+                                    <!-- Promedio de carbohidratos consumidos -->
                                     <TextBlock x:Name="EstadisticaCarbohidratosPromedioTextBlock" Text="Carbohidratos promedio: -" FontSize="16"/>
+                                    <!-- Promedio de grasas consumidas -->
                                     <TextBlock x:Name="EstadisticaGrasasPromedioTextBlock" Text="Grasas promedio: -" FontSize="16"/>
                                 </StackPanel>
                             </Border>
-
+                            <!-- Tarjeta: Diferencia promedio vs dieta -->
+                            <!-- Compara el consumo real vs el objetivo de la dieta -->
                             <Border Grid.Row="2" Grid.Column="1" Background="#EAF6EC" CornerRadius="8" Padding="15" VerticalAlignment="Stretch">
                                 <StackPanel Spacing="6">
+                                     <!-- Título -->    
                                     <TextBlock Text="Diferencia promedio vs dieta" FontSize="20" FontWeight="Bold"/>
+                                    <!-- Diferencia de calorías (consumido - objetivo) -->
                                     <TextBlock x:Name="EstadisticaDiferenciaCaloriasTextBlock" Text="Diferencia calorías: -" FontSize="16"/>
+                                    <!-- Diferencia de proteínas (consumido - objetivo) -->
                                     <TextBlock x:Name="EstadisticaDiferenciaProteinasTextBlock" Text="Diferencia proteínas: -" FontSize="16"/>
+                                    <!-- Diferencia de carbohidratos (consumido - objetivo) -->
                                     <TextBlock x:Name="EstadisticaDiferenciaCarbohidratosTextBlock" Text="Diferencia carbohidratos: -" FontSize="16"/>
+                                    <!-- Diferencia de grasas (consumido - objetivo) -->
                                     <TextBlock x:Name="EstadisticaDiferenciaGrasasTextBlock" Text="Diferencia grasas: -" FontSize="16"/>
                                 </StackPanel>
                             </Border>
 
+                            <!-- Tarjeta: Resultado final -->
+                            <!-- Muestra la interpretación final del estado nutricional -->
                             <Border Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Background="#EAF6EC" CornerRadius="8" Padding="15" VerticalAlignment="Stretch">
                                 <StackPanel Spacing="6">
+
+                                    <!-- Título -->
                                     <TextBlock Text="Resultado final" FontSize="20" FontWeight="Bold"/>
+                                    <!-- Estado calórico (déficit, superávit o balance) -->
                                     <TextBlock x:Name="EstadisticaEstadoCaloricoTextBlock" Text="Estado calórico: -" FontSize="16"/>
+                                    <!-- Recomendación basada en los resultados -->
                                     <TextBlock x:Name="EstadisticaRecomendacionTextBlock" Text="Recomendación: -" FontSize="16" TextWrapping="Wrap"/>
                                 </StackPanel>
                             </Border>

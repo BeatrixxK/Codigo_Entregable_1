@@ -1,3 +1,8 @@
+// =====================================================
+// LIBRERÍAS E IMPORTACIONES
+// =====================================================
+// Importación de librerías del sistema, utilidades de Avalonia (UI)
+// y los controladores/modelos/servicios de DragonNutrex.
 using System;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -13,24 +18,34 @@ using DragonNutrex.App.Services;
 
 namespace DragonNutrex.UI;
 
+// =====================================================
+// CLASE PRINCIPAL DE LA VENTANA
+// =====================================================
+// Lógica trasera (code-behind) de la interfaz de Registro de Usuario.
 public partial class RegistroUsuarioWindow : Window
 {
-    // Controlador para operaciones CRUD de usuarios
+    // =====================================================
+    // CONTROLADORES
+    // =====================================================
+    // Permite guardar y leer usuarios de la base de datos
     private readonly UsuarioController _usuarioController;
 
-    // Controlador para consultar dietas disponibles
+    // Permite consultar las dietas disponibles en el sistema
     private readonly EstadisticasNutricionController _estadisticasNutricionController;
 
+    // =====================================================
+    // CONSTRUCTOR
+    // =====================================================
+    // Inicializa la ventana, sus dependencias y carga los datos iniciales
     public RegistroUsuarioWindow()
     {
         InitializeComponent();
 
-        // Inicializa controlador de usuarios
+        // Inyección manual de dependencias para los controladores
         _usuarioController = new UsuarioController(
             new UsuarioService(new UsuarioRepository())
         );
 
-        // Inicializa controlador de estadísticas para obtener dietas
         _estadisticasNutricionController = new EstadisticasNutricionController(
             new EstadisticasNutricionService(
                 new UsuarioRepository(),
@@ -38,169 +53,100 @@ public partial class RegistroUsuarioWindow : Window
             )
         );
 
-        // Carga opciones en los ComboBox
+        // Pre-carga los datos de los menús desplegables (ComboBox)
         CargarActividades();
         CargarObjetivos();
         CargarDietas();
 
-        // Asocia el botón al método de creación de usuario
+        // Asocia el evento clic del botón a la función que guarda el usuario
         CrearUsuarioButton.Click += CrearUsuario;
     }
 
     // =========================================================
-    // CARGA DE COMBOBOX
+    // CARGA DE LISTAS DESPLEGABLES (COMBOBOX)
     // =========================================================
 
-    // Carga las opciones del nivel de actividad
+    // Llena el ComboBox de niveles de actividad física
     private void CargarActividades()
     {
         ActividadComboBox.Items.Clear();
 
-        // Opción inicial tipo placeholder
-        ActividadComboBox.Items.Add(new ComboBoxItem
-        {
-            Content = "Seleccione actividad",
-            Tag = ""
-        });
-
-        ActividadComboBox.Items.Add(new ComboBoxItem
-        {
-            Content = "Sedentaria",
-            Tag = "Sedentaria"
-        });
-
-        ActividadComboBox.Items.Add(new ComboBoxItem
-        {
-            Content = "Ligera",
-            Tag = "Ligera"
-        });
-
-        ActividadComboBox.Items.Add(new ComboBoxItem
-        {
-            Content = "Moderada",
-            Tag = "Moderada"
-        });
-
-        ActividadComboBox.Items.Add(new ComboBoxItem
-        {
-            Content = "Alta",
-            Tag = "Alta"
-        });
+        // Opción por defecto (Placeholder)
+        ActividadComboBox.Items.Add(new ComboBoxItem { Content = "Seleccione actividad", Tag = "" });
+        
+        // Opciones reales
+        ActividadComboBox.Items.Add(new ComboBoxItem { Content = "Sedentaria", Tag = "Sedentaria" });
+        ActividadComboBox.Items.Add(new ComboBoxItem { Content = "Ligera", Tag = "Ligera" });
+        ActividadComboBox.Items.Add(new ComboBoxItem { Content = "Moderada", Tag = "Moderada" });
+        ActividadComboBox.Items.Add(new ComboBoxItem { Content = "Alta", Tag = "Alta" });
 
         ActividadComboBox.SelectedIndex = 0;
     }
 
-    // Carga las opciones del objetivo nutricional
+    // Llena el ComboBox de metas nutricionales
     private void CargarObjetivos()
     {
         ObjetivoComboBox.Items.Clear();
 
-        // Opción inicial tipo placeholder
-        ObjetivoComboBox.Items.Add(new ComboBoxItem
-        {
-            Content = "Seleccione objetivo",
-            Tag = ""
-        });
-
-        ObjetivoComboBox.Items.Add(new ComboBoxItem
-        {
-            Content = "Bajar peso",
-            Tag = "Bajar peso"
-        });
-
-        ObjetivoComboBox.Items.Add(new ComboBoxItem
-        {
-            Content = "Mantener",
-            Tag = "Mantener"
-        });
-
-        ObjetivoComboBox.Items.Add(new ComboBoxItem
-        {
-            Content = "Ganar masa",
-            Tag = "Ganar masa"
-        });
-
-        ObjetivoComboBox.Items.Add(new ComboBoxItem
-        {
-            Content = "Resistencia",
-            Tag = "Resistencia"
-        });
+        // Opción por defecto (Placeholder)
+        ObjetivoComboBox.Items.Add(new ComboBoxItem { Content = "Seleccione objetivo", Tag = "" });
+        
+        // Opciones reales
+        ObjetivoComboBox.Items.Add(new ComboBoxItem { Content = "Bajar peso", Tag = "Bajar peso" });
+        ObjetivoComboBox.Items.Add(new ComboBoxItem { Content = "Mantener", Tag = "Mantener" });
+        ObjetivoComboBox.Items.Add(new ComboBoxItem { Content = "Ganar masa", Tag = "Ganar masa" });
+        ObjetivoComboBox.Items.Add(new ComboBoxItem { Content = "Resistencia", Tag = "Resistencia" });
 
         ObjetivoComboBox.SelectedIndex = 0;
     }
 
-    // Carga las dietas disponibles desde el sistema
+    // Consulta la base de datos y llena el ComboBox con las dietas existentes
     private void CargarDietas()
     {
         TipoDietaComboBox.Items.Clear();
 
-        // Opción inicial tipo placeholder
-        TipoDietaComboBox.Items.Add(new ComboBoxItem
-        {
-            Content = "Seleccione tipo de dieta",
-            Tag = ""
-        });
+        // Opción por defecto (Placeholder)
+        TipoDietaComboBox.Items.Add(new ComboBoxItem { Content = "Seleccione tipo de dieta", Tag = "" });
 
+        // Recupera las dietas y las agrega una por una
         var dietas = _estadisticasNutricionController.ObtenerDietasDisponibles();
-
         foreach (var dieta in dietas)
         {
-            TipoDietaComboBox.Items.Add(new ComboBoxItem
-            {
-                Content = dieta.Nombre,
-                Tag = dieta.Nombre
-            });
+            TipoDietaComboBox.Items.Add(new ComboBoxItem { Content = dieta.Nombre, Tag = dieta.Nombre });
         }
 
         TipoDietaComboBox.SelectedIndex = 0;
     }
 
     // =========================================================
-    // CREACIÓN DE USUARIO
+    // LÓGICA DE REGISTRO
     // =========================================================
 
-    // Se ejecuta al presionar el botón "Crear Usuario"
+    // Recopila datos, los valida, crea el usuario y lo redirige a la app
     private async void CrearUsuario(object? sender, RoutedEventArgs e)
     {
         try
         {
-            // Limpia mensaje anterior
-            MensajeTextBlock.Text = string.Empty;
+            MensajeTextBlock.Text = string.Empty; // Limpia errores previos
 
-            // Lee los datos del formulario
+            // Captura el texto de los campos limpiando espacios en blanco
             var nombre = (NombreTextBox.Text ?? string.Empty).Trim();
             var correo = (CorreoTextBox.Text ?? string.Empty).Trim();
             var password = PasswordTextBox.Text ?? string.Empty;
             var confirmarPassword = ConfirmarPasswordTextBox.Text ?? string.Empty;
 
             // =========================
-            // VALIDACIONES DE TEXTO
+            // VALIDACIONES DE TEXTO Y DUPLICADOS
             // =========================
+            
+            // Verifica que los campos básicos no estén vacíos
+            if (string.IsNullOrWhiteSpace(nombre)) { await MostrarMensaje("Ingrese el nombre completo."); return; }
+            if (string.IsNullOrWhiteSpace(correo)) { await MostrarMensaje("Ingrese un correo electrónico."); return; }
+            if (!EsCorreoValido(correo)) { await MostrarMensaje("Ingrese un correo electrónico válido."); return; }
 
-            if (string.IsNullOrWhiteSpace(nombre))
-            {
-                await MostrarMensaje("Ingrese el nombre completo.");
-                return;
-            }
-
-            if (string.IsNullOrWhiteSpace(correo))
-            {
-                await MostrarMensaje("Ingrese un correo electrónico.");
-                return;
-            }
-
-            if (!EsCorreoValido(correo))
-            {
-                await MostrarMensaje("Ingrese un correo electrónico válido.");
-                return;
-            }
-
-            // Verifica si ya existe un usuario con el mismo correo
+            // Verifica que el correo no pertenezca a un usuario ya registrado
             var usuariosExistentes = _usuarioController.ObtenerUsuarios();
-
-            if (usuariosExistentes.Any(u =>
-                    !string.IsNullOrWhiteSpace(u.Correo) &&
-                    u.Correo.Trim().Equals(correo, StringComparison.OrdinalIgnoreCase)))
+            if (usuariosExistentes.Any(u => !string.IsNullOrWhiteSpace(u.Correo) && u.Correo.Trim().Equals(correo, StringComparison.OrdinalIgnoreCase)))
             {
                 await MostrarMensaje("Ese correo ya está registrado.");
                 return;
@@ -210,21 +156,19 @@ public partial class RegistroUsuarioWindow : Window
             // VALIDACIONES NUMÉRICAS
             // =========================
 
-            // Valida peso en kilogramos
+            // Convierte a decimal y valida rangos lógicos para peso (0-500kg)
             if (!decimal.TryParse(PesoTextBox.Text, out var peso) || peso <= 0 || peso > 500)
             {
                 await MostrarMensaje("Ingrese un peso válido en kilogramos. Ejemplo: 70");
                 return;
             }
 
-            // Valida altura en metros
+            // Convierte a decimal y valida rangos lógicos para altura (1.00m - 2.50m)
             if (!decimal.TryParse(AlturaTextBox.Text, out var altura) || altura <= 0 || altura > 3)
             {
                 await MostrarMensaje("Ingrese una altura válida en metros. Ejemplo: 1.75");
                 return;
             }
-
-            // Validación adicional para rango realista
             if (altura < 1.00m || altura > 2.50m)
             {
                 await MostrarMensaje("La altura debe ingresarse en metros y en un rango realista. Ejemplo: 1.75");
@@ -232,89 +176,59 @@ public partial class RegistroUsuarioWindow : Window
             }
 
             // =========================
-            // VALIDACIONES DE COMBOBOX
+            // VALIDACIONES DE SELECCIÓN (COMBOBOX)
             // =========================
 
+            // Asegura que el usuario no haya dejado las opciones en el "Placeholder"
             var actividad = ObtenerValorCombo(ActividadComboBox);
-            if (string.IsNullOrWhiteSpace(actividad))
-            {
-                await MostrarMensaje("Seleccione una actividad.");
-                return;
-            }
+            if (string.IsNullOrWhiteSpace(actividad)) { await MostrarMensaje("Seleccione una actividad."); return; }
 
             var objetivo = ObtenerValorCombo(ObjetivoComboBox);
-            if (string.IsNullOrWhiteSpace(objetivo))
-            {
-                await MostrarMensaje("Seleccione un objetivo.");
-                return;
-            }
+            if (string.IsNullOrWhiteSpace(objetivo)) { await MostrarMensaje("Seleccione un objetivo."); return; }
 
             var tipoDieta = ObtenerValorCombo(TipoDietaComboBox);
-            if (string.IsNullOrWhiteSpace(tipoDieta))
-            {
-                await MostrarMensaje("Seleccione un tipo de dieta.");
-                return;
-            }
+            if (string.IsNullOrWhiteSpace(tipoDieta)) { await MostrarMensaje("Seleccione un tipo de dieta."); return; }
 
             // =========================
-            // VALIDACIONES DE CONTRASEÑA
+            // VALIDACIONES DE SEGURIDAD (CONTRASEÑA)
             // =========================
 
-            if (string.IsNullOrWhiteSpace(password))
-            {
-                await MostrarMensaje("Ingrese una contraseña.");
-                return;
-            }
-
-            if (password.Length < 4)
-            {
-                await MostrarMensaje("La contraseña debe tener al menos 4 caracteres.");
-                return;
-            }
-
-            if (password != confirmarPassword)
-            {
-                await MostrarMensaje("La confirmación de contraseña no coincide.");
-                return;
-            }
+            // Verifica longitud mínima y que ambas contraseñas digitadas coincidan
+            if (string.IsNullOrWhiteSpace(password)) { await MostrarMensaje("Ingrese una contraseña."); return; }
+            if (password.Length < 4) { await MostrarMensaje("La contraseña debe tener al menos 4 caracteres."); return; }
+            if (password != confirmarPassword) { await MostrarMensaje("La confirmación de contraseña no coincide."); return; }
 
             // =========================
-            // CREACIÓN DEL OBJETO USUARIO
+            // CREACIÓN Y GUARDADO
             // =========================
 
+            // Empaqueta los datos limpios en un nuevo objeto de modelo
             var nuevoUsuario = new Usuario
             {
-                Nombre = nombre,
-                Correo = correo,
-                Peso = peso,
-                Altura = altura,
-                Actividad = actividad,
-                Objetivo = objetivo,
-                TipoDieta = tipoDieta,
-                Password = password
+                Nombre = nombre, Correo = correo, Peso = peso, Altura = altura,
+                Actividad = actividad, Objetivo = objetivo, TipoDieta = tipoDieta, Password = password
             };
 
-            // Guarda el usuario
+            // Envía el objeto a la base de datos a través del controlador
             _usuarioController.CrearUsuario(nuevoUsuario);
 
-            // Mensaje visual de éxito
             MensajeTextBlock.Text = "Usuario registrado correctamente. Iniciando sesión...";
 
             // =========================
-            // LOGIN AUTOMÁTICO
+            // REDIRECCIÓN Y AUTENTICACIÓN
             // =========================
 
-            // Inicia sesión automáticamente con el usuario recién creado
+            // Marca al usuario como logueado globalmente en la sesión actual
             AuthSession.IniciarUsuario(nuevoUsuario);
 
-            // Abre la ventana principal
+            // Carga y muestra la pantalla principal (Dashboard)
             var mainWindow = new MainWindow();
             mainWindow.Show();
 
-            // Cierra esta ventana de registro
+            // Cierra la ventana actual de registro
             Close();
 
-            // Si la ventana de login sigue abierta, la cierra
+            // Busca y cierra la ventana de Login si quedó abierta en el fondo
             if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
                 foreach (var window in desktop.Windows.ToList())
@@ -328,26 +242,26 @@ public partial class RegistroUsuarioWindow : Window
         }
         catch (Exception ex)
         {
+            // Captura errores no previstos (ej. caída de base de datos)
             await MostrarMensaje($"Error al registrar usuario: {ex.Message}");
         }
     }
 
     // =========================================================
-    // MÉTODOS AUXILIARES
+    // MÉTODOS DE SOPORTE (HELPERS)
     // =========================================================
 
-    // Obtiene el Tag del ComboBox seleccionado
+    // Extrae de forma segura el valor (Tag) seleccionado de un ComboBox
     private string ObtenerValorCombo(ComboBox comboBox)
     {
         if (comboBox.SelectedItem is ComboBoxItem item && item.Tag is string valor)
         {
             return valor;
         }
-
         return string.Empty;
     }
 
-    // Valida que el correo tenga un formato básico correcto
+    // Usa una Expresión Regular (Regex) para confirmar que el texto tiene formato "usuario@dominio.com"
     private bool EsCorreoValido(string correo)
     {
         return Regex.IsMatch(
@@ -357,23 +271,12 @@ public partial class RegistroUsuarioWindow : Window
         );
     }
 
-    // Muestra una ventana modal simple con mensajes de validación o error
+    // Construye dinámicamente una mini-ventana flotante (Modal) para mostrar alertas al usuario
     private async Task MostrarMensaje(string mensaje)
     {
-        var ventana = new Window
-        {
-            Title = "Mensaje",
-            Width = 380,
-            Height = 170
-        };
-
-        var okButton = new Button
-        {
-            Content = "OK",
-            Width = 100,
-            HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center
-        };
-
+        var ventana = new Window { Title = "Mensaje", Width = 380, Height = 170 };
+        var okButton = new Button { Content = "OK", Width = 100, HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center };
+        
         okButton.Click += (_, _) => ventana.Close();
 
         ventana.Content = new StackPanel
@@ -382,15 +285,12 @@ public partial class RegistroUsuarioWindow : Window
             Spacing = 12,
             Children =
             {
-                new TextBlock
-                {
-                    Text = mensaje,
-                    TextWrapping = Avalonia.Media.TextWrapping.Wrap
-                },
+                new TextBlock { Text = mensaje, TextWrapping = Avalonia.Media.TextWrapping.Wrap },
                 okButton
             }
         };
 
+        // Muestra la ventana y bloquea la interacción con la pantalla de atrás hasta que se cierre
         await ventana.ShowDialog(this);
     }
 }

@@ -1,0 +1,108 @@
+>>>>>>>>> DIAGRAMA DE IMPLEMENTACION GENERAL SPRINT5 
+
+App.axaml / App.axaml.cs / Program.cs
+        ↓
+LoginWindow.axaml / LoginWindow.axaml.cs
+        ↓
+AuthSession
+        ↓
+MainWindow.axaml / MainWindow.axaml.cs
+        ↓
+UsuarioController / ProductoController / MenuController
+NutricionController / EstadisticasNutricionController
+        ↓
+UsuarioService / ProductoService / MenuService
+NutricionService / EstadisticasNutricionService
+        ↓
+UsuarioRepository / ProductoRepository / MenuRepository
+        ↓
+usuarios.json / productos.json / menus.json
+
+
+>>>>>>>>>FLUJO DE AUTENTICACION
+
+LoginWindow.axaml / LoginWindow.axaml.cs
+        ↓
+UsuarioController
+        ↓
+UsuarioService
+        ↓
+UsuarioRepository
+        ↓
+usuarios.json
+        ↓
+AuthSession
+        ↓
+MainWindow
+
+>>>>>>>>>FLUJO DE CAMBIO DE CONTRASEÑA
+
+CambiarPasswordWindow.axaml / CambiarPasswordWindow.axaml.cs
+        ↓
+UsuarioController
+        ↓
+UsuarioService
+        ↓
+UsuarioRepository
+        ↓
+usuarios.json
+
+>>>>>>>>>FLUJO DE GESTION DE USUARIOS
+
+MainWindow.axaml / MainWindow.axaml.cs
+        ↓
+UsuarioController
+        ↓
+UsuarioService
+        ↓
+UsuarioRepository
+        ↓
+usuarios.json
+
+>>>>>>>>>FLUJO DE GESTION DE PRODUCTOS
+
+MainWindow.axaml / MainWindow.axaml.cs
+        ↓
+ProductoController
+        ↓
+ProductoService
+        ↓
+ProductoRepository
+        ↓
+productos.json
+
+>>>>>>>>>FLUJO DE GESTION DE MENUS
+
+MainWindow.axaml / MainWindow.axaml.cs
+        ↓
+MenuController
+        ↓
+MenuService
+        ↓
+MenuRepository + UsuarioRepository + ProductoRepository
+        ↓
+menus.json + usuarios.json + productos.json
+
+FLUJO DE RESUMEN NUTRICIONAL DIARIO
+
+MainWindow.axaml / MainWindow.axaml.cs
+        ↓
+NutricionController
+        ↓
+NutricionService
+        ↓
+UsuarioRepository + MenuRepository
+        ↓
+usuarios.json + menus.json
+
+>>>>>>>>>FLUJO DE ESTADISTICAS NUTRICIONALES
+
+MainWindow.axaml / MainWindow.axaml.cs
+        ↓
+EstadisticasNutricionController
+        ↓
+EstadisticasNutricionService
+        ↓
+UsuarioRepository + MenuRepository
+        ↓
+usuarios.json + menus.json
