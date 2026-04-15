@@ -1,8 +1,6 @@
 // =====================================================
 // LIBRERÍAS E IMPORTACIONES
 // =====================================================
-// Importación de componentes del sistema, elementos visuales de Avalonia 
-// y las capas de lógica/datos de DragonNutrex.
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,14 +19,11 @@ namespace DragonNutrex.UI;
 // =====================================================
 // CLASE PRINCIPAL DE LA VENTANA (MAIN)
 // =====================================================
-// Maneja toda la lógica visual de la ventana principal y sus distintos paneles/módulos.
 public partial class MainWindow : Window
 {
     // =====================================================
     // CONTROLADORES Y ESTADO DE LA VISTA
     // =====================================================
-    // Dependencias para acceder a la base de datos y variables temporales 
-    // para saber qué elementos tiene seleccionados el usuario en la interfaz.
     private readonly UsuarioController _usuarioController;
     private readonly ProductoController _productoController;
     private readonly MenuController _menuController;
@@ -42,33 +37,46 @@ public partial class MainWindow : Window
     // =====================================================
     // CONSTRUCTOR PRINCIPAL
     // =====================================================
-    // Inicializa componentes, inyecta dependencias, enlaza los clics de botones 
-    // a sus funciones y carga los datos iniciales al abrir la app.
-    public MainWindow()
+    public MainWindow(Usuario? usuarioLogueado = null)
     {
         InitializeComponent();
 
+        if (usuarioLogueado != null)
+        {
+            AuthSession.UsuarioId = usuarioLogueado.Id;
+            AuthSession.NombreUsuario = usuarioLogueado.Nombre;
+            AuthSession.EsAdmin = usuarioLogueado.Nombre.Equals("admin", StringComparison.OrdinalIgnoreCase);
+        }
+
         CargarObjetivosEnCombo();
         CargarActividadesEnCombo();
+        
+        var redis = AppServices.Redis;
 
-        // Inicialización de controladores
-        _usuarioController = new UsuarioController(new UsuarioService(new UsuarioRepository()));
-        _productoController = new ProductoController(new ProductoService(new ProductoRepository()));
+        _usuarioController = new UsuarioController(
+            new UsuarioService(new UsuarioRedisRepository(redis!))
+        );
+
+        _productoController = new ProductoController(
+            new ProductoService(new ProductoRedisRepository(redis!))
+        );
+
         _menuController = new MenuController(
             new MenuService(
-                new MenuRepository(),
-                new UsuarioRepository(),
-                new ProductoRepository()
-            )
-        );
-        _estadisticasNutricionController = new EstadisticasNutricionController(
-            new EstadisticasNutricionService(
-                new UsuarioRepository(),
-                new MenuRepository()
+                new MenuRedisRepository(redis!),
+                new UsuarioRedisRepository(redis!),
+                new ProductoRedisRepository(redis!)
             )
         );
 
-        // Enlace de eventos (Click de botones y cambio de selección en tablas)
+        _estadisticasNutricionController = new EstadisticasNutricionController(
+            new EstadisticasNutricionService(
+                new UsuarioRedisRepository(redis!),
+                new MenuRedisRepository(redis!)
+            )
+        );
+
+        // Enlace de eventos
         GuardarButton.Click += GuardarUsuario;
         EliminarButton.Click += EliminarUsuario;
         LimpiarButton.Click += (_, _) => LimpiarUsuario();
@@ -82,7 +90,7 @@ public partial class MainWindow : Window
         RegistrosMenuDataGrid.SelectionChanged += RegistrosMenuDataGrid_SelectionChanged;
         MenusDataGrid.SelectionChanged += MenusDataGrid_SelectionChanged;
 
-        // Botones de navegación del menú lateral
+        // Botones de navegación
         UsuariosModuloButton.Click += (_, _) => MostrarSoloPanelUsuarios();
         ProductosModuloButton.Click += (_, _) => MostrarSoloPanelProductos();
 
@@ -105,7 +113,6 @@ public partial class MainWindow : Window
         var btnLogoutGlobal = this.FindControl<Button>("LogoutGlobalButton");
         if (btnLogoutGlobal != null) btnLogoutGlobal.Click += Logout;
 
-        // EVENTO DEL BOTÓN DE CONTACTO
         var btnContacto = this.FindControl<Button>("ContactoButton");
         if (btnContacto != null) btnContacto.Click += AbrirFormularioContacto;
 
@@ -121,23 +128,17 @@ public partial class MainWindow : Window
         {
             CambiarModoEdicionMenu(false); 
             ActualizarPanelInfoUsuario();
-
-            // =====================================================
-            // CAMBIO: RECARGAR TABLA AL CAMBIAR DE USUARIO
-            // =====================================================
-            // Obliga a la tabla inferior a actualizarse instantáneamente
-            // para mostrar solo los menús del nuevo usuario seleccionado.
             CargarMenus(); 
         };
 
         CalcularEstadisticaNutricionButton.Click += CalcularEstadisticasNutricion;
         UsuariosEstadisticaComboBox.SelectionChanged += UsuariosEstadisticaComboBox_SelectionChanged;
 
-        // Ejecución de tareas iniciales de carga y permisos
         CargarDietasEnComboUsuarios();
         AplicarPermisosPorSesion();
         AplicarPermisosEstadisticas();
         MostrarSesionActual();
+       
 
         CargarUsuarios();
         CargarProductos();
@@ -156,9 +157,6 @@ public partial class MainWindow : Window
     // =====================================================
     // AUTENTICACIÓN Y SESIÓN
     // =====================================================
-    // Cierra sesión o restringe qué botones y paneles se ven dependiendo
-    // de si entró un Administrador o un Usuario normal.
-
     private void Logout(object? sender, RoutedEventArgs e)
     {
         AuthSession.CerrarSesion();
@@ -171,17 +169,19 @@ public partial class MainWindow : Window
     {
         var panelInfoUsuarioMenu = this.FindControl<Border>("PanelInfoUsuarioMenu");
 
+        // --- ZONA DEL ADMINISTRADOR ---
         if (AuthSession.EsAdmin)
         {
             if (panelInfoUsuarioMenu != null) panelInfoUsuarioMenu.IsVisible = false;
             MostrarSoloPanelUsuarios();
-            return;
+            return; // ¡El código del admin termina aquí!
         }
 
+        // --- ZONA DEL USUARIO NORMAL (Usuario 1) ---
         if (panelInfoUsuarioMenu != null) panelInfoUsuarioMenu.IsVisible = true;
 
         UsuariosModuloButton.IsVisible = false;
-        ProductosModuloButton.IsVisible = false;
+        ProductosModuloButton.IsVisible = true; // 🔥 AQUÍ ESTÁ EL BOTÓN ACTIVADO
 
         MenusModuloButton.IsVisible = true;
         EstadisticasNutricionModuloButton.IsVisible = true;
@@ -195,9 +195,9 @@ public partial class MainWindow : Window
         EliminarButton.IsVisible = false;
         LimpiarButton.IsVisible = false;
 
-        GuardarProductoButton.IsVisible = false;
-        EliminarProductoButton.IsVisible = false;
-        LimpiarProductoButton.IsVisible = false;
+        GuardarProductoButton.IsVisible = true; 
+        LimpiarProductoButton.IsVisible = true; 
+        EliminarProductoButton.IsVisible = false; 
     }
 
     private void AplicarPermisosEstadisticas()
@@ -216,29 +216,32 @@ public partial class MainWindow : Window
     // =====================================================
     // NAVEGACIÓN ENTRE MÓDULOS
     // =====================================================
-    // Muestra un solo panel a la vez (Usuarios, Productos, Menús, etc.)
-
+ 
     private void MostrarSoloPanelUsuarios() { if (!AuthSession.EsAdmin) return; UsuariosPanel.IsVisible = true; ProductosPanel.IsVisible = false; MenusPanel.IsVisible = false; EstadisticasNutricionPanel.IsVisible = false; }
-    private void MostrarSoloPanelProductos() { if (!AuthSession.EsAdmin) return; UsuariosPanel.IsVisible = false; ProductosPanel.IsVisible = true; MenusPanel.IsVisible = false; EstadisticasNutricionPanel.IsVisible = false; }
+    
+    
+    private void MostrarSoloPanelProductos() { UsuariosPanel.IsVisible = false; ProductosPanel.IsVisible = true; MenusPanel.IsVisible = false; EstadisticasNutricionPanel.IsVisible = false; }
+    
     private void MostrarSoloPanelMenus() { UsuariosPanel.IsVisible = false; ProductosPanel.IsVisible = false; MenusPanel.IsVisible = true; EstadisticasNutricionPanel.IsVisible = false; }
     private void MostrarSoloPanelEstadisticasNutricion() { UsuariosPanel.IsVisible = false; ProductosPanel.IsVisible = false; MenusPanel.IsVisible = false; EstadisticasNutricionPanel.IsVisible = true; }
 
     // =====================================================
     // MÓDULO: USUARIOS (CRUD)
     // =====================================================
-    // Guardar, eliminar, cargar listas y gestionar los datos del perfil de los usuarios.
-
     private async void GuardarUsuario(object? sender, RoutedEventArgs e)
     {
         try
         {
+            string pesoTexto = PesoTextBox.Text?.Replace(",", ".") ?? "0";
+            string alturaTexto = AlturaTextBox.Text?.Replace(",", ".") ?? "0";
+
             if (_usuarioSeleccionado == null)
             {
                 var usuario = new Usuario
                 {
                     Nombre = NombreTextBox.Text ?? "",
-                    Peso = decimal.TryParse(PesoTextBox.Text, out var peso) ? peso : 0,
-                    Altura = decimal.TryParse(AlturaTextBox.Text, out var altura) ? altura : 0,
+                    Peso = decimal.TryParse(pesoTexto, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out var peso) ? peso : 0,
+                    Altura = decimal.TryParse(alturaTexto, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out var altura) ? altura : 0,
                     Actividad = ObtenerActividadSeleccionada(),
                     Objetivo = ObtenerObjetivoSeleccionado(),
                     TipoDieta = ObtenerTipoDietaUsuarioSeleccionada(),
@@ -249,8 +252,8 @@ public partial class MainWindow : Window
             else
             {
                 _usuarioSeleccionado.Nombre = NombreTextBox.Text ?? "";
-                _usuarioSeleccionado.Peso = decimal.TryParse(PesoTextBox.Text, out var peso) ? peso : 0;
-                _usuarioSeleccionado.Altura = decimal.TryParse(AlturaTextBox.Text, out var altura) ? altura : 0;
+                _usuarioSeleccionado.Peso = decimal.TryParse(pesoTexto, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out var peso) ? peso : 0;
+                _usuarioSeleccionado.Altura = decimal.TryParse(alturaTexto, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out var altura) ? altura : 0;
                 _usuarioSeleccionado.Actividad = ObtenerActividadSeleccionada();
                 _usuarioSeleccionado.Objetivo = ObtenerObjetivoSeleccionado();
                 _usuarioSeleccionado.TipoDieta = ObtenerTipoDietaUsuarioSeleccionada();
@@ -290,8 +293,8 @@ public partial class MainWindow : Window
         {
             _usuarioSeleccionado = usuario;
             NombreTextBox.Text = usuario.Nombre;
-            PesoTextBox.Text = usuario.Peso.ToString();
-            AlturaTextBox.Text = usuario.Altura.ToString();
+            PesoTextBox.Text = usuario.Peso.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            AlturaTextBox.Text = usuario.Altura.ToString(System.Globalization.CultureInfo.InvariantCulture);
             SeleccionarActividad(usuario.Actividad);
             SeleccionarObjetivo(usuario.Objetivo);
             SeleccionarDietaUsuario(usuario.TipoDieta);
@@ -301,10 +304,16 @@ public partial class MainWindow : Window
 
     private void CargarUsuarios()
     {
-        var usuarios = _usuarioController.ObtenerUsuarios();
-        if (!AuthSession.EsAdmin) usuarios = usuarios.Where(u => u.Id == AuthSession.UsuarioId).ToList();
-        UsuariosDataGrid.ItemsSource = null;
-        UsuariosDataGrid.ItemsSource = usuarios;
+        try
+        {
+            var usuarios = _usuarioController.ObtenerUsuarios(); 
+            UsuariosDataGrid.ItemsSource = null;
+            UsuariosDataGrid.ItemsSource = usuarios;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Error al cargar datos de Redis en MainWindow: " + ex.Message);
+        }
     }
 
     private void LimpiarUsuario()
@@ -323,8 +332,6 @@ public partial class MainWindow : Window
     // =====================================================
     // MÓDULO: CONFIGURACIÓN DE LISTAS DESPLEGABLES
     // =====================================================
-    // Llena los ComboBox (Objetivos, Dietas, Actividades) con información predefinida.
-
     private void CargarDietasEnComboUsuarios()
     {
         TipoDietaComboBox.Items.Clear();
@@ -392,31 +399,34 @@ public partial class MainWindow : Window
     // =====================================================
     // MÓDULO: PRODUCTOS (ALIMENTOS)
     // =====================================================
-    // Guardar, actualizar o eliminar alimentos de la base de datos central.
-
     private async void GuardarProducto(object? sender, RoutedEventArgs e)
     {
         try
         {
+            string calTexto = CaloriasTextBox.Text?.Replace(",", ".") ?? "0";
+            string protTexto = ProteinasTextBox.Text?.Replace(",", ".") ?? "0";
+            string carbTexto = CarbohidratosTextBox.Text?.Replace(",", ".") ?? "0";
+            string grasasTexto = GrasasTextBox.Text?.Replace(",", ".") ?? "0";
+
             if (_productoSeleccionado == null)
             {
                 var producto = new Producto
                 {
                     Nombre = ProductoNombreTextBox.Text ?? "",
-                    Calorias = decimal.TryParse(CaloriasTextBox.Text, out var calorias) ? calorias : 0,
-                    Proteinas = decimal.TryParse(ProteinasTextBox.Text, out var proteinas) ? proteinas : 0,
-                    Carbohidratos = decimal.TryParse(CarbohidratosTextBox.Text, out var carbohidratos) ? carbohidratos : 0,
-                    Grasas = decimal.TryParse(GrasasTextBox.Text, out var grasas) ? grasas : 0
+                    Calorias = decimal.TryParse(calTexto, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out var calorias) ? calorias : 0,
+                    Proteinas = decimal.TryParse(protTexto, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out var proteinas) ? proteinas : 0,
+                    Carbohidratos = decimal.TryParse(carbTexto, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out var carbohidratos) ? carbohidratos : 0,
+                    Grasas = decimal.TryParse(grasasTexto, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out var grasas) ? grasas : 0
                 };
                 _productoController.CrearProducto(producto);
             }
             else
             {
                 _productoSeleccionado.Nombre = ProductoNombreTextBox.Text ?? "";
-                _productoSeleccionado.Calorias = decimal.TryParse(CaloriasTextBox.Text, out var calorias) ? calorias : 0;
-                _productoSeleccionado.Proteinas = decimal.TryParse(ProteinasTextBox.Text, out var proteinas) ? proteinas : 0;
-                _productoSeleccionado.Carbohidratos = decimal.TryParse(CarbohidratosTextBox.Text, out var carbohidratos) ? carbohidratos : 0;
-                _productoSeleccionado.Grasas = decimal.TryParse(GrasasTextBox.Text, out var grasas) ? grasas : 0;
+                _productoSeleccionado.Calorias = decimal.TryParse(calTexto, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out var calorias) ? calorias : 0;
+                _productoSeleccionado.Proteinas = decimal.TryParse(protTexto, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out var proteinas) ? proteinas : 0;
+                _productoSeleccionado.Carbohidratos = decimal.TryParse(carbTexto, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out var carbohidratos) ? carbohidratos : 0;
+                _productoSeleccionado.Grasas = decimal.TryParse(grasasTexto, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out var grasas) ? grasas : 0;
                 _productoController.ActualizarProducto(_productoSeleccionado);
             }
             CargarProductos();
@@ -449,10 +459,10 @@ public partial class MainWindow : Window
         {
             _productoSeleccionado = producto;
             ProductoNombreTextBox.Text = producto.Nombre;
-            CaloriasTextBox.Text = producto.Calorias.ToString();
-            ProteinasTextBox.Text = producto.Proteinas.ToString();
-            CarbohidratosTextBox.Text = producto.Carbohidratos.ToString();
-            GrasasTextBox.Text = producto.Grasas.ToString();
+            CaloriasTextBox.Text = producto.Calorias.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            ProteinasTextBox.Text = producto.Proteinas.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            CarbohidratosTextBox.Text = producto.Carbohidratos.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            GrasasTextBox.Text = producto.Grasas.ToString(System.Globalization.CultureInfo.InvariantCulture);
             GuardarProductoButton.Content = "Actualizar Producto";
         }
     }
@@ -470,8 +480,6 @@ public partial class MainWindow : Window
     // =====================================================
     // MÓDULO: GESTIÓN DE MENÚS (DIETAS DIARIAS)
     // =====================================================
-    // Permite registrar qué alimentos come un usuario en una fecha específica y ver totales.
-
     private async void NuevoMenu(object? sender, RoutedEventArgs e)
     {
         try
@@ -502,7 +510,8 @@ public partial class MainWindow : Window
             var productoId = ObtenerProductoIdSeleccionado();
             if (productoId == Guid.Empty) { await MostrarMensaje("Seleccione un producto."); return; }
 
-            var cantidad = decimal.TryParse(CantidadProductoTextBox.Text, out var cantidadParseada) ? cantidadParseada : 0;
+            string cantTexto = CantidadProductoTextBox.Text?.Replace(",", ".") ?? "0";
+            var cantidad = decimal.TryParse(cantTexto, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out var cantidadParseada) ? cantidadParseada : 0;
             _menuController.AgregarProducto(_menuActual, productoId, cantidad);
 
             RegistrosMenuDataGrid.ItemsSource = null; RegistrosMenuDataGrid.ItemsSource = _menuActual.Registros.ToList();
@@ -538,7 +547,8 @@ public partial class MainWindow : Window
             if (_menuActual == null) { await MostrarMensaje("No hay menú activo."); return; }
             if (_registroSeleccionado == null) { await MostrarMensaje("Seleccione un registro del menú."); return; }
 
-            var nuevaCantidad = decimal.TryParse(CantidadProductoTextBox.Text, out var cantidad) ? cantidad : 0;
+            string cantTexto = CantidadProductoTextBox.Text?.Replace(",", ".") ?? "0";
+            var nuevaCantidad = decimal.TryParse(cantTexto, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out var cantidad) ? cantidad : 0;
             _menuController.ActualizarRegistro(_menuActual, _registroSeleccionado.Id, nuevaCantidad);
 
             RegistrosMenuDataGrid.ItemsSource = null; RegistrosMenuDataGrid.ItemsSource = _menuActual.Registros.ToList();
@@ -585,7 +595,7 @@ public partial class MainWindow : Window
     private void RegistrosMenuDataGrid_SelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
         if (RegistrosMenuDataGrid.SelectedItem is RegistroComida registro)
-        { _registroSeleccionado = registro; CantidadProductoTextBox.Text = registro.Cantidad.ToString(); }
+        { _registroSeleccionado = registro; CantidadProductoTextBox.Text = registro.Cantidad.ToString(System.Globalization.CultureInfo.InvariantCulture); }
     }
 
     private void MenusDataGrid_SelectionChanged(object? sender, SelectionChangedEventArgs e)
@@ -605,20 +615,16 @@ public partial class MainWindow : Window
         }
     }
 
+    // =====================================================
+    // CARGAR MENÚS (✨ CORREGIDO CON CÁLCULO AL VUELO)
+    // =====================================================
     private void CargarMenus()
     {
         var usuarios = _usuarioController.ObtenerUsuarios();
         var menus = _menuController.ObtenerMenus();
 
-        // =====================================================
-        // CAMBIO: FILTRO DE HISTORIAL DE MENÚS POR USUARIO
-        // =====================================================
-        // Obtenemos el ID del usuario seleccionado en el ComboBox 
-        // (si es Admin) o el ID de la sesión (si es paciente).
         var usuarioId = ObtenerUsuarioIdSeleccionado();
         
-        // Filtramos la lista global de menús para mostrar SOLAMENTE 
-        // los que le pertenecen a ese usuario específico.
         if (usuarioId != Guid.Empty)
         {
             menus = menus.Where(m => m.UsuarioId == usuarioId).ToList();
@@ -627,10 +633,28 @@ public partial class MainWindow : Window
         var vista = menus.Select(m =>
         {
             var usuario = usuarios.FirstOrDefault(u => u.Id == m.UsuarioId);
-            return new MenuVista { Id = m.Id, UsuarioNombre = usuario?.Nombre ?? "Usuario no encontrado", Fecha = m.Fecha, TotalCalorias = m.TotalCalorias, TotalProteinas = m.TotalProteinas, TotalCarbohidratos = m.TotalCarbohidratos, TotalGrasas = m.TotalGrasas };
+            
+            // 🔥 TRUCO MÁGICO: Sumamos los alimentos directamente aquí 
+            // asegurando que la tabla NUNCA vuelva a mostrar un cero por error.
+            var tCalorias = m.Registros?.Sum(r => r.Calorias) ?? 0;
+            var tProteinas = m.Registros?.Sum(r => r.Proteinas) ?? 0;
+            var tCarbohidratos = m.Registros?.Sum(r => r.Carbohidratos) ?? 0;
+            var tGrasas = m.Registros?.Sum(r => r.Grasas) ?? 0;
+
+            return new MenuVista 
+            { 
+                Id = m.Id, 
+                UsuarioNombre = usuario?.Nombre ?? "Usuario no encontrado", 
+                Fecha = m.Fecha, 
+                TotalCalorias = tCalorias, 
+                TotalProteinas = tProteinas, 
+                TotalCarbohidratos = tCarbohidratos, 
+                TotalGrasas = tGrasas 
+            };
         }).ToList();
 
-        MenusDataGrid.ItemsSource = null; MenusDataGrid.ItemsSource = vista;
+        MenusDataGrid.ItemsSource = null; 
+        MenusDataGrid.ItemsSource = vista;
     }
 
     private void CargarUsuariosEnCombo()
@@ -664,37 +688,61 @@ public partial class MainWindow : Window
         }
         ActualizarPanelInfoUsuario();
     }
-
+    // =====================================================
+    // CALCULADORA DE TOTALES DEL MENÚ 🧮
+    // =====================================================
     private void ActualizarTotalesMenu()
     {
         if (_menuActual == null)
         {
-            TotalCaloriasTextBlock.Text = "Calorías: 0"; TotalProteinasTextBlock.Text = "Proteínas: 0"; TotalCarbohidratosTextBlock.Text = "Carbohidratos: 0"; TotalGrasasTextBlock.Text = "Grasas: 0";
+            TotalCaloriasTextBlock.Text = "Calorías: 0"; 
+            TotalProteinasTextBlock.Text = "Proteínas: 0"; 
+            TotalCarbohidratosTextBlock.Text = "Carbohidratos: 0"; 
+            TotalGrasasTextBlock.Text = "Grasas: 0";
             return;
         }
-        TotalCaloriasTextBlock.Text = $"Calorías: {_menuActual.TotalCalorias}";
-        TotalProteinasTextBlock.Text = $"Proteínas: {_menuActual.TotalProteinas}";
-        TotalCarbohidratosTextBlock.Text = $"Carbohidratos: {_menuActual.TotalCarbohidratos}";
-        TotalGrasasTextBlock.Text = $"Grasas: {_menuActual.TotalGrasas}";
+
+        // 🔥 EL MOTOR DE CÁLCULO: Recorremos la lista y sumamos todo automáticamente
+        if (_menuActual.Registros != null && _menuActual.Registros.Any())
+        {
+            _menuActual.TotalCalorias = _menuActual.Registros.Sum(r => r.Calorias);
+            _menuActual.TotalProteinas = _menuActual.Registros.Sum(r => r.Proteinas);
+            _menuActual.TotalCarbohidratos = _menuActual.Registros.Sum(r => r.Carbohidratos);
+            _menuActual.TotalGrasas = _menuActual.Registros.Sum(r => r.Grasas);
+        }
+        else
+        {
+            _menuActual.TotalCalorias = 0;
+            _menuActual.TotalProteinas = 0;
+            _menuActual.TotalCarbohidratos = 0;
+            _menuActual.TotalGrasas = 0;
+        }
+
+        // 🎨 Actualizamos los textos en pantalla
+        TotalCaloriasTextBlock.Text = $"Calorías: {_menuActual.TotalCalorias:F2}";
+        TotalProteinasTextBlock.Text = $"Proteínas: {_menuActual.TotalProteinas:F2}";
+        TotalCarbohidratosTextBlock.Text = $"Carbohidratos: {_menuActual.TotalCarbohidratos:F2}";
+        TotalGrasasTextBlock.Text = $"Grasas: {_menuActual.TotalGrasas:F2}";
     }
+
 
     private void LimpiarMenu()
     {
         _menuActual = null; _registroSeleccionado = null;
-        UsuariosMenuComboBox.SelectedItem = null; CantidadProductoTextBox.Text = ""; FechaMenuDatePicker.SelectedDate = DateTime.Today;
+        CantidadProductoTextBox.Text = ""; FechaMenuDatePicker.SelectedDate = DateTime.Today;
         RegistrosMenuDataGrid.ItemsSource = null; MenusDataGrid.SelectedItem = null;
         if (ProductosMenuComboBox.ItemCount > 0) ProductosMenuComboBox.SelectedIndex = 0;
         ActualizarTotalesMenu();
-        if (UsuariosMenuComboBox.ItemCount > 0) UsuariosMenuComboBox.SelectedIndex = 0;
+        
+        if (AuthSession.EsAdmin && UsuariosMenuComboBox.ItemCount > 0) 
+            UsuariosMenuComboBox.SelectedIndex = 0;
+            
         ActualizarPanelInfoUsuario();
     }
 
     // =====================================================
     // EDICIÓN DE PERFIL EN PANEL DE MENÚS
     // =====================================================
-    // Lógica para que el usuario pueda editar sus datos rápidos (peso, altura)
-    // directamente desde el creador de menús sin cambiar de pestaña.
-
     private void CambiarModoEdicionMenu(bool enEdicion)
     {
         var txtUsuario = this.FindControl<TextBlock>("InfoMenuUsuarioTextBlock");
@@ -749,8 +797,8 @@ public partial class MainWindow : Window
         if (usuario != null)
         {
             if (txtUsuario != null) txtUsuario.Text = usuario.Nombre;
-            if (txtPeso != null) txtPeso.Text = $"{usuario.Peso} kg";
-            if (txtAltura != null) txtAltura.Text = $"{usuario.Altura} cm";
+            if (txtPeso != null) txtPeso.Text = $"{usuario.Peso.ToString(System.Globalization.CultureInfo.InvariantCulture)} kg";
+            if (txtAltura != null) txtAltura.Text = $"{usuario.Altura.ToString(System.Globalization.CultureInfo.InvariantCulture)} cm";
             if (txtDieta != null) txtDieta.Text = string.IsNullOrWhiteSpace(usuario.TipoDieta) ? "Sin dieta" : usuario.TipoDieta;
             if (txtActividad != null) txtActividad.Text = string.IsNullOrWhiteSpace(usuario.Actividad) ? "-" : usuario.Actividad;
             if (txtObjetivo != null) txtObjetivo.Text = string.IsNullOrWhiteSpace(usuario.Objetivo) ? "-" : usuario.Objetivo;
@@ -784,8 +832,8 @@ public partial class MainWindow : Window
         var editObjetivo = this.FindControl<ComboBox>("EditMenuObjetivoComboBox");
 
         if (editUsuario != null) editUsuario.Text = usuario.Nombre;
-        if (editPeso != null) editPeso.Text = usuario.Peso.ToString();
-        if (editAltura != null) editAltura.Text = usuario.Altura.ToString();
+        if (editPeso != null) editPeso.Text = usuario.Peso.ToString(System.Globalization.CultureInfo.InvariantCulture);
+        if (editAltura != null) editAltura.Text = usuario.Altura.ToString(System.Globalization.CultureInfo.InvariantCulture);
 
         SeleccionarEnComboGenerico(editDieta, usuario.TipoDieta);
         SeleccionarEnComboGenerico(editActividad, usuario.Actividad);
@@ -796,36 +844,46 @@ public partial class MainWindow : Window
 
     private async void GuardarPerfilMenu_Click(object? sender, RoutedEventArgs e)
     {
-        var usuarioId = ObtenerUsuarioIdSeleccionado();
-        var usuario = _usuarioController.ObtenerUsuarios().FirstOrDefault(u => u.Id == usuarioId);
-        if (usuario == null) return;
+        try
+        {
+            var usuarioId = ObtenerUsuarioIdSeleccionado();
+            var usuario = _usuarioController.ObtenerUsuarios().FirstOrDefault(u => u.Id == usuarioId);
+            if (usuario == null) return;
 
-        var editUsuario = this.FindControl<TextBox>("EditMenuUsuarioTextBox");
-        var editPeso = this.FindControl<TextBox>("EditMenuPesoTextBox");
-        var editAltura = this.FindControl<TextBox>("EditMenuAlturaTextBox");
-        var editDieta = this.FindControl<ComboBox>("EditMenuDietaComboBox");
-        var editActividad = this.FindControl<ComboBox>("EditMenuActividadComboBox");
-        var editObjetivo = this.FindControl<ComboBox>("EditMenuObjetivoComboBox");
+            var editUsuario = this.FindControl<TextBox>("EditMenuUsuarioTextBox");
+            var editPeso = this.FindControl<TextBox>("EditMenuPesoTextBox");
+            var editAltura = this.FindControl<TextBox>("EditMenuAlturaTextBox");
+            var editDieta = this.FindControl<ComboBox>("EditMenuDietaComboBox");
+            var editActividad = this.FindControl<ComboBox>("EditMenuActividadComboBox");
+            var editObjetivo = this.FindControl<ComboBox>("EditMenuObjetivoComboBox");
 
-        usuario.Nombre = editUsuario?.Text ?? "";
-        usuario.Peso = decimal.TryParse(editPeso?.Text, out var p) ? p : 0;
-        usuario.Altura = decimal.TryParse(editAltura?.Text, out var a) ? a : 0;
-        
-        usuario.TipoDieta = ObtenerValorComboGenerico(editDieta);
-        usuario.Actividad = ObtenerValorComboGenerico(editActividad);
-        usuario.Objetivo = ObtenerValorComboGenerico(editObjetivo);
+            string pesoTexto = editPeso?.Text?.Replace(",", ".") ?? "0";
+            string alturaTexto = editAltura?.Text?.Replace(",", ".") ?? "0";
 
-        _usuarioController.ActualizarUsuario(usuario);
+            usuario.Nombre = editUsuario?.Text ?? "";
+            usuario.Peso = decimal.TryParse(pesoTexto, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out var p) ? p : 0;
+            usuario.Altura = decimal.TryParse(alturaTexto, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out var a) ? a : 0;
+            
+            usuario.TipoDieta = ObtenerValorComboGenerico(editDieta);
+            usuario.Actividad = ObtenerValorComboGenerico(editActividad);
+            usuario.Objetivo = ObtenerValorComboGenerico(editObjetivo);
 
-        CargarUsuarios();
-        CargarUsuariosEnCombo();
-        CargarUsuariosEnComboEstadistica();
-        
-        SeleccionarUsuarioEnCombo(usuario.Id); 
-        ActualizarPanelInfoUsuario();
+            _usuarioController.ActualizarUsuario(usuario);
 
-        CambiarModoEdicionMenu(false);
-        await MostrarMensaje("Perfil actualizado y guardado correctamente.");
+            CargarUsuarios();
+            CargarUsuariosEnCombo();
+            CargarUsuariosEnComboEstadistica();
+            
+            SeleccionarUsuarioEnCombo(usuario.Id); 
+            ActualizarPanelInfoUsuario();
+
+            CambiarModoEdicionMenu(false);
+            await MostrarMensaje("Perfil actualizado y guardado correctamente.");
+        }
+        catch (Exception ex)
+        {
+            await MostrarMensaje("Ocurrió un error al intentar guardar: " + ex.Message);
+        }
     }
 
     private void CancelarPerfilMenu_Click(object? sender, RoutedEventArgs e)
@@ -884,9 +942,6 @@ public partial class MainWindow : Window
     // =====================================================
     // MÓDULO: ESTADÍSTICAS Y RESUMEN NUTRICIONAL
     // =====================================================
-    // Muestra los avances, calcula IMC, diferencias entre lo consumido vs objetivo, 
-    // y pinta de colores (Rojo/Verde) los resultados.
-
     private void CargarUsuariosEnComboEstadistica()
     {
         var usuarios = _usuarioController.ObtenerUsuarios();
@@ -1035,8 +1090,6 @@ public partial class MainWindow : Window
     // =====================================================
     // VENTANAS MODALES Y ALERTAS
     // =====================================================
-    // Métodos para construir y mostrar ventanas emergentes de error, éxito o confirmación.
-
     private async Task MostrarMensaje(string mensaje)
     {
         var ventana = new Window { Title = "Mensaje", Width = 380, Height = 180 };
@@ -1058,14 +1111,11 @@ public partial class MainWindow : Window
         return await tcs.Task;
     }
 
-    // Clase interna usada únicamente para moldear la vista en la tabla de Menús
     private class MenuVista { public Guid Id { get; set; } public string UsuarioNombre { get; set; } = ""; public DateTime Fecha { get; set; } public decimal TotalCalorias { get; set; } public decimal TotalProteinas { get; set; } public decimal TotalCarbohidratos { get; set; } public decimal TotalGrasas { get; set; } }
 
     // =====================================================
     // FORMULARIO DE CONTACTO
     // =====================================================
-    // Levanta un modal donde el usuario puede escribir un mensaje de soporte.
-    
     private async void AbrirFormularioContacto(object? sender, RoutedEventArgs e)
     {
         var ventanaContacto = new Window
@@ -1117,4 +1167,5 @@ public partial class MainWindow : Window
 
         await ventanaContacto.ShowDialog(this);
     }
+   
 }

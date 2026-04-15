@@ -1,150 +1,172 @@
-// =====================================================
-// IMPORTACIONES
-// =====================================================
-
-// Librerías base del sistema
 using System;
-using System.Linq;
-
-// Librerías de Avalonia para UI y eventos
+using System.Linq; 
+using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
-
-// Capas de la aplicación (arquitectura por capas)
-using DragonNutrex.App.Controllers;
+using Avalonia.Media;
 using DragonNutrex.App.Repositories;
-using DragonNutrex.App.Services;
+using DragonNutrex.App.Models; 
 
-// Namespace de la interfaz gráfica
 namespace DragonNutrex.UI;
 
-// =====================================================
-// VENTANA DE LOGIN
-// =====================================================
-
-// Clase parcial que representa la ventana de inicio de sesión
 public partial class LoginWindow : Window
 {
-    // Controlador de usuarios (conecta UI con lógica de negocio)
-    private readonly UsuarioController _usuarioController;
+    private bool _redisDisponible = false;
+    private RedisConnection? _redisConnection;
 
-    // =====================================================
-    // CONSTRUCTOR
-    // =====================================================
-    // Inicializa la ventana y configura dependencias y eventos
     public LoginWindow()
     {
-        // Inicializa los componentes gráficos (XAML)
         InitializeComponent();
+        this.Opened += LoginWindow_Opened;
+    }
 
-        // Inyección manual de dependencias (Controller → Service → Repository)
-        _usuarioController = new UsuarioController(
-            new UsuarioService(new UsuarioRepository())
-        );
+    private void LoginWindow_Opened(object? sender, EventArgs e)
+    {
+        _ = InicializarServiciosAsync(); 
+    }
 
-        // Eventos de botones
-        LoginButton.Click += Login; // Botón login
-        RegistrarseButton.Click += AbrirRegistro; // Botón registro
+    private async Task InicializarServiciosAsync()
+    {
+        try
+        {
+            _redisConnection = AppServices.Redis;
+
+            if (_redisConnection == null)
+            {
+                _redisDisponible = false;
+                await MostrarErrorConexionAsync();
+                return;
+            }
+
+            _redisDisponible = true;
+            Console.WriteLine("Conexión a Redis inicializada correctamente.");
+
+            // 🔥 ENCENDEMOS LA MÁQUINA CREADORA ANTES DE QUE EL USUARIO INICIE SESIÓN
+            GenerarDatosMasivos();
+        }
+        catch (Exception ex)
+        {
+            _redisDisponible = false;
+            Console.WriteLine("Error al inicializar servicios: " + ex.Message);
+            await MostrarErrorConexionAsync();
+        }
+    }
+
+    // =====================================================
+    // MÁQUINA CREADORA DE DATOS (SEED) 🪄
+    // =====================================================
+    private void GenerarDatosMasivos()
+    {
+        var redis = AppServices.Redis!;
+        var usuarioRepo = new UsuarioRedisRepository(redis);
+        var productoRepo = new ProductoRedisRepository(redis);
+
+        // Si ya existen usuarios, detenemos la máquina para no clonarlos cada vez que abrimos la app
+        if (usuarioRepo.GetAll().Count > 0) return;
+
+        Console.WriteLine("Base de datos vacía detectada. Generando usuarios y productos...");
+
+        // 1. Cuenta de Admin
+        usuarioRepo.Create(new Usuario { Nombre = "admin", Password = "123", Peso = 0, Altura = 0 });
+
+        // 2. Cuentas de Prueba
+        for (int i = 1; i <= 29; i++)
+        {
+            usuarioRepo.Create(new Usuario {
+                Nombre = $"Usuario {i}", 
+                Password = "Upi.2025", 
+                Peso = 60 + (i % 15), 
+                Altura = 160 + (i % 20), 
+                Actividad = "Ligera", 
+                Objetivo = "Bajar peso", 
+                TipoDieta = "Vegana"
+            });
+        }
+
+        // 3. Catálogo de Alimentos
+        productoRepo.Create(new Producto { Nombre = "Manzana", Calorias = 52, Proteinas = 0.3m, Carbohidratos = 14, Grasas = 0.2m });
+        productoRepo.Create(new Producto { Nombre = "Pollo a la plancha", Calorias = 165, Proteinas = 31, Carbohidratos = 0, Grasas = 3.6m });
+        productoRepo.Create(new Producto { Nombre = "Arroz blanco", Calorias = 130, Proteinas = 2.7m, Carbohidratos = 28, Grasas = 0.3m });
+        productoRepo.Create(new Producto { Nombre = "Huevo duro", Calorias = 78, Proteinas = 6.3m, Carbohidratos = 0.6m, Grasas = 5.3m });
+        productoRepo.Create(new Producto { Nombre = "Brócoli", Calorias = 34, Proteinas = 2.8m, Carbohidratos = 7, Grasas = 0.4m });
         
-        // Evento para recuperación de contraseña
-        OlvidastePasswordButton.Click += AbrirCambiarPassword;
+        Console.WriteLine("¡Datos generados exitosamente!");
     }
 
-    // =====================================================
-    // MÉTODO LOGIN
-    // =====================================================
-    // Valida credenciales e inicia sesión
-    private async void Login(object? sender, RoutedEventArgs e)
+    private async Task MostrarErrorConexionAsync()
     {
-        // Obtiene datos ingresados por el usuario
-        var usuarioIngresado = (UsuarioTextBox.Text ?? "").Trim();
-        var passwordIngresado = PasswordTextBox.Text ?? "";
-
-        // Validación de usuario administrador (hardcodeado)
-        if (usuarioIngresado.Equals("stephsg", StringComparison.OrdinalIgnoreCase)
-            && passwordIngresado == "Upi.2025")
+        var mensaje = new Window
         {
-            // Inicia sesión como admin
-            AuthSession.IniciarAdmin();
+            Title = "Error de conexión",
+            Width = 420,
+            Height = 180,
+            CanResize = false,
+            WindowStartupLocation = WindowStartupLocation.CenterOwner,
+            Content = new TextBlock
+            {
+                Text = "No se pudo conectar con Redis. Verifica la conexión a internet o la configuración del servidor.",
+                TextWrapping = TextWrapping.Wrap,
+                Margin = new Avalonia.Thickness(20)
+            }
+        };
 
-            // Abre ventana principal
-            var main = new MainWindow();
-            main.Show();
-
-            // Cierra ventana actual
-            Close();
-            return;
-        }
-
-        // Busca el usuario en la lista
-        var usuario = _usuarioController.ObtenerUsuarios()
-            .FirstOrDefault(u =>
-                u.Nombre.Trim().Equals(usuarioIngresado, StringComparison.OrdinalIgnoreCase));
-
-        // Validación: usuario no existe
-        if (usuario == null)
-        {
-            ErrorTextBlock.Text = "Usuario no encontrado.";
-            return;
-        }
-
-        // Validación: contraseña incorrecta
-        if (usuario.Password != passwordIngresado)
-        {
-            ErrorTextBlock.Text = "Contraseña incorrecta.";
-            return;
-        }
-
-        // Inicia sesión con usuario válido
-        AuthSession.IniciarUsuario(usuario);
-
-        // Abre ventana principal
-        var mainWindow = new MainWindow();
-        mainWindow.Show();
-
-        // Cierra login
-        Close();
+        await mensaje.ShowDialog(this);
     }
 
-    // =====================================================
-    // MÉTODO ABRIR REGISTRO
-    // =====================================================
-    // Abre la ventana para registrar un nuevo usuario
-    private async void AbrirRegistro(object? sender, RoutedEventArgs e)
+    // ====================================================================
+    // ACCIÓN DEL BOTÓN INGRESAR
+    // ====================================================================
+    public void BtnIngresar_Click(object? sender, RoutedEventArgs e)
     {
+        ErrorTextBlock.Text = "";
+
+        if (!_redisDisponible)
+        {
+            ErrorTextBlock.Text = "No hay conexión a la base de datos.";
+            return; 
+        }
+
+        var usuario = UsuarioTextBox.Text?.Trim() ?? "";
+        var password = PasswordTextBox.Text?.Trim() ?? "";
+
+        if (string.IsNullOrWhiteSpace(usuario) || string.IsNullOrWhiteSpace(password))
+        {
+            ErrorTextBlock.Text = "Por favor, ingresa tu usuario y contraseña.";
+            return;
+        }
+
         try
         {
-            // Crea la ventana de registro
-            var ventana = new RegistroUsuarioWindow();
+            var usuarioRepo = new UsuarioRedisRepository(AppServices.Redis!);
+            var todosLosUsuarios = usuarioRepo.GetAll();
 
-            // Abre como diálogo modal
-            await ventana.ShowDialog(this);
+            var usuarioValido = todosLosUsuarios.FirstOrDefault(u => 
+                u.Nombre.Equals(usuario, StringComparison.OrdinalIgnoreCase) && 
+                u.Password == password);
+
+            if (usuarioValido != null) 
+            {
+                this.Hide();
+                var mainWindow = new MainWindow(usuarioValido); 
+                mainWindow.Show();
+                this.Close();
+            }
+            else
+            {
+                ErrorTextBlock.Text = "Usuario o contraseña incorrectos.";
+            }
         }
         catch (Exception ex)
         {
-            // Muestra error en pantalla
-            ErrorTextBlock.Text = $"Error al abrir registro: {ex.Message}";
+            ErrorTextBlock.Text = "Error al intentar iniciar sesión.";
+            Console.WriteLine("Error crítico: " + ex.Message);
         }
     }
 
-    // =====================================================
-    // MÉTODO CAMBIAR CONTRASEÑA
-    // =====================================================
-    // Abre la ventana de recuperación/cambio de contraseña
-    private async void AbrirCambiarPassword(object? sender, RoutedEventArgs e)
+    public void BtnRegistrarse_Click(object? sender, RoutedEventArgs e)
     {
-        try
-        {
-            // Instancia la ventana de cambio de contraseña
-            var ventanaPassword = new CambiarPasswordWindow();
-
-            // Abre como diálogo modal
-            await ventanaPassword.ShowDialog(this);
-        }
-        catch (Exception ex)
-        {
-            // Muestra error en pantalla
-            ErrorTextBlock.Text = $"Error al abrir recuperación: {ex.Message}";
-        }
+        ErrorTextBlock.Text = "";
+        var registroWindow = new RegistroUsuarioWindow();
+        registroWindow.Show();
     }
 }

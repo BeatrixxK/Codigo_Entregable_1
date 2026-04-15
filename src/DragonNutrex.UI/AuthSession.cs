@@ -17,14 +17,12 @@ namespace DragonNutrex.UI;
 // Maneja el estado global del usuario logueado en la aplicación
 public static class AuthSession
 {
-    // Indica si el usuario actual es administrador
-    public static bool EsAdmin { get; private set; }
+    // ✨ CORRECCIÓN: Se quitó 'private' para permitir que MainWindow actualice la sesión
+    public static bool EsAdmin { get; set; }
 
-    // Guarda el ID del usuario autenticado
-    public static Guid UsuarioId { get; private set; }
+    public static Guid UsuarioId { get; set; }
 
-    // Guarda el nombre del usuario autenticado
-    public static string NombreUsuario { get; private set; } = string.Empty;
+    public static string NombreUsuario { get; set; } = string.Empty;
 
     // =====================================================
     // MÉTODO INICIAR ADMIN
@@ -32,9 +30,9 @@ public static class AuthSession
     // Configura la sesión como administrador
     public static void IniciarAdmin()
     {
-        EsAdmin = true; // Marca como admin
-        UsuarioId = Guid.Empty; // No usa ID específico
-        NombreUsuario = "Administrador"; // Nombre por defecto
+        EsAdmin = true; 
+        UsuarioId = Guid.Empty; 
+        NombreUsuario = "Administrador"; 
     }
 
     // =====================================================
@@ -43,9 +41,9 @@ public static class AuthSession
     // Configura la sesión con un usuario normal
     public static void IniciarUsuario(Usuario usuario)
     {
-        EsAdmin = false; // No es admin
-        UsuarioId = usuario.Id; // Asigna ID del usuario
-        NombreUsuario = usuario.Nombre; // Asigna nombre
+        EsAdmin = false; 
+        UsuarioId = usuario.Id; 
+        NombreUsuario = usuario.Nombre; 
     }
 
     // =====================================================
@@ -54,9 +52,9 @@ public static class AuthSession
     // Limpia la sesión actual (logout)
     public static void Cerrar()
     {
-        EsAdmin = false; // Quita privilegios de admin
-        UsuarioId = Guid.Empty; // Resetea ID
-        NombreUsuario = string.Empty; // Limpia nombre
+        EsAdmin = false; 
+        UsuarioId = Guid.Empty; 
+        NombreUsuario = string.Empty; 
     }
 
     // =====================================================
@@ -65,9 +63,8 @@ public static class AuthSession
     // Hace lo mismo que Cerrar(): reinicia los datos de sesión
     public static void CerrarSesion()
     {
-        UsuarioId = Guid.Empty; // Resetea ID
-        NombreUsuario = string.Empty; // Limpia nombre
-        EsAdmin = false; // Quita rol de admin
+        UsuarioId = Guid.Empty; 
+        NombreUsuario = string.Empty; 
+        EsAdmin = false; 
     }
-
 }

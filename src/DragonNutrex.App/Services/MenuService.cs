@@ -22,7 +22,7 @@ public class MenuService
     // Repositorios necesarios
     private readonly IRepository<Menu> _menuRepository;
     private readonly IRepository<Usuario> _usuarioRepository;
-    private readonly IRepository<Producto> _productoRepository;
+    private readonly IRepository<Producto> _productoRepository; // ✨ Una sola variable correcta
 
     // =====================================================
     // CONSTRUCTOR
@@ -31,11 +31,11 @@ public class MenuService
     public MenuService(
         IRepository<Menu> menuRepository,
         IRepository<Usuario> usuarioRepository,
-        IRepository<Producto> productoRepository)
+        IRepository<Producto> productoRepository) // ✨ Nombre en minúscula por convención
     {
         _menuRepository = menuRepository;
         _usuarioRepository = usuarioRepository;
-        _productoRepository = productoRepository;
+        _productoRepository = productoRepository; // ✨ Asignación correcta
     }
 
     // =====================================================
@@ -101,7 +101,7 @@ public class MenuService
         if (cantidad <= 0)
             throw new Exception("La cantidad debe ser mayor que cero.");
 
-        // Busca el producto
+        // Busca el producto usando la variable correcta ✨
         var producto = _productoRepository.GetById(productoId);
         if (producto == null)
             throw new Exception("Producto no encontrado.");
@@ -157,6 +157,7 @@ public class MenuService
         if (registro == null)
             throw new Exception("Registro no encontrado.");
 
+        // Usa la variable correcta ✨
         var producto = _productoRepository.GetById(registro.ProductoId);
         if (producto == null)
             throw new Exception("Producto no encontrado.");

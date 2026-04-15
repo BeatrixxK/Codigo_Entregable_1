@@ -1,72 +1,74 @@
-<!-- ===================================================== -->
-<!-- VENTANA DE LOGIN -->
-<!-- Define la interfaz gráfica para iniciar sesión -->
-<!-- ===================================================== -->
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="DragonNutrex.UI.LoginWindow"
+        Width="500"
+        Height="750"
+        Title="Login DragonNutrex"
+        Background="White"
+        WindowStartupLocation="CenterScreen">
 
-    <!-- Configuración de la ventana principal -->
-    <Window xmlns="https://github.com/avaloniaui"
-            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-            x:Class="DragonNutrex.UI.LoginWindow"
-            Width="500"
-            Height="750"
-            Title="Login DragonNutrex"
-            Background="White"
-            WindowStartupLocation="CenterScreen">
+    <Grid RowDefinitions="Auto,Auto" VerticalAlignment="Top">
 
-        <!-- Grid principal con 2 filas -->
-        <Grid RowDefinitions="Auto,Auto" VerticalAlignment="Top">
-
-    
-
-
-        <!-- ===================================================== -->
-        <!-- LOGO SUPERIOR -->
-        <!-- ===================================================== -->
         <StackPanel Grid.Row="0" HorizontalAlignment="Center" Margin="0,10,0,0" Spacing="10">
             
-            <!-- Imagen del logo de la aplicación -->
             <Image Source="avares://DragonNutrex.UI/Images/logo.png"
                    Width="300" Stretch="Uniform" HorizontalAlignment="Center"/>
         </StackPanel>
 
-        <!-- ===================================================== -->
-        <!-- CONTENEDOR PRINCIPAL DEL LOGIN -->
-        <!-- ===================================================== -->
         <Border Grid.Row="1" Background="#b4dcb8" CornerRadius="18" Padding="26" Margin="24,-80,24,20" VerticalAlignment="Top">
             
-            <!-- Contenedor vertical de los elementos -->
             <StackPanel Spacing="16">
 
-                <!-- Título de bienvenida -->
                 <TextBlock FontSize="28" FontWeight="Bold" Foreground="#11582d" TextWrapping="Wrap" TextAlignment="Center" HorizontalAlignment="Center">
                     Bienvenido a Dragon Nutrex
                     <LineBreak/>
                     Inicia sesión
                 </TextBlock>
 
-                <!-- Campo de texto para usuario -->
-                <TextBox x:Name="UsuarioTextBox" Watermark="Usuario" Background="#EAEAEA" Foreground="Gray" BorderBrush="#CCCCCC"/>
+                <TextBox x:Name="UsuarioTextBox" 
+                         Watermark="Usuario" 
+                         Background="#EAEAEA" 
+                         Foreground="Gray" 
+                         BorderBrush="#CCCCCC"/>
 
-                <!-- Campo de texto para contraseña (oculta caracteres) -->
-                <TextBox x:Name="PasswordTextBox" Watermark="Contraseña" PasswordChar="*" Background="#EAEAEA" Foreground="Gray" BorderBrush="#CCCCCC"/>
+                <TextBox x:Name="PasswordTextBox" 
+                         Watermark="Contraseña" 
+                         PasswordChar="*" 
+                         Background="#EAEAEA" 
+                         Foreground="Gray" 
+                         BorderBrush="#CCCCCC"/>
 
-                <!-- ===================================================== -->
-                <!-- BOTONES DE ACCIÓN -->
-                <!-- ===================================================== -->
                 <StackPanel Orientation="Horizontal" Spacing="12" HorizontalAlignment="Center">
                     
-                    <!-- Botón para iniciar sesión -->
-                    <Button x:Name="LoginButton" Content="Ingresar" Width="140" Background="#2E9E44" Foreground="White" HorizontalContentAlignment="Center"/>
+                    <Button x:Name="LoginButton" 
+                            Content="Ingresar" 
+                            Width="140" 
+                            Background="#2E9E44" 
+                            Foreground="White" 
+                            HorizontalContentAlignment="Center"
+                            Click="BtnIngresar_Click"/>
                     
-                    <!-- Botón para ir al registro -->
-                    <Button x:Name="RegistrarseButton" Content="Registrarse" Width="140" Background="#2E9E44" Foreground="White" HorizontalContentAlignment="Center"/>
+                    <Button x:Name="RegistrarseButton" 
+                            Content="Registrarse" 
+                            Width="140" 
+                            Background="#2E9E44" 
+                            Foreground="White" 
+                            HorizontalContentAlignment="Center"
+                            Click="BtnRegistrarse_Click"/>
                 </StackPanel>
 
-                <!-- Botón para recuperación de contraseña -->
-                <Button x:Name="OlvidastePasswordButton" Content="¿Olvidaste tu contraseña?" Background="Transparent" Foreground="#11582d" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,5,0,0"/>
+                <Button x:Name="OlvidastePasswordButton" 
+                        Content="¿Olvidaste tu contraseña?" 
+                        Background="Transparent" 
+                        Foreground="#11582d" 
+                        FontWeight="Bold" 
+                        HorizontalAlignment="Center" 
+                        Margin="0,5,0,0"/>
 
-                <!-- Texto para mostrar errores (ej: usuario incorrecto) -->
-                <TextBlock x:Name="ErrorTextBlock" Foreground="Red" TextWrapping="Wrap" TextAlignment="Center"/>
+                <TextBlock x:Name="ErrorTextBlock" 
+                           Foreground="Red" 
+                           TextWrapping="Wrap" 
+                           TextAlignment="Center"/>
             
             </StackPanel>
         </Border>

@@ -79,7 +79,7 @@ MenuController
         ↓
 MenuService
         ↓
-MenuRepository + UsuarioRepository + ProductoRepository
+MenuRepository + UsuarioRepository + ProductoRedisRepository
         ↓
 menus.json + usuarios.json + productos.json
 

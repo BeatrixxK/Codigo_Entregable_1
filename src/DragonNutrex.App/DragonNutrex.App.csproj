@@ -20,5 +20,8 @@
     <Nullable>enable</Nullable>
   
   </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="StackExchange.Redis" Version="2.12.14" />
+  </ItemGroup>
 
 </Project>
