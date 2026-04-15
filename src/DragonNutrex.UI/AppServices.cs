@@ -1,5 +1,6 @@
 using System;
 using DragonNutrex.App.Repositories;
+using DotNetEnv; 
 
 namespace DragonNutrex.UI;
 
@@ -16,20 +17,33 @@ public static class AppServices
 
             try
             {
-                // ✨ SOLUCIÓN: Todo el texto, incluidos los tiempos extra, están DENTRO de las comillas.
-                var connectionString = "redis-11674.c16.us-east-1-2.ec2.cloud.redislabs.com:11674,password=SStOKh8Jr8dlzIndL0eVP37Wy8p4o5xj,abortConnect=false,connectTimeout=15000,syncTimeout=15000";
+                // 1. 🔥 CORRECCIÓN: Usamos TraversePath() para que busque el .env 
+                // en carpetas superiores si no lo encuentra en la actual.
+                DotNetEnv.Env.TraversePath().Load();
 
+                // 2. Buscamos la variable secreta en el entorno del sistema
+                var connectionString = Environment.GetEnvironmentVariable("REDIS_URL");
+
+                // 3. Validación de seguridad para evitar que la app intente conectar al vacío
+                if (string.IsNullOrEmpty(connectionString))
+                {
+                    Console.WriteLine("❌ ERROR CRÍTICO: No se encontró la variable REDIS_URL.");
+                    Console.WriteLine("Asegúrate de que el archivo .env existe y tiene el formato REDIS_URL=valor");
+                    return null;
+                }
+
+                // 4. Inicializamos la conexión con la cadena segura
                 _redis = new RedisConnection(connectionString);
 
-                Console.WriteLine("✅ Redis conectado correctamente.");
+                Console.WriteLine("✅ Redis conectado correctamente usando variable de entorno segura.");
                 return _redis;
             }
             catch (Exception ex)
             {
                 Console.WriteLine("❌ Error creando la conexión Redis:");
-                Console.WriteLine(ex.ToString());
+                Console.WriteLine(ex.Message);
 
-                return null; // evita crash
+                return null;
             }
         }
     }
