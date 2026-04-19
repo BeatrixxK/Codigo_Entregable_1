@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "pTvyV3KnroA=",
+  "dgSpecHash": "cncUGObXr30=",
   "success": true,
   "projectFilePath": "/Users/beatrixxkiddo/Library/CloudStorage/GoogleDrive-stephaniesolisguevara@gmail.com/My Drive/Education/Politecnica/05.2026.IC.90501.G1.TECNICAS DE PROGRAMACION /Proyecto Final/Codigo_Entregable_1/src/DragonNutrex.UI/DragonNutrex.UI.csproj",
   "expectedPackageFiles": [
@@ -36,6 +36,7 @@
     "/Users/beatrixxkiddo/.nuget/packages/microsoft.netcore.platforms/1.1.0/microsoft.netcore.platforms.1.1.0.nupkg.sha512",
     "/Users/beatrixxkiddo/.nuget/packages/netstandard.library/1.6.1/netstandard.library.1.6.1.nupkg.sha512",
     "/Users/beatrixxkiddo/.nuget/packages/pipelines.sockets.unofficial/2.2.8/pipelines.sockets.unofficial.2.2.8.nupkg.sha512",
+    "/Users/beatrixxkiddo/.nuget/packages/questpdf/2026.2.4/questpdf.2026.2.4.nupkg.sha512",
     "/Users/beatrixxkiddo/.nuget/packages/skiasharp/2.88.9/skiasharp.2.88.9.nupkg.sha512",
     "/Users/beatrixxkiddo/.nuget/packages/skiasharp.nativeassets.linux/2.88.9/skiasharp.nativeassets.linux.2.88.9.nupkg.sha512",
     "/Users/beatrixxkiddo/.nuget/packages/skiasharp.nativeassets.macos/2.88.9/skiasharp.nativeassets.macos.2.88.9.nupkg.sha512",

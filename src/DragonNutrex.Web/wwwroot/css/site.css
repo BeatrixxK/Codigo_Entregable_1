@@ -1,0 +1,67 @@
+:root {
+    --dragon-red: #d32f2f;
+    --dragon-gold: #ffc107;
+    --dragon-dark: #121212;
+    --dragon-card: #1e1e1e;
+}
+
+body {
+    background-color: var(--dragon-dark);
+    color: white;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Estilo de Tarjetas tipo Manual */
+.card {
+    background-color: var(--dragon-card);
+    border: 1px solid var(--dragon-gold);
+    color: white;
+    margin-bottom: 20px;
+}
+
+.card-header {
+    background-color: var(--dragon-red) !important;
+    color: white;
+    font-weight: bold;
+    border-bottom: 1px solid var(--dragon-gold);
+}
+
+/* Botones estilo Dragon */
+.btn-dragon {
+    background-color: var(--dragon-gold);
+    color: black;
+    font-weight: bold;
+    border: none;
+}
+
+.btn-dragon:hover {
+    background-color: #e0a800;
+    color: white;
+}
+
+/* Navbar lateral */
+.sidebar {
+    background-image: linear-gradient(180deg, #b71c1c 0%, #121212 80%);
+}
+
+/* Colores fieles al manual de Dragon Nutrex */
+.btn-dragon-green {
+    background-color: #28a745;
+    color: white;
+    border: 1px solid #218838;
+}
+.btn-dragon-green:hover {
+    background-color: #218838;
+    color: white;
+}
+
+/* Tablas estilo Dragon Nutrex */
+.table-dragon {
+    border: 1px solid #dee2e6;
+}
+.table-dragon thead th {
+    background-color: #28a745 !important;
+    color: white !important;
+    font-weight: normal;
+    border-bottom: 2px solid #218838;
+}

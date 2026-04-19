@@ -24,10 +24,10 @@ public partial class MainWindow : Window
     // =====================================================
     // CONTROLADORES Y ESTADO DE LA VISTA
     // =====================================================
-    private readonly UsuarioController _usuarioController;
-    private readonly ProductoController _productoController;
-    private readonly MenuController _menuController;
-    private readonly EstadisticasNutricionController _estadisticasNutricionController;
+    private readonly UsuarioController _usuarioController = null!;
+    private readonly ProductoController _productoController = null!;
+    private readonly MenuController _menuController = null!;
+    private readonly EstadisticasNutricionController _estadisticasNutricionController = null!;
 
     private Usuario? _usuarioSeleccionado;
     private Producto? _productoSeleccionado;

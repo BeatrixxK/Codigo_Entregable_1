@@ -1,0 +1,86 @@
+@page "/admin/reportes"
+@using DragonNutrex.App.Controllers
+@using DragonNutrex.App.Services
+@inject EstadisticasNutricionController _statsController
+@inject ExportacionService _exportService
+@inject IJSRuntime JS
+
+<PageTitle>Reportes Globales - Dragon Nutrex</PageTitle>
+
+<div class="container mt-4">
+    <h2 class="text-danger mb-4"><i class="bi bi-graph-up"></i> Estadísticas del Sistema</h2>
+
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-dark text-white">Producto Top (Hoy)</div>
+                <div class="card-body text-center">
+                    <h3>@_statsController.ObtenerProductoMasConsumido(DateTime.Today, DateTime.Today)</h3>
+                    <p class="text-muted">Basado en los menús de hoy</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-primary text-white">Usuarios más activos</div>
+                <ul class="list-group list-group-flush">
+                    @foreach (var user in _statsController.ObtenerTopUsuariosConMasMenus(3))
+                    {
+                        <li class="list-group-item d-flex justify-content-between">
+                            @user.Key <span>@user.Value menús</span>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm mt-2">
+        <div class="card-header bg-success text-white">Exportar Datos</div>
+        <div class="card-body">
+            <p>Descarga los reportes consolidados en diferentes formatos:</p>
+            <div class="d-flex gap-3">
+                <button class="btn btn-outline-primary" @onclick="DescargarCSV">
+                    <i class="bi bi-filetype-csv"></i> Descargar CSV
+                </button>
+                
+                <button class="btn btn-outline-secondary" @onclick="DescargarTXT">
+                    <i class="bi bi-file-text"></i> Descargar TXT
+                </button>
+
+                <button class="btn btn-danger" @onclick="DescargarPDF">
+                    <i class="bi bi-file-pdf"></i> Descargar PDF (+10 pts)
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private async Task DescargarCSV() {
+        // En un caso real, obtendrías la lista de usuarios del controlador
+        var bytes = _exportService.GenerarCsvUsuarios(new()); // Usamos lista vacía para prueba
+        await GuardarArchivo("Reporte_Usuarios.csv", bytes);
+    }
+
+    private async Task DescargarTXT() {
+        var bytes = _exportService.GenerarTxtUsuarios(new());
+        await GuardarArchivo("Reporte_Usuarios.txt", bytes);
+    }
+
+    private async Task DescargarPDF() {
+        var dietas = _statsController.ObtenerPorcentajesDietas();
+        var top = _statsController.ObtenerTopUsuariosConMasMenus();
+        var producto = _statsController.ObtenerProductoMasConsumido(DateTime.Today.AddDays(-30), DateTime.Today);
+        
+        var bytes = _exportService.GenerarPdfEstadisticas(dietas, top, producto, "Últimos 30 días");
+        await GuardarArchivo("Reporte_DragonNutrex.pdf", bytes);
+    }
+
+    private async Task GuardarArchivo(string nombre, byte[] bytes) {
+        var stream = new MemoryStream(bytes);
+        using var streamRef = new DotNetStreamReference(stream);
+        await JS.InvokeVoidAsync("downloadFileFromStream", nombre, streamRef);
+    }
+}

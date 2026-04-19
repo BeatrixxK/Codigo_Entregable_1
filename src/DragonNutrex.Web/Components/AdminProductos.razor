@@ -1,0 +1,174 @@
+@page "/admin/productos"
+@using DragonNutrex.Web
+@using DragonNutrex.App.Controllers
+@using DragonNutrex.App.Models
+@inject UserSession Session
+@inject ProductoController _productoController
+@rendermode InteractiveServer
+
+<PageTitle>Gestión de Productos</PageTitle>
+
+<div class="container-fluid">
+    <h3 class="fw-bold mb-4" style="color: #1b5e20;">Gestión de Productos</h3>
+
+    @if (!string.IsNullOrEmpty(mensaje))
+    {
+        <div class="alert @(esError ? "alert-danger" : "alert-success") py-2 rounded-1 fw-bold">
+            @mensaje
+        </div>
+    }
+
+    <div class="row g-2 mb-3">
+        <div class="col-md-4">
+            <label class="text-muted small fw-bold mb-1">Nombre del producto</label>
+            <input type="text" class="form-control input-dragon" @bind="nuevoProducto.Nombre" />
+        </div>
+        <div class="col-md-2">
+            <label class="text-muted small fw-bold mb-1">Calorías (kcal)</label>
+            <input type="number" step="any" class="form-control input-dragon" @bind="nuevoProducto.Calorias" />
+        </div>
+        <div class="col-md-2">
+            <label class="text-muted small fw-bold mb-1">Proteínas (g)</label>
+            <input type="number" step="any" class="form-control input-dragon" @bind="nuevoProducto.Proteinas" />
+        </div>
+        <div class="col-md-2">
+            <label class="text-muted small fw-bold mb-1">Carbohidratos (g)</label>
+            <input type="number" step="any" class="form-control input-dragon" @bind="nuevoProducto.Carbohidratos" />
+        </div>
+        <div class="col-md-2">
+            <label class="text-muted small fw-bold mb-1">Grasas (g)</label>
+            <input type="number" step="any" class="form-control input-dragon" @bind="nuevoProducto.Grasas" />
+        </div>
+    </div>
+
+    <div class="d-flex gap-2 mb-4">
+        <button type="button" class="btn btn-dragon" @onclick="Guardar">Guardar Producto</button>
+        @if (Session.IsAdmin)
+        {
+            <button type="button" class="btn btn-danger fw-bold rounded-1" @onclick="Eliminar">Eliminar seleccionado</button>
+        }
+        <button type="button" class="btn btn-dragon" @onclick="Limpiar">Limpiar</button>
+    </div>
+
+    <div class="table-responsive shadow-sm">
+        <table class="table table-hover table-dragon w-100">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Calorías</th>
+                    <th>Proteínas</th>
+                    <th>Carbohidratos</th>
+                    <th>Grasas</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var prod in listaProductos)
+                {
+                    <tr @onclick="() => Seleccionar(prod)" style="cursor: pointer;" class="@(productoSeleccionado?.Id == prod.Id ? "selected-row" : "")">
+                        <td class="fw-bold">@prod.Nombre</td>
+                        <td>@prod.Calorias</td>
+                        <td>@prod.Proteinas</td>
+                        <td>@prod.Carbohidratos</td>
+                        <td>@prod.Grasas</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@code {
+    private List<Producto> listaProductos = new();
+    private Producto nuevoProducto = new();
+    private Producto? productoSeleccionado;
+    
+    private string mensaje = "";
+    private bool esError = false;
+
+    protected override void OnInitialized() => Cargar();
+
+    private void Cargar() => listaProductos = _productoController.ObtenerProductos() ?? new();
+
+    private void Seleccionar(Producto p)
+    {
+        productoSeleccionado = p;
+        nuevoProducto = new Producto { 
+            Id = p.Id, Nombre = p.Nombre, Calorias = p.Calorias, 
+            Proteinas = p.Proteinas, Carbohidratos = p.Carbohidratos, Grasas = p.Grasas 
+        };
+        mensaje = ""; // Oculta mensajes al hacer clic en una fila
+    }
+
+    private void Guardar()
+    {
+        if (string.IsNullOrWhiteSpace(nuevoProducto.Nombre)) 
+        {
+            mensaje = "⚠️ El nombre del producto es obligatorio.";
+            esError = true;
+            return;
+        }
+
+        try
+        {
+            if (nuevoProducto.Id == Guid.Empty)
+            {
+                // 🔥 SOLUCIÓN: Eliminamos el Guid.NewGuid() de aquí. 
+                // Tu backend se encargará de crearle su propio ID real.
+                _productoController.CrearProducto(nuevoProducto); 
+                mensaje = $"✅ Producto '{nuevoProducto.Nombre}' creado con éxito.";
+            }
+            else
+            {
+                _productoController.ActualizarProducto(nuevoProducto); 
+                mensaje = $"✅ Producto '{nuevoProducto.Nombre}' actualizado con éxito.";
+            }
+            
+            esError = false;
+            LimpiarFormulario(); 
+            Cargar(); 
+        }
+        catch (Exception ex)
+        {
+            mensaje = $"❌ Error: {ex.Message}";
+            esError = true;
+        }
+    }
+
+    private void Eliminar()
+    {
+        if (productoSeleccionado != null)
+        {
+            try
+            {
+                _productoController.EliminarProducto(productoSeleccionado.Id); 
+                mensaje = "🗑️ Producto eliminado correctamente.";
+                esError = false;
+                LimpiarFormulario();
+                Cargar();
+            }
+            catch (Exception ex)
+            {
+                mensaje = $"❌ Error al eliminar: {ex.Message}";
+                esError = true;
+            }
+        }
+    }
+
+    // Método que llama el botón "Limpiar" (Borra todo, incluyendo el banner de mensaje)
+    private void Limpiar() 
+    { 
+        nuevoProducto = new(); 
+        productoSeleccionado = null; 
+        mensaje = "";
+        esError = false;
+        StateHasChanged(); // Fuerza repintado de pantalla
+    }
+
+    // Método que llamamos internamente tras guardar (Borra datos, pero DEJA el banner de éxito visible)
+    private void LimpiarFormulario()
+    {
+        nuevoProducto = new(); 
+        productoSeleccionado = null; 
+        StateHasChanged(); 
+    }
+}

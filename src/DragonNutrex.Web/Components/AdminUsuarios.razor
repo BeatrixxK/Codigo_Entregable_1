@@ -1,0 +1,86 @@
+@page "/admin/usuarios"
+@using DragonNutrex.App.Controllers
+@using DragonNutrex.App.Models
+@inject UsuarioController _usuarioController
+@inject NavigationManager _nav
+
+<PageTitle>Gestión de Usuarios - Admin</PageTitle>
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-danger"><i class="bi bi-people-fill"></i> Panel de Usuarios</h2>
+        <span class="badge bg-dark">Modo Administrador</span>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Dieta</th>
+                        <th>Estado</th>
+                        <th class="text-center">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var u in _usuarioController.ObtenerUsuarios())
+                    {
+                        <tr>
+                            <td>
+                                <div class="fw-bold">@u.Nombre</div>
+                                <small class="text-muted">ID: @u.Id.ToString().Substring(0, 8)...</small>
+                            </td>
+                            <td><span class="badge bg-info text-dark">@u.TipoDieta</span></td>
+                            <td>
+                                @if (u.Activo) {
+                                    <span class="badge bg-success">Activo</span>
+                                } else {
+                                    <span class="badge bg-secondary">Desactivado</span>
+                                }
+                            </td>
+                            <td class="text-center">
+                                <div class="btn-group shadow-sm">
+                                    <button class="btn btn-outline-warning btn-sm" @onclick="() => ResetClave(u.Id)">
+                                        <i class="bi bi-key"></i> Reset
+                                    </button>
+                                    
+                                    @if (u.Activo) {
+                                        <button class="btn btn-outline-danger btn-sm" @onclick="() => Desactivar(u.Id)">
+                                            <i class="bi bi-person-x"></i> Desactivar
+                                        </button>
+                                    } else {
+                                        <button class="btn btn-success btn-sm" @onclick="() => Activar(u.Id)">
+                                            <i class="bi bi-person-check"></i> Activar
+                                        </button>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@code {
+    private void Desactivar(Guid id) {
+        _usuarioController.DesactivarUsuario(id);
+        StateHasChanged(); // Refresca la pantalla
+    }
+
+    private void Activar(Guid id) {
+        var u = _usuarioController.ObtenerUsuarios().FirstOrDefault(x => x.Id == id);
+        if (u != null) {
+            u.Activo = true;
+            _usuarioController.ActualizarUsuario(u);
+        }
+        StateHasChanged();
+    }
+
+    private void ResetClave(Guid id) {
+        _usuarioController.ResetearPassword(id);
+        // Aquí podrías agregar un mensaje de "Éxito"
+    }
+}

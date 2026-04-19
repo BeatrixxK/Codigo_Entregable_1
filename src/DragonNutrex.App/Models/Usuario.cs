@@ -33,4 +33,7 @@ public class Usuario
 
     // Correo electrónico del usuario
     public string Correo { get; set; } = "";
+    public bool Activo { get; set; } = true;
+
 }
+

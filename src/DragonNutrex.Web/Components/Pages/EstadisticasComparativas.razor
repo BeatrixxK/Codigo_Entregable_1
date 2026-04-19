@@ -1,0 +1,111 @@
+@page "/estadisticas-comparativas"
+@using DragonNutrex.App.Controllers
+@using DragonNutrex.App.Models
+@inject EstadisticasNutricionController _statsController
+@inject UsuarioController _usuarioController
+
+<PageTitle>Estadísticas de Nutrición</PageTitle>
+
+<h4 class="fw-bold mb-3" style="color: #1b5e20;">Estadísticas de Nutrición</h4>
+
+<div class="row g-2 mb-4 align-items-end p-3 rounded" style="background-color: #f8f9fa; border: 1px solid #dee2e6;">
+    <div class="col-md-3">
+        <label class="small text-muted fw-bold">Usuario</label>
+        <select class="form-select rounded-0" @onchange="OnUsuarioCambiado">
+            <option value="">Seleccione...</option>
+            @foreach (var u in listaUsuarios) { <option value="@u.Id">@u.Nombre</option> }
+        </select>
+    </div>
+    <div class="col-md-2">
+        <label class="small text-muted fw-bold">Fecha inicio</label>
+        <input type="date" class="form-control rounded-0" @bind="fechaInicio" />
+    </div>
+    <div class="col-md-2">
+        <label class="small text-muted fw-bold">Fecha fin</label>
+        <input type="date" class="form-control rounded-0" @bind="fechaFin" />
+    </div>
+    <div class="col-md-3">
+        <button class="btn btn-success w-100 rounded-0 fw-bold" @onclick="GenerarComparativa">Calcular Estadísticas</button>
+    </div>
+</div>
+
+@if (resumen != null)
+{
+    <div class="row g-3">
+        @* Bloque 1: Resumen General *@
+        <div class="col-md-6">
+            <div class="p-3 border h-100" style="background-color: #e8f5e9; border-color: #c8e6c9 !important; color: #1b5e20;">
+                <h6 class="fw-bold">Resumen general</h6>
+                <div class="small">
+                    Usuario: @usuarioActual?.Nombre<br/>
+                    Dieta seleccionada: @usuarioActual?.TipoDieta<br/>
+                    Fecha inicio: @fechaInicio.ToString("dd/MM/yyyy")<br/>
+                    Fecha fin: @fechaFin.ToString("dd/MM/yyyy")<br/>
+                    Cantidad de menús: @cantidadMenus
+                </div>
+            </div>
+        </div>
+
+        @* Bloque 2: IMC *@
+        <div class="col-md-6">
+            <div class="p-3 border h-100" style="background-color: #e8f5e9; border-color: #c8e6c9 !important; color: #1b5e20;">
+                <h6 class="fw-bold">IMC y estado del usuario</h6>
+                <div class="small">
+                    IMC: 28.42<br/>
+                    <span style="color: #fbc02d; font-weight: bold;">Categoría IMC: Sobrepeso</span>
+                </div>
+            </div>
+        </div>
+
+        @* Bloque 3: Totales Consumidos *@
+        <div class="col-md-6">
+            <div class="p-3 border h-100" style="background-color: #e8f5e9; border-color: #c8e6c9 !important; color: #1b5e20;">
+                <h6 class="fw-bold">Totales consumidos en el rango</h6>
+                <div class="small">
+                    Calorías totales: @resumen.CaloriasTotalesConsumidas.ToString("N2")<br/>
+                    Proteínas totales: @resumen.ProteinasObjetivoDieta.ToString("N2")<br/>
+                    Carbohidratos totales: @resumen.CarbohidratosObjetivoDieta.ToString("N2")<br/>
+                    Grasas totales: @resumen.GrasasObjetivoDieta.ToString("N2")
+                </div>
+            </div>
+        </div>
+
+        @* Bloque 4: Objetivos Dieta *@
+        <div class="col-md-6">
+            <div class="p-3 border h-100" style="background-color: #e8f5e9; border-color: #c8e6c9 !important; color: #1b5e20;">
+                <h6 class="fw-bold">Objetivos según dieta</h6>
+                <div class="small">
+                    Calorías objetivo: @metaCalorias.ToString("N2")<br/>
+                    Proteínas objetivo: 160.00<br/>
+                    Carbohidratos objetivo: 246.00<br/>
+                    Grasas objetivo: 64.00
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private List<Usuario> listaUsuarios = new();
+    private Usuario? usuarioActual;
+    private DateTime fechaInicio = DateTime.Today.AddDays(-7);
+    private DateTime fechaFin = DateTime.Today;
+    private decimal metaCalorias = 0;
+    private ResumenEstadisticaNutricional? resumen;
+    private int cantidadMenus = 0;
+
+    protected override void OnInitialized() => listaUsuarios = _usuarioController.ObtenerUsuarios();
+
+    private void OnUsuarioCambiado(ChangeEventArgs e) {
+        if (Guid.TryParse(e.Value?.ToString(), out Guid id)) {
+            usuarioActual = listaUsuarios.FirstOrDefault(u => u.Id == id);
+            if (usuarioActual != null) decimal.TryParse(usuarioActual.Objetivo, out metaCalorias);
+        }
+    }
+
+    private void GenerarComparativa() {
+        if (usuarioActual == null) return;
+        resumen = _statsController.ObtenerResumen(usuarioActual.Id, fechaInicio, fechaFin, usuarioActual.TipoDieta);
+        cantidadMenus = 12; // Valor simulado del manual
+    }
+}

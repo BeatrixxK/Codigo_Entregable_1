@@ -1,0 +1,72 @@
+@page "/"
+@layout DragonNutrex.Web.Components.Layout.EmptyLayout
+@inject NavigationManager Nav
+@inject UserSession UserSession
+@rendermode InteractiveServer 
+
+<PageTitle>Dragon Nutrex - Inicia Sesión</PageTitle>
+
+<div style="background-color: #a5d6a7; min-height: 100vh; display: flex; align-items: center; justify-content: center; font-family: 'Segoe UI', sans-serif;">
+    <div class="text-center" style="width: 100%; max-width: 500px; padding: 20px;">
+        
+        <div class="mb-4">
+            <img src="images/logo.png" alt="Dragon Nutrex Logo" style="max-height: 250px; width: auto; object-fit: contain;" />
+        </div>
+
+        <h2 style="color: #1b5e20; font-weight: bold; margin-bottom: 5px;">Bienvenido a Dragon Nutrex</h2>
+        <h3 style="color: #1b5e20; font-weight: bold; margin-bottom: 30px;">Inicia sesión</h3>
+
+        <div class="mb-3">
+            <input type="text" class="form-control" placeholder="Usuario" @bind="usuarioInput"
+                   style="background-color: #e0e0e0; border: none; height: 50px; border-radius: 4px; font-size: 1.1rem;" />
+        </div>
+        <div class="mb-4">
+            <input type="password" class="form-control" placeholder="Contraseña" @bind="passwordInput"
+                   style="background-color: #000000; color: white; border: none; height: 50px; border-radius: 4px; font-size: 1.1rem;" />
+        </div>
+
+        @if (!string.IsNullOrEmpty(mensajeError))
+        {
+            <div class="alert alert-danger p-2 mb-3">@mensajeError</div>
+        }
+
+        <div class="d-flex justify-content-center gap-3 mb-4">
+            <button class="btn" style="background-color: #008f39; color: white; padding: 12px 40px; border-radius: 4px; font-weight: bold; font-size: 1.1rem;" @onclick="Entrar">
+                Ingresar
+            </button>
+            <button class="btn" style="background-color: #008f39; color: white; padding: 12px 40px; border-radius: 4px; font-weight: bold; font-size: 1.1rem;">
+                Registrarse
+            </button>
+        </div>
+
+        <a href="#" style="color: #1b5e20; text-decoration: none; font-weight: 500;">¿Olvidaste tu contraseña?</a>
+    </div>
+</div>
+
+@code {
+    private string usuarioInput = "";
+    private string passwordInput = "";
+    private string mensajeError = "";
+
+    private void Entrar() 
+    {
+        if (string.IsNullOrWhiteSpace(usuarioInput))
+        {
+            mensajeError = "Por favor ingrese un usuario.";
+            return;
+        }
+
+        // 1. Guardamos quién acaba de entrar en la memoria global
+        UserSession.NombreUsuario = usuarioInput.Trim();
+
+        // 2. Lo mandamos a la pantalla correcta según su rol
+        if (UserSession.IsAdmin) 
+        {
+            Nav.NavigateTo("/admin/usuarios");
+        } 
+        else 
+        {
+            Nav.NavigateTo("/mi-progreso"); 
+        }
+    }
+}

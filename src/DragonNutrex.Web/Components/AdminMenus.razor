@@ -1,0 +1,224 @@
+@page "/admin/menus"
+@using DragonNutrex.Web
+@using DragonNutrex.App.Controllers
+@using DragonNutrex.App.Models
+@inject UserSession Session
+@inject UsuarioController _usuarioController
+@inject MenuController _menuController
+@inject ProductoController _productoController
+@rendermode InteractiveServer
+
+<PageTitle>Gestión de Menús</PageTitle>
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="fw-bold mb-0" style="color: #1b5e20;">Gestión de Menús</h3>
+        <div class="d-flex gap-2">
+            <button class="btn btn-success fw-bold shadow-sm px-4" @onclick='() => GuardarMenu("¡Menú guardado exitosamente!")'>
+                💾 GUARDAR TODO EL MENÚ
+            </button>
+            @if (menuActual != null && menuActual.Registros.Any())
+            {
+                <button class="btn btn-outline-danger fw-bold" @onclick="EliminarMenuCompleto">
+                    🗑️ Borrar Día
+                </button>
+            }
+        </div>
+    </div>
+
+    @if (!string.IsNullOrEmpty(mensaje))
+    {
+        <div class="alert @(esError ? "alert-danger" : "alert-success") py-2 rounded-1 fw-bold shadow-sm">
+            @mensaje
+        </div>
+    }
+
+    <div class="row g-2 mb-3 align-items-end">
+        <div class="col-md-6">
+            <label class="text-muted small fw-bold mb-1">Usuario</label>
+            @if (Session.IsAdmin)
+            {
+                <select class="form-select input-dragon" @bind="usuarioSeleccionadoId" @bind:after="CargarMenuDelDia">
+                    <option value="@Guid.Empty">Seleccione un usuario...</option>
+                    @foreach (var u in listaUsuarios)
+                    {
+                        <option value="@u.Id">@u.Nombre</option>
+                    }
+                </select>
+            }
+            else
+            {
+                <input type="text" class="form-control input-dragon fw-bold" value="@Session.NombreUsuario" disabled />
+            }
+        </div>
+        <div class="col-md-4">
+            <label class="text-muted small fw-bold mb-1">Fecha</label>
+            <input type="date" class="form-control input-dragon" @bind="fechaMenu" @bind:after="CargarMenuDelDia" />
+        </div>
+        <div class="col-md-2">
+            <button type="button" class="btn btn-secondary w-100 fw-bold" @onclick="LimpiarPantalla">Limpiar</button>
+        </div>
+    </div>
+
+    <div class="row g-2 mb-4 align-items-end p-3 rounded-2 shadow-sm" style="background-color: #f8f9fa; border: 1px solid #dee2e6;">
+        <div class="col-md-6">
+            <label class="text-muted small fw-bold mb-1">Producto</label>
+            <select class="form-select input-dragon" @bind="productoSeleccionadoId">
+                <option value="@Guid.Empty">Seleccione un producto...</option>
+                @foreach (var p in listaProductos)
+                {
+                    <option value="@p.Id">@p.Nombre (@p.Calorias kcal)</option>
+                }
+            </select>
+        </div>
+        <div class="col-md-4">
+            <label class="text-muted small fw-bold mb-1">Cantidad</label>
+            <input type="number" step="any" class="form-control input-dragon" @bind="cantidadProducto" />
+        </div>
+        <div class="col-md-2">
+            <button type="button" class="btn btn-dragon w-100 fw-bold" @onclick="AgregarProductoAlMenu">
+                + Agregar
+            </button>
+        </div>
+    </div>
+
+    @if (menuActual != null)
+    {
+        <div class="card mb-3 shadow-sm" style="background-color: #e8f5e9; border: 1px solid #c8e6c9;">
+            <div class="card-body py-2 d-flex justify-content-between align-items-center" style="color: #1b5e20;">
+                <h6 class="mb-0 fw-bold">Totales del @fechaMenu.ToString("dd/MM/yyyy"):</h6>
+                <div class="d-flex gap-4">
+                    <span><strong>Kcal:</strong> @menuActual.TotalCalorias.ToString("F2")</span>
+                    <span><strong>Prot:</strong> @menuActual.TotalProteinas.ToString("F2")g</span>
+                    <span><strong>Carb:</strong> @menuActual.TotalCarbohidratos.ToString("F2")g</span>
+                    <span><strong>Gras:</strong> @menuActual.TotalGrasas.ToString("F2")g</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="table-responsive shadow-sm">
+            <table class="table table-hover table-dragon w-100 align-middle">
+                <thead style="background-color: #1b5e20; color: white;">
+                    <tr>
+                        <th>Producto</th>
+                        <th style="width: 100px;">Cant.</th>
+                        <th>Kcal</th>
+                        <th>Prot.</th>
+                        <th>Carb.</th>
+                        <th>Gras.</th>
+                        <th class="text-center">X</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white">
+                    @foreach (var reg in menuActual.Registros)
+                    {
+                        <tr>
+                            <td class="fw-bold" style="color: #1b5e20;">@reg.NombreProducto</td>
+                            <td>
+                                <input type="number" step="any" class="form-control form-control-sm text-center" 
+                                       @bind="reg.Cantidad" @bind:after="() => RecalcularLineaYGuardar(reg)" />
+                            </td>
+                            <td>@reg.Calorias.ToString("F2")</td>
+                            <td>@reg.Proteinas.ToString("F2")</td>
+                            <td>@reg.Carbohidratos.ToString("F2")</td>
+                            <td>@reg.Grasas.ToString("F2")</td>
+                            <td class="text-center">
+                                <button type="button" class="btn btn-sm btn-outline-danger" @onclick="() => EliminarRegistro(reg)">
+                                    X
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+
+@code {
+    private List<Usuario> listaUsuarios = new();
+    private List<Producto> listaProductos = new();
+    private Guid usuarioSeleccionadoId = Guid.Empty;
+    private Guid productoSeleccionadoId = Guid.Empty;
+    private DateTime fechaMenu = DateTime.Today;
+    private decimal cantidadProducto = 1;
+    private Menu? menuActual;
+    private string mensaje = "";
+    private bool esError = false;
+
+    protected override void OnInitialized()
+    {
+        listaProductos = _productoController.ObtenerProductos() ?? new();
+        listaUsuarios = _usuarioController.ObtenerUsuarios() ?? new();
+
+        if (!Session.IsAdmin)
+        {
+            var yo = listaUsuarios.FirstOrDefault(u => u.Nombre?.ToLower() == Session.NombreUsuario?.ToLower());
+            if (yo != null) { usuarioSeleccionadoId = yo.Id; CargarMenuDelDia(); }
+        }
+    }
+
+    private void CargarMenuDelDia()
+    {
+        mensaje = ""; esError = false;
+        if (usuarioSeleccionadoId == Guid.Empty) { menuActual = null; return; }
+
+        var todos = _menuController.ObtenerMenus() ?? new();
+        menuActual = todos.FirstOrDefault(m => m.UsuarioId == usuarioSeleccionadoId && m.Fecha.Date == fechaMenu.Date) 
+                     ?? new Menu { UsuarioId = usuarioSeleccionadoId, Fecha = fechaMenu.Date };
+        RecalcularTotalesGenerales();
+    }
+
+    private void AgregarProductoAlMenu()
+    {
+        if (menuActual == null || productoSeleccionadoId == Guid.Empty) return;
+        var p = listaProductos.FirstOrDefault(x => x.Id == productoSeleccionadoId);
+        if (p == null) return;
+
+        menuActual.Registros.Add(new RegistroComida {
+            ProductoId = p.Id, NombreProducto = p.Nombre, Cantidad = cantidadProducto,
+            Calorias = p.Calorias * cantidadProducto, Proteinas = p.Proteinas * cantidadProducto,
+            Carbohidratos = p.Carbohidratos * cantidadProducto, Grasas = p.Grasas * cantidadProducto
+        });
+
+        GuardarMenu("Producto añadido.");
+    }
+
+    private void RecalcularLineaYGuardar(RegistroComida reg)
+    {
+        var p = listaProductos.FirstOrDefault(x => x.Id == reg.ProductoId);
+        if (p != null) {
+            reg.Calorias = p.Calorias * reg.Cantidad; reg.Proteinas = p.Proteinas * reg.Cantidad;
+            reg.Carbohidratos = p.Carbohidratos * reg.Cantidad; reg.Grasas = p.Grasas * reg.Cantidad;
+            GuardarMenu("Cantidad actualizada.");
+        }
+    }
+
+    private void EliminarRegistro(RegistroComida r) { menuActual?.Registros.Remove(r); GuardarMenu("Eliminado."); }
+
+    private void GuardarMenu(string msj)
+    {
+        if (menuActual == null) return;
+        RecalcularTotalesGenerales();
+        try {
+            var todos = _menuController.ObtenerMenus() ?? new();
+            if (todos.Any(m => m.Id == menuActual.Id)) _menuController.ActualizarMenu(menuActual);
+            else _menuController.CrearMenu(menuActual);
+            mensaje = "✅ " + msj; esError = false;
+        } catch (Exception ex) { mensaje = "❌ Error: " + ex.Message; esError = true; }
+    }
+
+    private void RecalcularTotalesGenerales() {
+        if (menuActual == null) return;
+        menuActual.TotalCalorias = menuActual.Registros.Sum(r => r.Calorias);
+        menuActual.TotalProteinas = menuActual.Registros.Sum(r => r.Proteinas);
+        menuActual.TotalCarbohidratos = menuActual.Registros.Sum(r => r.Carbohidratos);
+        menuActual.TotalGrasas = menuActual.Registros.Sum(r => r.Grasas);
+    }
+
+    private void EliminarMenuCompleto() {
+        if (menuActual != null) { _menuController.EliminarMenu(menuActual.Id); CargarMenuDelDia(); mensaje = "🗑️ Menú eliminado."; }
+    }
+
+    private void LimpiarPantalla() { productoSeleccionadoId = Guid.Empty; cantidadProducto = 1; mensaje = ""; CargarMenuDelDia(); }
+}

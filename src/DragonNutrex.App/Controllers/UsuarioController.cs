@@ -1,13 +1,6 @@
-/* =====================================================
-   CONTROLADOR DE USUARIO
-   Conecta la capa de servicio con la UI
-   ✔ conecta servicio con UI
-   ===================================================== */
-
-// Modelo Usuario
+using System;
+using System.Collections.Generic;
 using DragonNutrex.App.Models;
-
-// Servicio de lógica de negocio
 using DragonNutrex.App.Services;
 
 namespace DragonNutrex.App.Controllers;
@@ -15,63 +8,63 @@ namespace DragonNutrex.App.Controllers;
 // =====================================================
 // CLASE USUARIO CONTROLLER
 // =====================================================
-// Actúa como intermediario entre la UI y el servicio
 public class UsuarioController
 {
-    // Servicio de usuarios
     private readonly UsuarioService _service;
 
-    // =====================================================
-    // CONSTRUCTOR
-    // =====================================================
-    // Recibe el servicio para usar la lógica de negocio
     public UsuarioController(UsuarioService service)
     {
         _service = service;
     }
 
     // =====================================================
-    // MÉTODO CREAR USUARIO
+    // FASE 1: MÉTODOS ORIGINALES (CRUD BASE)
     // =====================================================
-    // Envía el usuario al servicio para validación y guardado
-    public void CrearUsuario(Usuario usuario)
-    {
-        _service.CrearUsuario(usuario);
-    }
-
-    // =====================================================
-    // MÉTODO ACTUALIZAR USUARIO
-    // =====================================================
-    // Envía el usuario al servicio para actualización
-    public void ActualizarUsuario(Usuario usuario)
-    {
-        _service.ActualizarUsuario(usuario);
-    }
-
-    // =====================================================
-    // MÉTODO ELIMINAR USUARIO
-    // =====================================================
-    // Envía el ID al servicio para eliminar el usuario
-    public void EliminarUsuario(Guid id)
-    {
-        _service.EliminarUsuario(id);
-    }
-
-    // =====================================================
-    // MÉTODO OBTENER USUARIOS
-    // =====================================================
-    // Solicita al servicio la lista de usuarios
+    
     public List<Usuario> ObtenerUsuarios()
     {
         return _service.ObtenerUsuarios();
     }
 
-    // =====================================================
-    // MÉTODO OBTENER USUARIO
-    // =====================================================
-    // Solicita al servicio un usuario específico por ID
-    public Usuario? ObtenerUsuario(Guid id)
+    public void CrearUsuario(Usuario usuario)
     {
-        return _service.ObtenerUsuario(id);
+        _service.CrearUsuario(usuario);
+    }
+
+    public void ActualizarUsuario(Usuario usuario)
+    {
+        _service.ActualizarUsuario(usuario);
+    }
+
+    public void EliminarUsuario(Guid id)
+    {
+        // Eliminación física (Fase 1)
+        _service.EliminarUsuario(id);
+    }
+
+    // =====================================================
+    // FASE 2: NUEVAS FUNCIONES DE ADMINISTRADOR
+    // =====================================================
+    
+    public void DesactivarUsuario(Guid id)
+    {
+        // Baja lógica (Soft Delete) - No borra de la BD, solo lo oculta
+        var usuario = _service.ObtenerUsuario(id);
+        if (usuario != null)
+        {
+            usuario.Activo = false;
+            _service.ActualizarUsuario(usuario);
+        }
+    }
+
+    public void ResetearPassword(Guid id, string nuevaPasswordPorDefecto = "Upi.2026")
+    {
+        // Reseteo rápido para que el admin pueda ayudar a usuarios bloqueados
+        var usuario = _service.ObtenerUsuario(id);
+        if (usuario != null)
+        {
+            usuario.Password = nuevaPasswordPorDefecto;
+            _service.ActualizarUsuario(usuario);
+        }
     }
 }

@@ -52,6 +52,10 @@
               "target": "Package",
               "version": "[3.1.1, )"
             },
+            "QuestPDF": {
+              "target": "Package",
+              "version": "[2026.2.4, )"
+            },
             "StackExchange.Redis": {
               "target": "Package",
               "version": "[2.12.14, )"
