@@ -1,0 +1,193 @@
+@using DragonNutrex.App.Controllers
+@using DragonNutrex.App.Models
+@using DragonNutrex.Web
+@inject UserSession Session
+@inject UsuarioController _usuarioController
+@rendermode InteractiveServer
+
+@if (usuario != null)
+{
+    <div class="card shadow-sm border-0 mb-4" style="background-color: #f1f8f1; border: 1px solid #c8e6c9 !important;">
+        <div class="card-body py-3 px-4">
+            @if (!enEdicion)
+            {
+                <div class="row align-items-center">
+                    <div class="col-md-3">
+                        <div class="mb-1"><span class="fw-bold" style="color: #1b5e20;">Usuario:</span> <span class="text-dark ms-1">@usuario.Nombre</span></div>
+                        <div><span class="fw-bold" style="color: #1b5e20;">Dieta:</span> <span class="text-dark ms-1">@(usuario.TipoDieta ?? "Estándar")</span></div>
+                    </div>
+                    
+                    <div class="col-md-3">
+                        <div class="mb-1"><span class="fw-bold" style="color: #1b5e20;">Peso:</span> <span class="text-dark ms-1">@usuario.Peso.ToString("N1") kg</span></div>
+                        <div><span class="fw-bold" style="color: #1b5e20;">Actividad:</span> <span class="text-dark ms-1">@actividadVisual</span></div>
+                    </div>
+                    
+                    <div class="col-md-3">
+                        <div class="mb-1"><span class="fw-bold" style="color: #1b5e20;">Altura:</span> <span class="text-dark ms-1">@usuario.Altura cm</span></div>
+                        <div><span class="fw-bold" style="color: #1b5e20;">Objetivo:</span> <span class="text-dark ms-1">@objetivoVisual</span></div>
+                    </div>
+
+                    <div class="col-md-2 text-center border-start border-success border-opacity-25">
+                        <div class="fw-bold small mb-1" style="color: #1b5e20;">Tu IMC</div>
+                        <span class="badge shadow-sm px-3 py-2 fs-6" style="@ObtenerColorIMC(imcActual)">
+                            @imcActual.ToString("N1") - @ObtenerTextoIMC(imcActual)
+                        </span>
+                    </div>
+
+                    <div class="col-md-1 text-end">
+                        <button class="btn btn-success fw-bold" @onclick="ActivarEdicion">Editar Perfil</button>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="row g-2 align-items-end">
+                    <div class="col-md-2">
+                        <label class="small fw-bold text-success">Peso (kg)</label>
+                        <input type="number" step="0.1" class="form-control form-control-sm" @bind="pesoEdit" @bind:after="RecalcularImcPreview" />
+                    </div>
+                    <div class="col-md-2">
+                        <label class="small fw-bold text-success">Altura (cm)</label>
+                        <input type="number" step="1" class="form-control form-control-sm" @bind="alturaEdit" @bind:after="RecalcularImcPreview" />
+                    </div>
+                    <div class="col-md-2">
+                        <label class="small fw-bold text-success">Dieta</label>
+                        <select class="form-select form-select-sm" @bind="dietaEdit">
+                            <option value="Estándar">Estándar</option>
+                            <option value="Vegana">Vegana</option>
+                            <option value="Vegetariana">Vegetariana</option>
+                            <option value="Keto">Keto</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="small fw-bold text-success">Actividad</label>
+                        <select class="form-select form-select-sm" @bind="actividadEdit">
+                            <option value="Sedentaria">Sedentaria</option>
+                            <option value="Ligera">Ligera</option>
+                            <option value="Moderada">Moderada</option>
+                            <option value="Intensa">Intensa</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="small fw-bold text-success">Objetivo</label>
+                        <select class="form-select form-select-sm" @bind="objetivoEdit">
+                            <option value="Bajar peso">Bajar peso</option>
+                            <option value="Mantener">Mantener</option>
+                            <option value="Ganar músculo">Ganar músculo</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2 text-end d-flex gap-2 justify-content-end">
+                        <button class="btn btn-sm btn-outline-secondary fw-bold" @onclick="CancelarEdicion">Cancelar</button>
+                        <button class="btn btn-sm btn-success fw-bold" @onclick="GuardarPerfil">Guardar</button>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+}
+else
+{
+    <div class="alert alert-warning shadow-sm py-2 mb-4">
+        ⏳ <strong>Depuración de Componente:</strong> Intentando cargar el perfil... 
+        <br/>Estado de Sesión: '@(Session == null || string.IsNullOrEmpty(Session.NombreUsuario) ? "SESIÓN VACÍA O NULA" : Session.NombreUsuario)'
+    </div>
+}
+
+@code {
+    private Usuario? usuario;
+    private bool enEdicion = false;
+    private decimal imcActual = 0;
+    private decimal imcPreview = 0;
+
+    private decimal pesoEdit;
+    private decimal alturaEdit;
+    private string dietaEdit = "";
+    
+    private string actividadVisual = "Sedentaria";
+    private string objetivoVisual = "Bajar peso";
+    private string actividadEdit = "Sedentaria";
+    private string objetivoEdit = "Bajar peso";
+
+    protected override void OnInitialized()
+    {
+        CargarDatosUsuario();
+    }
+
+    private void CargarDatosUsuario()
+    {
+        if (Session != null && !string.IsNullOrEmpty(Session.NombreUsuario))
+        {
+            var usuarios = _usuarioController.ObtenerUsuarios() ?? new();
+            usuario = usuarios.FirstOrDefault(u => u.Nombre.ToLower() == Session.NombreUsuario.ToLower());
+            if (usuario != null) CalcularIMCOriginal();
+        }
+    }
+
+    private void CalcularIMCOriginal()
+    {
+        if (usuario != null && usuario.Altura > 0)
+        {
+            decimal alturaMetros = usuario.Altura / 100m;
+            imcActual = usuario.Peso / (alturaMetros * alturaMetros);
+        }
+    }
+
+    private void ActivarEdicion()
+    {
+        if (usuario == null) return;
+        pesoEdit = usuario.Peso;
+        alturaEdit = usuario.Altura;
+        dietaEdit = usuario.TipoDieta ?? "Estándar";
+        
+        actividadEdit = actividadVisual;
+        objetivoEdit = objetivoVisual;
+        
+        imcPreview = imcActual;
+        enEdicion = true;
+    }
+
+    private void RecalcularImcPreview()
+    {
+        if (alturaEdit > 0)
+        {
+            decimal alturaMetros = alturaEdit / 100m;
+            imcPreview = pesoEdit / (alturaMetros * alturaMetros);
+        }
+    }
+
+    private void CancelarEdicion() => enEdicion = false;
+
+    private void GuardarPerfil()
+    {
+        if (usuario != null)
+        {
+            usuario.Peso = pesoEdit;
+            usuario.Altura = alturaEdit;
+            usuario.TipoDieta = dietaEdit;
+            
+            actividadVisual = actividadEdit;
+            objetivoVisual = objetivoEdit;
+            
+            _usuarioController.ActualizarUsuario(usuario);
+            CalcularIMCOriginal();
+            enEdicion = false;
+            StateHasChanged();
+        }
+    }
+
+    private string ObtenerColorIMC(decimal imc)
+    {
+        if (imc < 18.5m) return "background-color: #ffc107; color: #000;"; 
+        if (imc >= 18.5m && imc <= 24.9m) return "background-color: #28a745; color: #fff;"; 
+        if (imc >= 25.0m && imc <= 29.9m) return "background-color: #fd7e14; color: #fff;"; 
+        return "background-color: #dc3545; color: #fff;"; 
+    }
+
+    private string ObtenerTextoIMC(decimal imc)
+    {
+        if (imc < 18.5m) return "Bajo peso";
+        if (imc >= 18.5m && imc <= 24.9m) return "Peso normal";
+        if (imc >= 25.0m && imc <= 29.9m) return "Sobrepeso";
+        return "Obesidad";
+    }
+}

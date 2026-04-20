@@ -41,7 +41,7 @@
         }
 
         <div class="table-responsive shadow-sm rounded-2">
-            <table class="table table-hover mb-0 bg-white">
+            <table class="table table-hover mb-0 bg-white align-middle">
                 <thead style="background-color: #1b5e20; color: white;">
                     <tr>
                         <th>Día (Click para ver detalle)</th>
@@ -51,20 +51,30 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var dia in listaResumenes)
+                    @if (listaResumenes.Any())
                     {
-                        decimal diferencia = Math.Abs(dia.Consumido - dia.Meta);
-                        bool cumple = dia.Meta > 0 && diferencia <= (dia.Meta * 0.10m);
-
-                        <tr @onclick="() => VerDetalle(dia.Fecha)" style="cursor: pointer;">
-                            <td class="fw-bold" style="color: #1b5e20;">📁 @dia.Fecha.ToString("dd/MM/yyyy")</td>
-                            <td class="fw-bold">@dia.Consumido.ToString("N2")</td>
-                            <td>@dia.Meta.ToString("N2")</td>
-                            <td class="text-center">
-                                <span class="badge @(dia.Consumido > dia.Meta ? "bg-danger" : "bg-success")">
-                                    @(dia.Consumido > dia.Meta ? "Exceso" : "Adecuado")
-                                </span>
-                            </td>
+                        @foreach (var dia in listaResumenes)
+                        {
+                            var item = dia; 
+                            
+                            <tr @key="item.Fecha" @onclick="() => VerDetalle(item.Fecha)" style="cursor: pointer; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#e8f5e9'" onmouseout="this.style.backgroundColor='transparent'">
+                                <td class="fw-bold" style="color: #1b5e20;">
+                                    <i class="bi bi-folder2-open me-2"></i> @item.Fecha.ToString("dd/MM/yyyy")
+                                </td>
+                                <td class="fw-bold">@item.Consumido.ToString("N1")</td>
+                                <td>@item.Meta.ToString("N1")</td>
+                                <td class="text-center">
+                                    <span class="badge @(item.Consumido > item.Meta ? "bg-danger" : "bg-success") px-3 py-2 rounded-pill">
+                                        @(item.Consumido > item.Meta ? "Exceso" : "Adecuado")
+                                    </span>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="4" class="text-center text-muted py-4">No hay datos en este rango de fechas.</td>
                         </tr>
                     }
                 </tbody>
@@ -73,55 +83,64 @@
     }
 </div>
 
-@if (mostrarModal && menuSeleccionado != null)
+@if (mostrarVisor && menuVisor != null)
 {
-    <div class="modal fade show d-block" style="background: rgba(0,0,0,0.5);" tabindex="-1">
+    <div class="modal fade show d-block" style="background-color: rgba(0,0,0,0.7); position: fixed; top:0; left:0; width:100%; height:100%; z-index: 9999;">
         <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content border-0 shadow-lg">
+            <div class="modal-content border-0 shadow-lg" style="border-radius: 12px; overflow: hidden;">
                 <div class="modal-header text-white" style="background-color: #1b5e20;">
-                    <h5 class="modal-title fw-bold">Detalle del Menú - @menuSeleccionado.Fecha.ToString("dd/MM/yyyy")</h5>
-                    <button type="button" class="btn-close btn-close-white" @onclick="CerrarModal"></button>
+                    <h5 class="modal-title fw-bold">🍽️ Menú del @menuVisor.Fecha.ToString("dd/MM/yyyy")</h5>
+                    <button type="button" class="btn-close btn-close-white" @onclick="CerrarVisor"></button>
                 </div>
-                <div class="modal-body">
-                    <div class="table-responsive">
-                        <table class="table table-sm table-striped">
-                            <thead class="table-dark">
-                                <tr>
-                                    <th>Alimento</th>
-                                    <th>Cant.</th>
-                                    <th>Kcal</th>
-                                    <th>Prot.</th>
-                                    <th>Carb.</th>
-                                    <th>Gras.</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var reg in menuSeleccionado.Registros)
+                
+                <div class="modal-body p-0">
+                    <table class="table table-bordered table-striped mb-0 text-center align-middle">
+                        <thead class="table-dark">
+                            <tr>
+                                <th class="text-start ps-3">Alimento</th>
+                                <th style="width: 80px;">Cant.</th>
+                                <th>Calorías</th>
+                                <th>Proteína</th>
+                                <th>Carbos</th>
+                                <th>Grasas</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (menuVisor.Registros != null && menuVisor.Registros.Any())
+                            {
+                                @foreach (var r in menuVisor.Registros)
                                 {
-                                    <tr>
-                                        <td>@reg.NombreProducto</td>
-                                        <td>@reg.Cantidad</td>
-                                        <td>@reg.Calorias.ToString("N1")</td>
-                                        <td>@reg.Proteinas.ToString("N1")g</td>
-                                        <td>@reg.Carbohidratos.ToString("N1")g</td>
-                                        <td>@reg.Grasas.ToString("N1")g</td>
+                                    <tr @key="r.ProductoId">
+                                        <td class="text-start ps-3 fw-bold" style="color: #1b5e20;">@r.NombreProducto</td>
+                                        <td>@r.Cantidad</td>
+                                        <td class="fw-bold">@r.Calorias.ToString("N1")</td>
+                                        <td>@r.Proteinas.ToString("N1") g</td>
+                                        <td>@r.Carbohidratos.ToString("N1") g</td>
+                                        <td>@r.Grasas.ToString("N1") g</td>
                                     </tr>
                                 }
-                            </tbody>
-                            <tfoot class="table-light fw-bold">
+                            }
+                            else
+                            {
                                 <tr>
-                                    <td colspan="2">TOTALES</td>
-                                    <td>@menuSeleccionado.TotalCalorias.ToString("N2")</td>
-                                    <td>@menuSeleccionado.TotalProteinas.ToString("N2")g</td>
-                                    <td>@menuSeleccionado.TotalCarbohidratos.ToString("N2")g</td>
-                                    <td>@menuSeleccionado.TotalGrasas.ToString("N2")g</td>
+                                    <td colspan="6" class="text-center py-4 text-muted">No hay alimentos detallados en este menú.</td>
                                 </tr>
-                            </tfoot>
-                        </table>
-                    </div>
+                            }
+                        </tbody>
+                        <tfoot style="background-color: #e8f5e9; border-top: 3px solid #1b5e20;">
+                            <tr class="fw-bold fs-6" style="color: #1b5e20;">
+                                <td colspan="2" class="text-end pe-3">TOTALES DEL DÍA:</td>
+                                <td>@menuVisor.TotalCalorias.ToString("N1")</td>
+                                <td>@menuVisor.TotalProteinas.ToString("N1") g</td>
+                                <td>@menuVisor.TotalCarbohidratos.ToString("N1") g</td>
+                                <td>@menuVisor.TotalGrasas.ToString("N1") g</td>
+                            </tr>
+                        </tfoot>
+                    </table>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary fw-bold" @onclick="CerrarModal">Cerrar</button>
+
+                <div class="modal-footer justify-content-end" style="background-color: #f8f9fa;">
+                    <button type="button" class="btn btn-secondary fw-bold px-4" @onclick="CerrarVisor">Cerrar</button>
                 </div>
             </div>
         </div>
@@ -133,15 +152,20 @@
     private DateTime fechaInicio = DateTime.Today.AddDays(-30);
     private DateTime fechaFin = DateTime.Today;
     private string mensajeEstado = "";
+    
     private List<ResumenDiario> listaResumenes = new();
 
-    private bool mostrarModal = false;
-    private Menu? menuSeleccionado;
+    // Variables del Visor
+    private bool mostrarVisor = false;
+    private Menu? menuVisor;
 
     protected override void OnInitialized()
     {
         if (string.IsNullOrWhiteSpace(Session.NombreUsuario)) return;
-        usuarioActual = _usuarioController.ObtenerUsuarios()?.FirstOrDefault(u => u.Nombre.ToLower() == Session.NombreUsuario.ToLower());
+        
+        usuarioActual = _usuarioController.ObtenerUsuarios()?
+            .FirstOrDefault(u => u.Nombre.ToLower() == Session.NombreUsuario.ToLower());
+            
         if (usuarioActual != null) CargarProgreso();
     }
 
@@ -150,48 +174,54 @@
         listaResumenes.Clear();
         if (usuarioActual == null) return;
 
-        var menus = _menuController.ObtenerMenus()?.Where(m => m.UsuarioId.ToString().ToLower() == usuarioActual.Id.ToString().ToLower()).ToList() ?? new();
+        var menus = _menuController.ObtenerMenus()?
+            .Where(m => m.UsuarioId.ToString().ToLower() == usuarioActual.Id.ToString().ToLower())
+            .ToList() ?? new List<Menu>();
         
         foreach (var m in menus.Where(x => x.Fecha.Date >= fechaInicio.Date && x.Fecha.Date <= fechaFin.Date))
         {
             decimal meta = 0;
             try {
                 var res = _statsController.ObtenerResumen(usuarioActual.Id, m.Fecha.Date, m.Fecha.Date.AddHours(23), usuarioActual.TipoDieta);
-                if (res != null) meta = res.CaloriasObjetivoDieta;
+                meta = res?.CaloriasObjetivoDieta ?? 0;
             } catch { }
 
-            // 🔥 TRUCO MÁGICO APLICADO AQUÍ: Si el total viene vacío de Redis, lo forzamos a sumar
             decimal consumido = m.TotalCalorias > 0 ? m.TotalCalorias : (m.Registros?.Sum(r => r.Calorias) ?? 0);
 
             listaResumenes.Add(new ResumenDiario { Fecha = m.Fecha, Consumido = consumido, Meta = meta });
         }
+        
         listaResumenes = listaResumenes.OrderByDescending(x => x.Fecha).ToList();
         mensajeEstado = $"✅ Datos cargados: {listaResumenes.Count} días encontrados.";
     }
 
     private void VerDetalle(DateTime fecha)
     {
-        if (usuarioActual == null) return;
-        
-        menuSeleccionado = _menuController.ObtenerMenus()?
-            .FirstOrDefault(m => m.UsuarioId.ToString().ToLower() == usuarioActual.Id.ToString().ToLower() && m.Fecha.Date == fecha.Date);
+        menuVisor = _menuController.ObtenerMenus()?
+            .FirstOrDefault(m => m.UsuarioId == usuarioActual?.Id && m.Fecha.Date == fecha.Date);
             
-        if (menuSeleccionado != null) 
+        if (menuVisor != null) 
         {
-            // 🔥 TRUCO MÁGICO PARA EL MODAL: Fuerza los 4 totales si vienen en 0
-            if (menuSeleccionado.TotalCalorias <= 0 && menuSeleccionado.Registros != null)
+            if (menuVisor.TotalCalorias <= 0)
             {
-                menuSeleccionado.TotalCalorias = menuSeleccionado.Registros.Sum(r => r.Calorias);
-                menuSeleccionado.TotalProteinas = menuSeleccionado.Registros.Sum(r => r.Proteinas);
-                menuSeleccionado.TotalCarbohidratos = menuSeleccionado.Registros.Sum(r => r.Carbohidratos);
-                menuSeleccionado.TotalGrasas = menuSeleccionado.Registros.Sum(r => r.Grasas);
+                var registrosSeguros = menuVisor.Registros ?? new List<RegistroComida>();
+                menuVisor.TotalCalorias = registrosSeguros.Sum(r => r.Calorias);
+                menuVisor.TotalProteinas = registrosSeguros.Sum(r => r.Proteinas);
+                menuVisor.TotalCarbohidratos = registrosSeguros.Sum(r => r.Carbohidratos);
+                menuVisor.TotalGrasas = registrosSeguros.Sum(r => r.Grasas);
             }
 
-            mostrarModal = true;
+            mostrarVisor = true;
+            StateHasChanged(); 
         }
     }
 
-    private void CerrarModal() => mostrarModal = false;
+    private void CerrarVisor()
+    {
+        mostrarVisor = false;
+        menuVisor = null;
+        StateHasChanged(); 
+    }
 
     private class ResumenDiario {
         public DateTime Fecha { get; set; }

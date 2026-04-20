@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("DragonNutrex.Web")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+305584c6766d9a578a0b5cac23f9bf2514ab9844")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+33267ba61fb0fe566a2f08c4e75fff1dfcbd10cb")]
 [assembly: System.Reflection.AssemblyProductAttribute("DragonNutrex.Web")]
 [assembly: System.Reflection.AssemblyTitleAttribute("DragonNutrex.Web")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

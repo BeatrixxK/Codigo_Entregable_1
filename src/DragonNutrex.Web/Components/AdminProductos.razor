@@ -11,65 +11,84 @@
 <div class="container-fluid">
     <h3 class="fw-bold mb-4" style="color: #1b5e20;">Gestión de Productos</h3>
 
-    @if (!string.IsNullOrEmpty(mensaje))
+    @if (!string.IsNullOrEmpty(mensaje) && !mostrarModalExito)
     {
-        <div class="alert @(esError ? "alert-danger" : "alert-success") py-2 rounded-1 fw-bold">
+        <div class="alert @(esError ? "alert-danger" : "alert-success") py-2 rounded-1 fw-bold shadow-sm">
             @mensaje
         </div>
     }
 
-    <div class="row g-2 mb-3">
-        <div class="col-md-4">
-            <label class="text-muted small fw-bold mb-1">Nombre del producto</label>
-            <input type="text" class="form-control input-dragon" @bind="nuevoProducto.Nombre" />
-        </div>
-        <div class="col-md-2">
-            <label class="text-muted small fw-bold mb-1">Calorías (kcal)</label>
-            <input type="number" step="any" class="form-control input-dragon" @bind="nuevoProducto.Calorias" />
-        </div>
-        <div class="col-md-2">
-            <label class="text-muted small fw-bold mb-1">Proteínas (g)</label>
-            <input type="number" step="any" class="form-control input-dragon" @bind="nuevoProducto.Proteinas" />
-        </div>
-        <div class="col-md-2">
-            <label class="text-muted small fw-bold mb-1">Carbohidratos (g)</label>
-            <input type="number" step="any" class="form-control input-dragon" @bind="nuevoProducto.Carbohidratos" />
-        </div>
-        <div class="col-md-2">
-            <label class="text-muted small fw-bold mb-1">Grasas (g)</label>
-            <input type="number" step="any" class="form-control input-dragon" @bind="nuevoProducto.Grasas" />
+    <div class="card border-0 shadow-sm mb-4" style="background: #f8f9fa;">
+        <div class="card-body">
+            <div class="row g-2 mb-3">
+                <div class="col-md-4">
+                    <label class="text-muted small fw-bold mb-1">Nombre del producto</label>
+                    <input type="text" class="form-control input-dragon" @bind="nuevoProducto.Nombre" placeholder="Ej: Atún en agua" />
+                </div>
+                <div class="col-md-2">
+                    <label class="text-muted small fw-bold mb-1">Calorías (kcal)</label>
+                    <input type="number" step="any" class="form-control input-dragon" @bind="nuevoProducto.Calorias" />
+                </div>
+                <div class="col-md-2">
+                    <label class="text-muted small fw-bold mb-1">Proteínas (g)</label>
+                    <input type="number" step="any" class="form-control input-dragon" @bind="nuevoProducto.Proteinas" />
+                </div>
+                <div class="col-md-2">
+                    <label class="text-muted small fw-bold mb-1">Carbohidratos (g)</label>
+                    <input type="number" step="any" class="form-control input-dragon" @bind="nuevoProducto.Carbohidratos" />
+                </div>
+                <div class="col-md-2">
+                    <label class="text-muted small fw-bold mb-1">Grasas (g)</label>
+                    <input type="number" step="any" class="form-control input-dragon" @bind="nuevoProducto.Grasas" />
+                </div>
+            </div>
+
+            <div class="d-flex gap-2">
+                @if (productoSeleccionado == null)
+                {
+                    <button type="button" class="btn btn-dragon fw-bold px-4 shadow-sm" style="background-color: #1b5e20; color: white;" @onclick="Guardar">
+                        💾 GUARDAR PRODUCTO NUEVO
+                    </button>
+                }
+                else if (Session.IsAdmin)
+                {
+                    <button type="button" class="btn btn-primary fw-bold px-4 shadow-sm" @onclick="Guardar">
+                        🔄 ACTUALIZAR CAMBIOS
+                    </button>
+                }
+
+                @if (Session.IsAdmin && productoSeleccionado != null)
+                {
+                    <button type="button" class="btn btn-danger fw-bold rounded-1" @onclick="Eliminar">🗑️ ELIMINAR</button>
+                }
+
+                <button type="button" class="btn btn-outline-secondary fw-bold" @onclick="LimpiarFormulario">LIMPIAR / NUEVO</button>
+            </div>
         </div>
     </div>
 
-    <div class="d-flex gap-2 mb-4">
-        <button type="button" class="btn btn-dragon" @onclick="Guardar">Guardar Producto</button>
-        @if (Session.IsAdmin)
-        {
-            <button type="button" class="btn btn-danger fw-bold rounded-1" @onclick="Eliminar">Eliminar seleccionado</button>
-        }
-        <button type="button" class="btn btn-dragon" @onclick="Limpiar">Limpiar</button>
-    </div>
-
-    <div class="table-responsive shadow-sm">
-        <table class="table table-hover table-dragon w-100">
-            <thead>
+    <div class="table-responsive shadow-sm rounded-2">
+        <table class="table table-hover bg-white align-middle mb-0">
+            <thead class="table-dark">
                 <tr>
                     <th>Nombre</th>
-                    <th>Calorías</th>
-                    <th>Proteínas</th>
-                    <th>Carbohidratos</th>
-                    <th>Grasas</th>
+                    <th class="text-center">Calorías</th>
+                    <th class="text-center">Proteínas</th>
+                    <th class="text-center">Carbos</th>
+                    <th class="text-center">Grasas</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach (var prod in listaProductos)
                 {
-                    <tr @onclick="() => Seleccionar(prod)" style="cursor: pointer;" class="@(productoSeleccionado?.Id == prod.Id ? "selected-row" : "")">
-                        <td class="fw-bold">@prod.Nombre</td>
-                        <td>@prod.Calorias</td>
-                        <td>@prod.Proteinas</td>
-                        <td>@prod.Carbohidratos</td>
-                        <td>@prod.Grasas</td>
+                    <tr @onclick="() => Seleccionar(prod)" 
+                        style="@(Session.IsAdmin ? "cursor: pointer;" : "cursor: default;")" 
+                        class="@(productoSeleccionado?.Id == prod.Id ? "table-success" : "")">
+                        <td class="fw-bold" style="color: #1b5e20;">@prod.Nombre</td>
+                        <td class="text-center">@prod.Calorias.ToString("N1")</td>
+                        <td class="text-center">@prod.Proteinas.ToString("N1")g</td>
+                        <td class="text-center">@prod.Carbohidratos.ToString("N1")g</td>
+                        <td class="text-center">@prod.Grasas.ToString("N1")g</td>
                     </tr>
                 }
             </tbody>
@@ -77,98 +96,144 @@
     </div>
 </div>
 
+@if (mostrarModalExito)
+{
+    <div class="modal fade show" style="display: block; background-color: rgba(0, 0, 0, 0.7); position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 9999;" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg" style="border-radius: 12px; overflow: hidden;">
+                <div class="modal-header text-white" style="background-color: #28a745;">
+                    <h5 class="modal-title fw-bold">¡Operación Exitosa!</h5>
+                    <button type="button" class="btn-close btn-close-white" @onclick="CerrarModal"></button>
+                </div>
+                <div class="modal-body py-4 text-center">
+                    <span style="font-size: 3.5rem;">✅</span>
+                    <p class="mb-0 fs-5 fw-bold mt-2" style="color: #1b5e20;">@mensajeExito</p>
+                </div>
+                <div class="modal-footer justify-content-center">
+                    <button type="button" class="btn btn-success fw-bold px-5" @onclick="CerrarModal">Aceptar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
 @code {
     private List<Producto> listaProductos = new();
-    private Producto nuevoProducto = new();
+    private Producto nuevoProducto = new Producto();
     private Producto? productoSeleccionado;
     
     private string mensaje = "";
     private bool esError = false;
+    private bool mostrarModalExito = false;
+    private string mensajeExito = "";
 
-    protected override void OnInitialized() => Cargar();
+    protected override void OnInitialized() => CargarLista();
 
-    private void Cargar() => listaProductos = _productoController.ObtenerProductos() ?? new();
+    private void CargarLista() 
+    {
+        var data = _productoController.ObtenerProductos();
+        listaProductos = data != null ? data.ToList() : new List<Producto>();
+    }
 
     private void Seleccionar(Producto p)
     {
+        if (!Session.IsAdmin) return;
+
         productoSeleccionado = p;
         nuevoProducto = new Producto { 
             Id = p.Id, Nombre = p.Nombre, Calorias = p.Calorias, 
             Proteinas = p.Proteinas, Carbohidratos = p.Carbohidratos, Grasas = p.Grasas 
         };
-        mensaje = ""; // Oculta mensajes al hacer clic en una fila
+        mensaje = ""; 
     }
 
     private void Guardar()
     {
         if (string.IsNullOrWhiteSpace(nuevoProducto.Nombre)) 
         {
-            mensaje = "⚠️ El nombre del producto es obligatorio.";
-            esError = true;
+            MostrarError("El nombre del producto es obligatorio.");
             return;
         }
 
         try
         {
-            if (nuevoProducto.Id == Guid.Empty)
+            // Validar que no exista otro producto con el mismo nombre (Ignorando mayúsculas)
+            bool nombreYaExiste = listaProductos.Any(p => 
+                p.Nombre.Equals(nuevoProducto.Nombre, StringComparison.OrdinalIgnoreCase) && 
+                p.Id != nuevoProducto.Id);
+
+            if (nombreYaExiste)
             {
-                // 🔥 SOLUCIÓN: Eliminamos el Guid.NewGuid() de aquí. 
-                // Tu backend se encargará de crearle su propio ID real.
-                _productoController.CrearProducto(nuevoProducto); 
-                mensaje = $"✅ Producto '{nuevoProducto.Nombre}' creado con éxito.";
+                MostrarError($"Ya existe un producto llamado '{nuevoProducto.Nombre}'. Usa otro nombre o actualiza el existente.");
+                return;
             }
-            else
+
+            if (productoSeleccionado == null)
+            {
+                nuevoProducto.Id = Guid.NewGuid();
+                _productoController.CrearProducto(nuevoProducto); 
+                
+                mensajeExito = $"El producto '{nuevoProducto.Nombre}' se guardó correctamente.";
+                mostrarModalExito = true;
+                esError = false;
+                mensaje = "";
+            }
+            else if (Session.IsAdmin)
             {
                 _productoController.ActualizarProducto(nuevoProducto); 
-                mensaje = $"✅ Producto '{nuevoProducto.Nombre}' actualizado con éxito.";
+                
+                mensajeExito = "Producto actualizado correctamente.";
+                mostrarModalExito = true;
+                esError = false;
+                mensaje = "";
             }
-            
-            esError = false;
-            LimpiarFormulario(); 
-            Cargar(); 
+
+            CargarLista(); 
         }
         catch (Exception ex)
         {
-            mensaje = $"❌ Error: {ex.Message}";
-            esError = true;
+            MostrarError($"Error al guardar en la base de datos: {ex.Message}");
         }
     }
 
     private void Eliminar()
     {
-        if (productoSeleccionado != null)
+        if (Session.IsAdmin && productoSeleccionado != null)
         {
             try
             {
                 _productoController.EliminarProducto(productoSeleccionado.Id); 
-                mensaje = "🗑️ Producto eliminado correctamente.";
+                mensaje = "🗑️ Producto eliminado.";
                 esError = false;
                 LimpiarFormulario();
-                Cargar();
+                CargarLista();
             }
             catch (Exception ex)
             {
-                mensaje = $"❌ Error al eliminar: {ex.Message}";
-                esError = true;
+                MostrarError($"Error al eliminar: {ex.Message}");
             }
         }
     }
 
-    // Método que llama el botón "Limpiar" (Borra todo, incluyendo el banner de mensaje)
-    private void Limpiar() 
+    private void MostrarError(string msj)
+    {
+        mensaje = "⚠️ " + msj;
+        esError = true;
+        StateHasChanged();
+    }
+
+    private void LimpiarFormulario() 
     { 
-        nuevoProducto = new(); 
+        nuevoProducto = new Producto(); 
         productoSeleccionado = null; 
         mensaje = "";
         esError = false;
-        StateHasChanged(); // Fuerza repintado de pantalla
     }
 
-    // Método que llamamos internamente tras guardar (Borra datos, pero DEJA el banner de éxito visible)
-    private void LimpiarFormulario()
+    private void CerrarModal()
     {
-        nuevoProducto = new(); 
-        productoSeleccionado = null; 
-        StateHasChanged(); 
+        mostrarModalExito = false;
+        LimpiarFormulario();
+        StateHasChanged();
     }
 }
