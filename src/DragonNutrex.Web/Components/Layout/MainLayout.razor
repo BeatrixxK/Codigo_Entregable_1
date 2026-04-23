@@ -13,15 +13,14 @@
         <div class="d-flex gap-2 mb-4">
             @if (Session.IsAdmin)
             {
-                @* La vista de Admin permanece igual con acceso a Productos *@
                 <a href="/admin/usuarios" class="btn flex-fill btn-nav-dragon shadow-sm">Usuarios</a>
                 <a href="/admin/productos" class="btn flex-fill btn-nav-dragon shadow-sm">Productos</a>
                 <a href="/admin/menus" class="btn flex-fill btn-nav-dragon shadow-sm">Menús</a>
                 <a href="/estadisticas-comparativas" class="btn flex-fill btn-nav-dragon shadow-sm">Estadísticas</a>
+                <a href="/admin/estadisticas-consumo" class="btn flex-fill btn-nav-dragon shadow-sm">Estadísticas de Consumo</a>
             }
             else
             {
-                @* Se eliminó la línea de 'Catálogo de Productos' para usuarios estándar *@
                 <a href="/admin/menus" class="btn flex-fill btn-nav-dragon shadow-sm">Mis Menús</a>
                 <a href="/mi-progreso" class="btn flex-fill btn-nav-dragon shadow-sm">Mi Progreso (Estadísticas)</a>
             }
@@ -40,13 +39,3 @@
         </div>
     </main>
 </div>
-
-@code {
-   private void CerrarSesion()
-        {
-            
-            Session.NombreUsuario = ""; 
-                        
-            Nav.NavigateTo("/login", forceLoad: true);
-        }
-}

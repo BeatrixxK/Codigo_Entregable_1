@@ -1,7 +1,10 @@
 @page "/"
 @layout DragonNutrex.Web.Components.Layout.EmptyLayout
 @inject NavigationManager Nav
+@using DragonNutrex.App.Models
 @inject UserSession UserSession
+@using DragonNutrex.App.Controllers
+@inject UsuarioController _usuarioController
 @rendermode InteractiveServer 
 
 <PageTitle>Dragon Nutrex - Inicia Sesión</PageTitle>
@@ -13,60 +16,173 @@
             <img src="images/logo.png" alt="Dragon Nutrex Logo" style="max-height: 250px; width: auto; object-fit: contain;" />
         </div>
 
-        <h2 style="color: #1b5e20; font-weight: bold; margin-bottom: 5px;">Bienvenido a Dragon Nutrex</h2>
-        <h3 style="color: #1b5e20; font-weight: bold; margin-bottom: 30px;">Inicia sesión</h3>
-
-        <div class="mb-3">
-            <input type="text" class="form-control" placeholder="Usuario" @bind="usuarioInput"
-                   style="background-color: #e0e0e0; border: none; height: 50px; border-radius: 4px; font-size: 1.1rem;" />
-        </div>
-        <div class="mb-4">
-            <input type="password" class="form-control" placeholder="Contraseña" @bind="passwordInput"
-                   style="background-color: #000000; color: white; border: none; height: 50px; border-radius: 4px; font-size: 1.1rem;" />
-        </div>
-
-        @if (!string.IsNullOrEmpty(mensajeError))
+        @if (!modoRecuperacion)
         {
-            <div class="alert alert-danger p-2 mb-3">@mensajeError</div>
+            <h2 style="color: #1b5e20; font-weight: bold; margin-bottom: 5px;">Bienvenido a Dragon Nutrex</h2>
+            <h3 style="color: #1b5e20; font-weight: bold; margin-bottom: 30px;">Inicia sesión</h3>
+
+            <div class="mb-3">
+                <input type="text" class="form-control" placeholder="Usuario" @bind="usuarioInput"
+                       style="background-color: #e0e0e0; border: none; height: 50px; border-radius: 4px; font-size: 1.1rem;" />
+            </div>
+            <div class="mb-4">
+                <input type="password" class="form-control" placeholder="Contraseña" @bind="passwordInput"
+                       style="background-color: #000000; color: white; border: none; height: 50px; border-radius: 4px; font-size: 1.1rem;" />
+            </div>
+
+            @if (!string.IsNullOrEmpty(mensajeSistema))
+            {
+                <div class="alert @(esExito ? "alert-success" : "alert-danger") p-2 mb-3">@mensajeSistema</div>
+            }
+
+            <div class="d-flex justify-content-center gap-3 mb-4">
+                <button class="btn" style="background-color: #008f39; color: white; padding: 12px 40px; border-radius: 4px; font-weight: bold; font-size: 1.1rem;" @onclick="Entrar">
+                    Ingresar
+                </button>
+                <button class="btn" style="background-color: #008f39; color: white; padding: 12px 40px; border-radius: 4px; font-weight: bold; font-size: 1.1rem;">
+                    Registrarse
+                </button>
+            </div>
+
+            <a href="javascript:void(0)" @onclick="() => AlternarModo(true)" style="color: #1b5e20; text-decoration: none; font-weight: 500;">
+                ¿Olvidaste tu contraseña?
+            </a>
         }
+        else
+        {
+            <h2 style="color: #1b5e20; font-weight: bold; margin-bottom: 5px;">Recuperar Contraseña</h2>
+            <p style="color: #1b5e20; margin-bottom: 20px;">Ingresa tu usuario para crear una nueva contraseña.</p>
 
-        <div class="d-flex justify-content-center gap-3 mb-4">
-            <button class="btn" style="background-color: #008f39; color: white; padding: 12px 40px; border-radius: 4px; font-weight: bold; font-size: 1.1rem;" @onclick="Entrar">
-                Ingresar
-            </button>
-            <button class="btn" style="background-color: #008f39; color: white; padding: 12px 40px; border-radius: 4px; font-weight: bold; font-size: 1.1rem;">
-                Registrarse
-            </button>
-        </div>
+            <div class="mb-3">
+                <input type="text" class="form-control" placeholder="Nombre de Usuario" @bind="usuarioRecuperacion"
+                       style="background-color: #e0e0e0; border: none; height: 50px; border-radius: 4px; font-size: 1.1rem;" />
+            </div>
+            <div class="mb-4">
+                <input type="password" class="form-control" placeholder="Nueva Contraseña" @bind="nuevaPassword"
+                       style="background-color: #000000; color: white; border: none; height: 50px; border-radius: 4px; font-size: 1.1rem;" />
+            </div>
 
-        <a href="#" style="color: #1b5e20; text-decoration: none; font-weight: 500;">¿Olvidaste tu contraseña?</a>
+            @if (!string.IsNullOrEmpty(mensajeSistema))
+            {
+                <div class="alert @(esExito ? "alert-success" : "alert-danger") p-2 mb-3">@mensajeSistema</div>
+            }
+
+            <div class="d-flex justify-content-center gap-3 mb-4">
+                <button class="btn btn-secondary" style="padding: 12px 30px; border-radius: 4px; font-weight: bold; font-size: 1.1rem;" @onclick="() => AlternarModo(false)">
+                    Cancelar
+                </button>
+                <button class="btn" style="background-color: #008f39; color: white; padding: 12px 30px; border-radius: 4px; font-weight: bold; font-size: 1.1rem;" @onclick="AutoresetearPassword">
+                    Actualizar
+                </button>
+            </div>
+        }
     </div>
 </div>
 
 @code {
     private string usuarioInput = "";
     private string passwordInput = "";
-    private string mensajeError = "";
+    
+    // Variables para el modo recuperación
+    private bool modoRecuperacion = false;
+    private string usuarioRecuperacion = "";
+    private string nuevaPassword = "";
+    
+    // Alertas compartidas
+    private string mensajeSistema = "";
+    private bool esExito = false;
+
+    private void AlternarModo(bool recuperar)
+    {
+        modoRecuperacion = recuperar;
+        mensajeSistema = "";
+        usuarioRecuperacion = "";
+        nuevaPassword = "";
+        esExito = false;
+    }
 
     private void Entrar() 
     {
-        if (string.IsNullOrWhiteSpace(usuarioInput))
+        mensajeSistema = "";
+        esExito = false;
+
+        if (string.IsNullOrWhiteSpace(usuarioInput) || string.IsNullOrWhiteSpace(passwordInput))
         {
-            mensajeError = "Por favor ingrese un usuario.";
+            mensajeSistema = "Por favor ingrese usuario y contraseña.";
             return;
         }
 
-        // 1. Guardamos quién acaba de entrar en la memoria global
-        UserSession.NombreUsuario = usuarioInput.Trim();
-
-        // 2. Lo mandamos a la pantalla correcta según su rol
-        if (UserSession.IsAdmin) 
+        // Caso especial para el admin maestro (si decides dejarlo harcodeado o validarlo en base de datos)
+        if (usuarioInput.ToLower() == "admin" && passwordInput == "admin")
         {
+            UserSession.NombreUsuario = "admin";
             Nav.NavigateTo("/admin/usuarios");
-        } 
-        else 
-        {
-            Nav.NavigateTo("/mi-progreso"); 
+            return;
         }
+
+        // Validación real contra la base de datos SQLite
+        var todosLosUsuarios = _usuarioController.ObtenerUsuarios() ?? new List<Usuario>();
+        var userDb = todosLosUsuarios.FirstOrDefault(u => u.Nombre.ToLower() == usuarioInput.ToLower() && u.Password == passwordInput);
+
+        if (userDb == null)
+        {
+            mensajeSistema = "Usuario o contraseña incorrectos.";
+            return;
+        }
+
+        if (!userDb.Activo)
+        {
+            mensajeSistema = "Esta cuenta ha sido desactivada por el administrador.";
+            return;
+        }
+
+        // Si pasa todas las pruebas, iniciamos sesión
+        UserSession.NombreUsuario = userDb.Nombre;
+        Nav.NavigateTo("/mi-progreso"); 
+    }
+
+    private void AutoresetearPassword()
+    {
+        mensajeSistema = "";
+        esExito = false;
+
+        if (string.IsNullOrWhiteSpace(usuarioRecuperacion) || string.IsNullOrWhiteSpace(nuevaPassword))
+        {
+            mensajeSistema = "Todos los campos son obligatorios.";
+            return;
+        }
+
+        var todosLosUsuarios = _usuarioController.ObtenerUsuarios() ?? new List<Usuario>();
+        var userDb = todosLosUsuarios.FirstOrDefault(u => u.Nombre.ToLower() == usuarioRecuperacion.ToLower());
+
+        if (userDb == null)
+        {
+            mensajeSistema = "El usuario no existe.";
+            return;
+        }
+
+        if (!userDb.Activo)
+        {
+            mensajeSistema = "No se puede recuperar la contraseña de una cuenta inactiva.";
+            return;
+        }
+
+        // Actualizamos la contraseña del usuario
+        userDb.Password = nuevaPassword;
+        
+        // IMPORTANTE: Asegúrate de que tu UsuarioController tenga un método para guardar
+        // _usuarioController.ActualizarUsuario(userDb); 
+
+        esExito = true;
+        mensajeSistema = "¡Contraseña actualizada! Ya puedes iniciar sesión.";
+        
+        // Limpiamos los campos y preparamos el login
+        usuarioInput = usuarioRecuperacion;
+        passwordInput = "";
+        usuarioRecuperacion = "";
+        nuevaPassword = "";
+        
+        // Cambiamos a la vista normal para que el usuario ingrese con su nueva clave
+        modoRecuperacion = false; 
     }
 }

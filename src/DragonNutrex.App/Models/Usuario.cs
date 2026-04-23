@@ -13,10 +13,16 @@ public class Usuario
     // Nombre del usuario
     public string Nombre { get; set; } = "";
 
+    // Correo electrónico del usuario
+    public string Correo { get; set; } = "";
+
+    // Contraseña del usuario (para login)
+    public string Password { get; set; } = "";
+
     // Peso del usuario (en kg)
     public decimal Peso { get; set; }
 
-    // Altura del usuario (en metros)
+    // Altura del usuario (en metros o cm según tu lógica de cálculo)
     public decimal Altura { get; set; }
 
     // Nivel de actividad física (ej: sedentaria, moderada, etc.)
@@ -28,12 +34,6 @@ public class Usuario
     // Tipo de dieta seleccionada
     public string TipoDieta { get; set; } = "";
 
-    // Contraseña del usuario (para login)
-    public string Password { get; set; } = "";
-
-    // Correo electrónico del usuario
-    public string Correo { get; set; } = "";
+    // Estado del usuario: true para activo, false para desactivado (Borrado Lógico)
     public bool Activo { get; set; } = true;
-
 }
-

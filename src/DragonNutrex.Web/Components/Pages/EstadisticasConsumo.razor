@@ -1,0 +1,160 @@
+@page "/admin/estadisticas-consumo"
+@using DragonNutrex.App.Models
+@using DragonNutrex.App.Controllers
+@inject UsuarioController _usuarioController
+@inject MenuController _menuController
+@inject UserSession Session
+@inject NavigationManager Nav
+@rendermode InteractiveServer
+
+<PageTitle>Estadísticas de Consumo</PageTitle>
+
+<div class="container-fluid mt-4" style="max-width: 1000px;">
+    <h3 class="fw-bold mb-4" style="color: #1b5e20;">📊 Estadísticas de Consumo Globales</h3>
+
+    <div class="card mb-4 shadow-sm border-0" style="background-color: #f8f9fa;">
+        <div class="card-body row align-items-end g-3">
+            <div class="col-md-4">
+                <label class="fw-bold text-muted small">Fecha Inicio</label>
+                <input type="date" class="form-control" @bind="fechaInicio" />
+            </div>
+            <div class="col-md-4">
+                <label class="fw-bold text-muted small">Fecha Fin</label>
+                <input type="date" class="form-control" @bind="fechaFin" />
+            </div>
+            <div class="col-md-4">
+                <button class="btn btn-success w-100 fw-bold" @onclick="CalcularEstadisticas">Generar Reporte</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-6">
+            <div class="card shadow-sm h-100 border-0">
+                <div class="card-header text-white" style="background-color: #1b5e20;">
+                    <h6 class="mb-0 fw-bold">🏆 Top 5 Productos Más Consumidos</h6>
+                </div>
+                <ul class="list-group list-group-flush">
+                    @foreach (var prod in topProductos)
+                    {
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            @prod.Nombre
+                            <span class="badge bg-success rounded-pill">@prod.Cantidad consumidos</span>
+                        </li>
+                    }
+                    @if(!topProductos.Any()) { <li class="list-group-item text-muted text-center">No hay datos en este rango</li> }
+                </ul>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card shadow-sm h-100 border-0">
+                <div class="card-header text-white" style="background-color: #008f39;">
+                    <h6 class="mb-0 fw-bold">🥗 Porcentaje por Tipo de Dieta</h6>
+                </div>
+                <ul class="list-group list-group-flush">
+                    @foreach (var dieta in dietasPorcentaje)
+                    {
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            @dieta.Nombre
+                            <span class="badge bg-secondary rounded-pill">@dieta.Porcentaje.ToString("0.0")%</span>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+
+        <div class="col-md-12">
+            <div class="card shadow-sm border-0">
+                <div class="card-header text-white bg-dark">
+                    <h6 class="mb-0 fw-bold">🔥 Usuarios más Activos (Menús Registrados)</h6>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Usuario</th>
+                                <th class="text-end">Total Menús</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var user in usuariosTopMenus)
+                            {
+                                <tr>
+                                    <td>@user.NombreUsuario</td>
+                                    <td class="text-end fw-bold">@user.TotalMenus</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private DateTime fechaInicio = DateTime.Today.AddDays(-30);
+    private DateTime fechaFin = DateTime.Today;
+
+    // Modelos internos para las listas de resultados
+    private List<TopProducto> topProductos = new();
+    private List<DietaStat> dietasPorcentaje = new();
+    private List<UsuarioTop> usuariosTopMenus = new();
+
+    protected override void OnInitialized()
+    {
+        if (!Session.IsAdmin) Nav.NavigateTo("/mi-progreso");
+        CalcularEstadisticas();
+    }
+
+    private void CalcularEstadisticas()
+    {
+        var todosLosMenus = _menuController.ObtenerMenus() ?? new List<Menu>();
+        var todosLosUsuarios = _usuarioController.ObtenerUsuarios() ?? new List<Usuario>();
+
+        // Filtramos menús por el rango de fechas seleccionado
+        var menusEnRango = todosLosMenus
+            .Where(m => m.Fecha.Date >= fechaInicio.Date && m.Fecha.Date <= fechaFin.Date)
+            .ToList();
+
+        // 1. Calcular Top 5 Productos
+        topProductos = menusEnRango
+            .Where(m => m.Registros != null)
+            .SelectMany(m => m.Registros!)
+            .GroupBy(r => r.NombreProducto)
+            .Select(g => new TopProducto { Nombre = g.Key, Cantidad = g.Sum(r => r.Cantidad) })
+            .OrderByDescending(p => p.Cantidad)
+            .Take(5)
+            .ToList();
+
+        // 2. Calcular Porcentajes de Dieta (Esto se basa en todos los usuarios, independiente de la fecha)
+        int totalUsuarios = todosLosUsuarios.Count;
+        if (totalUsuarios > 0)
+        {
+            dietasPorcentaje = todosLosUsuarios
+                .GroupBy(u => u.TipoDieta)
+                .Select(g => new DietaStat { 
+                    Nombre = string.IsNullOrEmpty(g.Key) ? "No especificada" : g.Key, 
+                    Porcentaje = (g.Count() * 100.0) / totalUsuarios 
+                })
+                .OrderByDescending(d => d.Porcentaje)
+                .ToList();
+        }
+
+        // 3. Calcular Usuarios con más Menús (Afectado por rango de fechas)
+        usuariosTopMenus = menusEnRango
+            .GroupBy(m => m.UsuarioId)
+            .Select(g => new UsuarioTop {
+                NombreUsuario = todosLosUsuarios.FirstOrDefault(u => u.Id == g.Key)?.Nombre ?? "Usuario Desconocido",
+                TotalMenus = g.Count()
+            })
+            .OrderByDescending(u => u.TotalMenus)
+            .ToList();
+    }
+
+    // Clases auxiliares para la UI
+    class TopProducto { public string Nombre { get; set; } = ""; public decimal Cantidad { get; set; } }
+    class DietaStat { public string Nombre { get; set; } = ""; public double Porcentaje { get; set; } }
+    class UsuarioTop { public string NombreUsuario { get; set; } = ""; public int TotalMenus { get; set; } }
+}
