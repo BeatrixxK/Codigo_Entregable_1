@@ -43,7 +43,10 @@
             <label class="text-muted small fw-bold">Seleccionar Producto</label>
             <select class="form-select input-dragon" @bind="productoSeleccionadoId">
                 <option value="@Guid.Empty">Escoger alimento...</option>
-                @foreach (var p in listaProductos) { <option value="@p.Id">@p.Nombre (@p.Calorias kcal)</option> }
+                @foreach (var p in listaProductos) 
+                { 
+                <option value="@p.Id">@p.Nombre (@p.Calorias kcal)</option> 
+                }
             </select>
         </div>
         <div class="col-md-3">
