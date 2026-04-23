@@ -1,0 +1,14 @@
+@page "/logout"
+@inject UserSession Session
+@inject NavigationManager Nav
+
+@code {
+    protected override void OnInitialized()
+    {
+        // 1. Delegamos la limpieza a la clase responsable
+        Session.CerrarSesion();
+        
+        // 2. Ejecutamos la redirección forzando la recarga
+        Nav.NavigateTo("/", forceLoad: true);
+    }
+}

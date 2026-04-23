@@ -13,6 +13,7 @@
         <div class="d-flex gap-2 mb-4">
             @if (Session.IsAdmin)
             {
+                @* La vista de Admin permanece igual con acceso a Productos *@
                 <a href="/admin/usuarios" class="btn flex-fill btn-nav-dragon shadow-sm">Usuarios</a>
                 <a href="/admin/productos" class="btn flex-fill btn-nav-dragon shadow-sm">Productos</a>
                 <a href="/admin/menus" class="btn flex-fill btn-nav-dragon shadow-sm">Menús</a>
@@ -20,7 +21,7 @@
             }
             else
             {
-                <a href="/admin/productos" class="btn flex-fill btn-nav-dragon shadow-sm">Catálogo de Productos</a>
+                @* Se eliminó la línea de 'Catálogo de Productos' para usuarios estándar *@
                 <a href="/admin/menus" class="btn flex-fill btn-nav-dragon shadow-sm">Mis Menús</a>
                 <a href="/mi-progreso" class="btn flex-fill btn-nav-dragon shadow-sm">Mi Progreso (Estadísticas)</a>
             }
@@ -33,20 +34,19 @@
         </article>
 
         <div class="text-end mt-5 pt-3 border-top">
-            <button class="btn btn-sm btn-outline-danger fw-bold px-4" @onclick="CerrarSesion">
-                🚪 Cerrar sesión
-            </button>
+            <a href="/logout" target="_top" class="btn btn-sm btn-outline-danger fw-bold px-4">
+            🚪 Cerrar sesión
+            </a>
         </div>
     </main>
 </div>
 
 @code {
-    private void CerrarSesion()
-    {
-        // SOLUCIÓN ERROR CS0200: 
-        // Solo limpiamos NombreUsuario. IsAdmin normalmente se calcula 
-        // basado en el nombre, así que al vaciar el nombre, deja de ser Admin.
-        Session.NombreUsuario = ""; 
-        Nav.NavigateTo("/");
-    }
+   private void CerrarSesion()
+        {
+            
+            Session.NombreUsuario = ""; 
+                        
+            Nav.NavigateTo("/login", forceLoad: true);
+        }
 }
