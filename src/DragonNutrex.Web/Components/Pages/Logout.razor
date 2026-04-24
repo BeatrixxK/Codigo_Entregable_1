@@ -1,14 +1,19 @@
 @page "/logout"
+@using DragonNutrex.App.Models
 @inject UserSession Session
 @inject NavigationManager Nav
+
+<div class="text-center mt-5">
+    <p>Cerrando sesión...</p>
+</div>
 
 @code {
     protected override void OnInitialized()
     {
-        // 1. Delegamos la limpieza a la clase responsable
-        Session.CerrarSesion();
+        // 1. Limpiamos la memoria
+        Session.NombreUsuario = string.Empty;
         
-        // 2. Ejecutamos la redirección forzando la recarga
+        // 2. Lo pateamos de vuelta al Login recargando la página entera
         Nav.NavigateTo("/", forceLoad: true);
     }
 }

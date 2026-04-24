@@ -25,7 +25,22 @@
             <div class="row g-2 align-items-end">
                 <div class="col-md-5">
                     <label class="text-muted small fw-bold">Usuario Seleccionado</label>
-                    <input type="text" class="form-control bg-white" value="@(listaUsuarios.FirstOrDefault(u => u.Id == usuarioSeleccionadoId)?.Nombre ?? "Seleccione...")" disabled />
+                    
+                    @if (Session.IsAdmin)
+                    {
+                        <select class="form-select bg-white" @onchange="OnCambioUsuarioAdmin">
+                            <option value="@Guid.Empty">Seleccione un usuario...</option>
+                            @foreach (var u in listaUsuarios)
+                            {
+                                // El selected asegura que si ya escogimos uno, se mantenga visible
+                                <option value="@u.Id" selected="@(u.Id == usuarioSeleccionadoId)">@u.Nombre</option>
+                            }
+                        </select>
+                    }
+                    else
+                    {
+                        <input type="text" class="form-control bg-white" value="@(listaUsuarios.FirstOrDefault(u => u.Id == usuarioSeleccionadoId)?.Nombre ?? "Cargando...")" disabled />
+                    }
                 </div>
                 <div class="col-md-5">
                     <label class="text-muted small fw-bold">Fecha del Menú</label>
@@ -58,64 +73,82 @@
         </div>
     </div>
 
-    @if (menuActual != null && menuActual.Registros != null && menuActual.Registros.Any())
+    @if (usuarioSeleccionadoId == Guid.Empty)
     {
-        <div class="table-responsive mb-5 shadow-sm rounded-2">
-            <table class="table table-bordered align-middle mb-0 bg-white">
-                <thead style="background-color: #1b5e20; color: white;">
+        <div class="alert alert-info text-center mt-5 shadow-sm border-0 fw-bold">
+            👆 Por favor, selecciona un usuario en la parte superior para ver y gestionar sus menús.
+        </div>
+    }
+    else
+    {
+        @if (menuActual != null && menuActual.Registros != null && menuActual.Registros.Any())
+        {
+            <div class="table-responsive mb-5 shadow-sm rounded-2">
+                <table class="table table-bordered align-middle mb-0 bg-white">
+                    <thead style="background-color: #1b5e20; color: white;">
+                        <tr>
+                            <th>Producto</th>
+                            <th style="width: 120px;">Cant.</th>
+                            <th>Kcal</th>
+                            <th class="text-center">Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var reg in menuActual.Registros)
+                        {
+                            <tr @key="reg.ProductoId">
+                                <td class="fw-bold">@reg.NombreProducto</td>
+                                <td><input type="number" step="any" class="form-control form-control-sm text-center fw-bold" @bind="reg.Cantidad" @bind:after="() => RecalcularLineaYGuardar(reg)" /></td>
+                                <td>@reg.Calorias.ToString("N1")</td>
+                                <td class="text-center"><button class="btn btn-sm btn-outline-danger fw-bold" @onclick="() => EliminarRegistro(reg)">X</button></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+
+        <hr class="my-5" />
+
+        <h4 class="fw-bold mb-3" style="color: #1b5e20;">📋 Historial de Menús Registrados</h4>
+        <div class="table-responsive shadow-sm rounded-2">
+            <table class="table table-hover bg-white align-middle mb-0">
+                <thead class="table-dark">
                     <tr>
-                        <th>Producto</th>
-                        <th style="width: 120px;">Cant.</th>
-                        <th>Kcal</th>
-                        <th class="text-center">Acción</th>
+                        <th>Fecha (Click para ver)</th>
+                        <th>Calorías</th>
+                        <th>Alimentos</th>
+                        <th class="text-center">Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var reg in menuActual.Registros)
+                    @if (historialMenus.Any())
                     {
-                        <tr @key="reg.ProductoId">
-                            <td class="fw-bold">@reg.NombreProducto</td>
-                            <td><input type="number" step="any" class="form-control form-control-sm text-center fw-bold" @bind="reg.Cantidad" @bind:after="() => RecalcularLineaYGuardar(reg)" /></td>
-                            <td>@reg.Calorias.ToString("N1")</td>
-                            <td class="text-center"><button class="btn btn-sm btn-outline-danger fw-bold" @onclick="() => EliminarRegistro(reg)">X</button></td>
+                        @foreach (var m in historialMenus.OrderByDescending(x => x.Fecha).ToList())
+                        {
+                            decimal totalKcal = m.TotalCalorias > 0 ? m.TotalCalorias : (m.Registros?.Sum(r => r.Calorias) ?? 0);
+
+                            <tr @key="m.Id" style="cursor: pointer; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#e8f5e9'" onmouseout="this.style.backgroundColor='transparent'" @onclick="() => AbrirVisor(m)">
+                                <td class="fw-bold" style="color: #1b5e20;">📁 @m.Fecha.ToString("dd/MM/yyyy")</td>
+                                <td>@totalKcal.ToString("N1") kcal</td>
+                                <td class="small text-muted">@string.Join(", ", m.Registros?.Select(r => r.NombreProducto).Take(2) ?? new List<string>())...</td>
+                                <td class="text-center">
+                                    <button class="btn btn-sm btn-primary fw-bold me-1" @onclick="() => ConfirmarEdicion(m)" @onclick:stopPropagation="true">Editar</button>
+                                    <button class="btn btn-sm btn-danger fw-bold" @onclick="() => EliminarMenuDesdeHistorial(m.Id)" @onclick:stopPropagation="true">Borrar</button>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="4" class="text-center text-muted py-4">Este usuario aún no tiene menús registrados.</td>
                         </tr>
                     }
                 </tbody>
             </table>
         </div>
     }
-
-    <hr class="my-5" />
-
-    <h4 class="fw-bold mb-3" style="color: #1b5e20;">📋 Historial de Menús Registrados</h4>
-    <div class="table-responsive shadow-sm rounded-2">
-        <table class="table table-hover bg-white align-middle mb-0">
-            <thead class="table-dark">
-                <tr>
-                    <th>Fecha (Click para ver)</th>
-                    <th>Calorías</th>
-                    <th>Alimentos</th>
-                    <th class="text-center">Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var m in historialMenus.OrderByDescending(x => x.Fecha).ToList())
-                {
-                    decimal totalKcal = m.TotalCalorias > 0 ? m.TotalCalorias : (m.Registros?.Sum(r => r.Calorias) ?? 0);
-
-                    <tr @key="m.Id" style="cursor: pointer; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#e8f5e9'" onmouseout="this.style.backgroundColor='transparent'" @onclick="() => AbrirVisor(m)">
-                        <td class="fw-bold" style="color: #1b5e20;">📁 @m.Fecha.ToString("dd/MM/yyyy")</td>
-                        <td>@totalKcal.ToString("N1") kcal</td>
-                        <td class="small text-muted">@string.Join(", ", m.Registros?.Select(r => r.NombreProducto).Take(2) ?? new List<string>())...</td>
-                        <td class="text-center">
-                            <button class="btn btn-sm btn-primary fw-bold me-1" @onclick="() => ConfirmarEdicion(m)" @onclick:stopPropagation="true">Editar</button>
-                            <button class="btn btn-sm btn-danger fw-bold" @onclick="() => EliminarMenuDesdeHistorial(m.Id)" @onclick:stopPropagation="true">Borrar</button>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </div>
 </div>
 
 @if (mostrarVisor && menuVisor != null)
@@ -248,18 +281,54 @@
     {
         listaProductos = _productoController.ObtenerProductos() ?? new();
         listaUsuarios = _usuarioController.ObtenerUsuarios() ?? new();
-        var yo = listaUsuarios.FirstOrDefault(u => u.Nombre?.ToLower() == Session.NombreUsuario?.ToLower());
-        if (yo != null) { usuarioSeleccionadoId = yo.Id; CargarHistorial(); }
+        
+        // Inicialización inteligente: 
+        // Si no es admin, carga SU usuario obligatoriamente.
+        // Si ES admin, lo dejamos en Guid.Empty para que él elija a quién revisar.
+        if (!Session.IsAdmin)
+        {
+            var yo = listaUsuarios.FirstOrDefault(u => u.Nombre?.ToLower() == Session.NombreUsuario?.ToLower());
+            if (yo != null) 
+            { 
+                usuarioSeleccionadoId = yo.Id; 
+                CargarHistorial(); 
+            }
+        }
+    }
+
+    // Nuevo método para cuando el Admin cambia la lista desplegable
+    private void OnCambioUsuarioAdmin(ChangeEventArgs e)
+    {
+        if (Guid.TryParse(e.Value?.ToString(), out Guid idSeleccionado))
+        {
+            usuarioSeleccionadoId = idSeleccionado;
+            
+            if (usuarioSeleccionadoId != Guid.Empty)
+            {
+                LimpiarPantalla(); // Resetea la fecha a HOY
+                CargarHistorial(); // Trae los menús de la nueva persona
+            }
+            else
+            {
+                // Si vuelve a elegir "Seleccione un usuario...", limpiamos todo
+                historialMenus.Clear();
+                menuActual = null;
+            }
+        }
     }
 
     private void CargarHistorial()
     {
+        if (usuarioSeleccionadoId == Guid.Empty) return;
+
         historialMenus = _menuController.ObtenerMenus()?.Where(m => m.UsuarioId == usuarioSeleccionadoId).ToList() ?? new();
         CargarMenuDelDia();
     }
 
     private void CargarMenuDelDia()
     {
+        if (usuarioSeleccionadoId == Guid.Empty) return;
+
         menuActual = historialMenus.FirstOrDefault(m => m.Fecha.Date == fechaMenu.Date) 
                      ?? new Menu { UsuarioId = usuarioSeleccionadoId, Fecha = fechaMenu.Date, Registros = new List<RegistroComida>() };
         RecalcularTotalesGenerales();
@@ -269,7 +338,6 @@
     { 
         menuVisor = m; 
         
-        // Seguro contra nulos por si se abre un menú con la data cruda de Redis
         if (menuVisor.TotalCalorias <= 0 && menuVisor.Registros != null)
         {
             menuVisor.TotalCalorias = menuVisor.Registros.Sum(r => r.Calorias);
@@ -298,6 +366,12 @@
 
     private void GuardarMenu()
     {
+        if (usuarioSeleccionadoId == Guid.Empty)
+        {
+            // Pequeña validación por si intentan guardar sin seleccionar usuario
+            return; 
+        }
+
         if (menuActual == null) return;
         RecalcularTotalesGenerales();
         bool esUpdate = _menuController.ObtenerMenus()?.Any(m => m.Id == menuActual.Id) ?? false;
@@ -311,6 +385,8 @@
 
     private void AgregarProductoAlMenu()
     {
+        if (usuarioSeleccionadoId == Guid.Empty) return;
+
         var p = listaProductos.FirstOrDefault(x => x.Id == productoSeleccionadoId);
         if (p != null) {
             menuActual!.Registros.Add(new RegistroComida { ProductoId = p.Id, NombreProducto = p.Nombre, Cantidad = cantidadProducto, Calorias = p.Calorias * cantidadProducto, Proteinas = p.Proteinas * cantidadProducto, Carbohidratos = p.Carbohidratos * cantidadProducto, Grasas = p.Grasas * cantidadProducto });

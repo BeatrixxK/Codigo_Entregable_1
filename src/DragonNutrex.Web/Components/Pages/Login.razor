@@ -112,7 +112,7 @@
             return;
         }
 
-        // Caso especial para el admin maestro (si decides dejarlo harcodeado o validarlo en base de datos)
+        // 1. Caso especial para el admin maestro
         if (usuarioInput.ToLower() == "admin" && passwordInput == "admin")
         {
             UserSession.NombreUsuario = "admin";
@@ -120,7 +120,7 @@
             return;
         }
 
-        // Validación real contra la base de datos SQLite
+        // 2. Validación real contra la base de datos SQLite para usuarios
         var todosLosUsuarios = _usuarioController.ObtenerUsuarios() ?? new List<Usuario>();
         var userDb = todosLosUsuarios.FirstOrDefault(u => u.Nombre.ToLower() == usuarioInput.ToLower() && u.Password == passwordInput);
 
@@ -136,9 +136,18 @@
             return;
         }
 
-        // Si pasa todas las pruebas, iniciamos sesión
+        // 3. Iniciamos sesión con el usuario validado
         UserSession.NombreUsuario = userDb.Nombre;
-        Nav.NavigateTo("/mi-progreso"); 
+
+        // 4. Redirección final controlada leyendo la propiedad automática IsAdmin
+        if (UserSession.IsAdmin)
+        {
+            Nav.NavigateTo("/admin/usuarios");
+        }
+        else
+        {
+            Nav.NavigateTo("/mi-progreso"); 
+        }
     }
 
     private void AutoresetearPassword()

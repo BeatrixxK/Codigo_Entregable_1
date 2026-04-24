@@ -5,9 +5,13 @@
 
 <div class="page">
     <main class="w-100 px-4 py-3">
-        <div class="p-3 mb-3" style="background-color: #e8f5e9; color: #1b5e20; border-radius: 4px; border: 1px solid #c8e6c9;">
-            <h5 class="fw-bold mb-0">Seleccione un módulo para agregar, visualizar, editar o eliminar datos y realizar cálculos.</h5>
-            <small>Sesión activa: @(Session.IsAdmin ? "Administrador" : Session.NombreUsuario)</small>
+        <div class="p-3 mb-3 d-flex justify-content-between align-items-center shadow-sm" style="background-color: #e8f5e9; color: #1b5e20; border-radius: 8px; border: 1px solid #c8e6c9;">
+            <div>
+                <h5 class="fw-bold mb-0">Seleccione un módulo para agregar, visualizar, editar o eliminar datos y realizar cálculos.</h5>
+                <small class="fw-medium">Sesión activa: @(Session.IsAdmin ? "Administrador" : Session.NombreUsuario)</small>
+            </div>
+            
+            <img src="images/logosecundario.png" alt="Dragon Nutrex Logo Secundario" style="max-height: 130px; width: auto; object-fit: contain; margin-left: 15px;" />
         </div>
 
         <div class="d-flex gap-2 mb-4">
@@ -16,7 +20,7 @@
                 <a href="/admin/usuarios" class="btn flex-fill btn-nav-dragon shadow-sm">Usuarios</a>
                 <a href="/admin/productos" class="btn flex-fill btn-nav-dragon shadow-sm">Productos</a>
                 <a href="/admin/menus" class="btn flex-fill btn-nav-dragon shadow-sm">Menús</a>
-                <a href="/estadisticas-comparativas" class="btn flex-fill btn-nav-dragon shadow-sm">Estadísticas</a>
+                <a href="/admin/estadisticas" class="btn flex-fill btn-nav-dragon shadow-sm">Estadísticas</a>
                 <a href="/admin/estadisticas-consumo" class="btn flex-fill btn-nav-dragon shadow-sm">Estadísticas de Consumo</a>
             }
             else
@@ -27,15 +31,30 @@
         </div>
 
         <article class="content">
-            <HeaderPerfil />
+            @if (!Session.IsAdmin)
+            {
+                <HeaderPerfil />
+            }
 
             @Body
         </article>
 
         <div class="text-end mt-5 pt-3 border-top">
-            <a href="/logout" target="_top" class="btn btn-sm btn-outline-danger fw-bold px-4">
-            🚪 Cerrar sesión
+            <a href="/logout" class="btn btn-sm btn-outline-danger fw-bold px-4 shadow-sm">
+                🚪 Cerrar sesión
             </a>
         </div>
     </main>
 </div>
+
+@code {
+    private void CerrarSesion()
+    {
+        // Limpiamos la memoria de la sesión (Esto apaga automáticamente el IsAdmin)
+        Session.NombreUsuario = string.Empty;
+        
+        // Redirigimos a la pantalla de Login (la raíz)
+        // El 'true' al final fuerza una recarga completa del navegador
+        Nav.NavigateTo("/", true); 
+    }
+}
