@@ -18,12 +18,23 @@
         </div>
     }
 
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <div class="input-group shadow-sm">
+                <span class="input-group-text bg-white text-muted border-end-0">🔍</span>
+                <input type="text" class="form-control border-start-0" 
+                       placeholder="Buscar usuario por nombre..." 
+                       @bind="filtroBusqueda" 
+                       @bind:event="oninput" />
+            </div>
+        </div>
+    </div>
+
     <div class="table-responsive shadow-sm rounded-2">
         <table class="table table-hover mb-0 bg-white align-middle">
             <thead style="background-color: #1b5e20; color: white;">
                 <tr>
                     <th>Nombre / Usuario</th>
-                    <th>Correo</th>
                     <th>Dieta</th>
                     <th class="text-center">Estado</th>
                     <th class="text-center">Acciones</th>
@@ -32,35 +43,49 @@
             <tbody>
                 @if (listaUsuarios.Any())
                 {
-                    @foreach (var user in listaUsuarios)
+                    // Aplicamos el filtro dinámico a la lista antes de dibujarla
+                    var usuariosFiltrados = listaUsuarios
+                        .Where(u => string.IsNullOrWhiteSpace(filtroBusqueda) || 
+                                    u.Nombre.Contains(filtroBusqueda, StringComparison.OrdinalIgnoreCase))
+                        .ToList();
+
+                    if (usuariosFiltrados.Any())
+                    {
+                        @foreach (var user in usuariosFiltrados)
+                        {
+                            <tr>
+                                <td class="fw-bold">@user.Nombre</td>
+                                <td>@user.TipoDieta</td>
+                                <td class="text-center">
+                                    <span class="badge @(user.Activo ? "bg-success" : "bg-danger") rounded-pill">
+                                        @(user.Activo ? "Activo" : "Inactivo")
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    <button class="btn btn-sm @(user.Activo ? "btn-outline-danger" : "btn-outline-success") fw-bold me-2" 
+                                            @onclick="() => AlternarEstado(user)">
+                                        @(user.Activo ? "Desactivar" : "Activar")
+                                    </button>
+                                    
+                                    <button class="btn btn-sm btn-outline-warning fw-bold" 
+                                            @onclick="() => ResetearPassword(user)">
+                                        Reset Pwd
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
                     {
                         <tr>
-                            <td class="fw-bold">@user.Nombre</td>
-                            <td>@user.Correo</td>
-                            <td>@user.TipoDieta</td>
-                            <td class="text-center">
-                                <span class="badge @(user.Activo ? "bg-success" : "bg-danger") rounded-pill">
-                                    @(user.Activo ? "Activo" : "Inactivo")
-                                </span>
-                            </td>
-                            <td class="text-center">
-                                <button class="btn btn-sm @(user.Activo ? "btn-outline-danger" : "btn-outline-success") fw-bold me-2" 
-                                        @onclick="() => AlternarEstado(user)">
-                                    @(user.Activo ? "Desactivar" : "Activar")
-                                </button>
-                                
-                                <button class="btn btn-sm btn-outline-warning fw-bold" 
-                                        @onclick="() => ResetearPassword(user)">
-                                    Reset Pwd
-                                </button>
-                            </td>
+                            <td colspan="4" class="text-center text-muted py-4">No se encontraron usuarios que coincidan con la búsqueda.</td>
                         </tr>
                     }
                 }
                 else
                 {
                     <tr>
-                        <td colspan="5" class="text-center text-muted py-4">No hay usuarios registrados.</td>
+                        <td colspan="4" class="text-center text-muted py-4">No hay usuarios registrados.</td>
                     </tr>
                 }
             </tbody>
@@ -71,6 +96,9 @@
 @code {
     private List<Usuario> listaUsuarios = new();
     private string mensajeAlerta = "";
+    
+    // Variable para capturar lo que el admin escribe en tiempo real
+    private string filtroBusqueda = "";
 
     protected override void OnInitialized()
     {
@@ -93,7 +121,7 @@
     private void AlternarEstado(Usuario u)
     {
         u.Activo = !u.Activo;
-        // Asumiendo que tu controlador tiene un método para guardar/actualizar en SQLite
+        // IMPORTANTE: Asegúrate de descomentar esto cuando tu base de datos esté lista
         // _usuarioController.ActualizarUsuario(u); 
         
         mensajeAlerta = $"El usuario {u.Nombre} ahora está {(u.Activo ? "Activo" : "Inactivo")}.";
@@ -102,7 +130,8 @@
     private void ResetearPassword(Usuario u)
     {
         u.Password = "Dragon123*"; // Contraseña temporal por defecto
-        // _usuarioController.ActualizarUsuario(u); // Guardar en DB
+        // IMPORTANTE: Asegúrate de descomentar esto cuando tu base de datos esté lista
+        // _usuarioController.ActualizarUsuario(u); 
         
         mensajeAlerta = $"Contraseña de {u.Nombre} reseteada a: Dragon123*";
     }

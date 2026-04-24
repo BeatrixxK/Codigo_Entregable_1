@@ -67,6 +67,18 @@
         </div>
     </div>
 
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <div class="input-group shadow-sm">
+                <span class="input-group-text bg-white text-muted border-end-0">🔍</span>
+                <input type="text" class="form-control border-start-0" 
+                       placeholder="Buscar producto en la tabla..." 
+                       value="@filtroBusqueda" 
+                       @oninput="FiltrarTabla" />
+            </div>
+        </div>
+    </div>
+
     <div class="table-responsive shadow-sm rounded-2">
         <table class="table table-hover bg-white align-middle mb-0">
             <thead class="table-dark">
@@ -79,16 +91,25 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (var prod in listaProductos)
+                @if (productosFiltrados.Any())
                 {
-                    <tr @onclick="() => Seleccionar(prod)" 
-                        style="@(Session.IsAdmin ? "cursor: pointer;" : "cursor: default;")" 
-                        class="@(productoSeleccionado?.Id == prod.Id ? "table-success" : "")">
-                        <td class="fw-bold" style="color: #1b5e20;">@prod.Nombre</td>
-                        <td class="text-center">@prod.Calorias.ToString("N1")</td>
-                        <td class="text-center">@prod.Proteinas.ToString("N1")g</td>
-                        <td class="text-center">@prod.Carbohidratos.ToString("N1")g</td>
-                        <td class="text-center">@prod.Grasas.ToString("N1")g</td>
+                    @foreach (var prod in productosFiltrados)
+                    {
+                        <tr @onclick="() => Seleccionar(prod)" 
+                            style="@(Session.IsAdmin ? "cursor: pointer;" : "cursor: default;")" 
+                            class="@(productoSeleccionado?.Id == prod.Id ? "table-success" : "")">
+                            <td class="fw-bold" style="color: #1b5e20;">@prod.Nombre</td>
+                            <td class="text-center">@prod.Calorias.ToString("N1")</td>
+                            <td class="text-center">@prod.Proteinas.ToString("N1")g</td>
+                            <td class="text-center">@prod.Carbohidratos.ToString("N1")g</td>
+                            <td class="text-center">@prod.Grasas.ToString("N1")g</td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="5" class="text-center text-muted py-4">No se encontraron productos con ese nombre.</td>
                     </tr>
                 }
             </tbody>
@@ -118,14 +139,21 @@
 }
 
 @code {
+    // Listas base y filtrada
     private List<Producto> listaProductos = new();
+    private List<Producto> productosFiltrados = new();
+    
     private Producto nuevoProducto = new Producto();
     private Producto? productoSeleccionado;
     
+    // Variables de estado
     private string mensaje = "";
     private bool esError = false;
     private bool mostrarModalExito = false;
     private string mensajeExito = "";
+    
+    // Variable para el buscador
+    private string filtroBusqueda = "";
 
     protected override void OnInitialized() => CargarLista();
 
@@ -133,6 +161,31 @@
     {
         var data = _productoController.ObtenerProductos();
         listaProductos = data != null ? data.ToList() : new List<Producto>();
+        
+        // Al cargar, aplicamos el filtro por si ya había texto
+        AplicarFiltro();
+    }
+
+    // Nuevo método para filtrar en tiempo real
+    private void FiltrarTabla(ChangeEventArgs e)
+    {
+        filtroBusqueda = e.Value?.ToString() ?? "";
+        AplicarFiltro();
+    }
+
+    // Lógica interna del filtro
+    private void AplicarFiltro()
+    {
+        if (string.IsNullOrWhiteSpace(filtroBusqueda))
+        {
+            productosFiltrados = listaProductos.ToList();
+        }
+        else
+        {
+            productosFiltrados = listaProductos
+                .Where(p => p.Nombre.Contains(filtroBusqueda, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+        }
     }
 
     private void Seleccionar(Producto p)
@@ -188,7 +241,7 @@
                 mensaje = "";
             }
 
-            CargarLista(); 
+            CargarLista(); // Recarga la base de datos y vuelve a aplicar el filtro
         }
         catch (Exception ex)
         {
@@ -206,7 +259,7 @@
                 mensaje = "🗑️ Producto eliminado.";
                 esError = false;
                 LimpiarFormulario();
-                CargarLista();
+                CargarLista(); // Recarga la base de datos y vuelve a aplicar el filtro
             }
             catch (Exception ex)
             {
