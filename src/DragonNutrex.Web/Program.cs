@@ -55,6 +55,10 @@ builder.Services.AddScoped<ProductoController>();
 builder.Services.AddScoped<MenuController>();
 builder.Services.AddScoped<EstadisticasNutricionController>();
 
+//Usar caché en la memoria local (SessionStorage / Singleton)
+
+builder.Services.AddMemoryCache(); // Agregamos el servicio de caché en memoria para optimizar la lectura de productos
+
 var app = builder.Build();
 
 app.UseStaticFiles();

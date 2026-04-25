@@ -5,44 +5,48 @@ namespace DragonNutrex.App.Repositories;
 
 public class RedisConnection
 {
-    private ConnectionMultiplexer? _connection;
-    private readonly string _connectionString;
+    // 🔥 EL FRANCOTIRADOR: Lazy garantiza que la conexión se arme UNA SOLA VEZ, 
+    // sin importar cuántos hilos la pidan al mismo tiempo. Cero bloqueos.
+    private readonly Lazy<ConnectionMultiplexer> _lazyConnection;
 
     public RedisConnection(string connectionString)
     {
         if (string.IsNullOrWhiteSpace(connectionString))
             throw new ArgumentException("La cadena de conexión de Redis está vacía.");
 
-        _connectionString = connectionString;
-    }
+        _lazyConnection = new Lazy<ConnectionMultiplexer>(() =>
+        {
+            var options = ConfigurationOptions.Parse(connectionString);
+            
+            // 1. Evitamos que la app explote si Redis parpadea
+            options.AbortOnConnectFail = false;
 
-    private void Connect()
-    {
-        var options = ConfigurationOptions.Parse(_connectionString);
-        options.AbortOnConnectFail = false;
+            // 2. ⚡ LÍMITES DE VELOCIDAD ESTRICTOS (Adiós a los 99 segundos)
+            options.ConnectTimeout = 5000; // Máximo 5 segundos para enganchar
+            options.SyncTimeout = 5000;    // Máximo 5 segundos por operación
+            options.AsyncTimeout = 5000;   // Máximo 5 segundos en background
+            options.KeepAlive = 60;        // Mantiene el túnel despierto cada minuto
 
-        _connection = ConnectionMultiplexer.Connect(options);
+            return ConnectionMultiplexer.Connect(options);
+        });
     }
 
     // =================================================================
-    // SOLUCIÓN CS1061: Agregamos el método que los repositorios buscan
+    // OBTENER BASE DE DATOS (AHORA 100% SEGURO Y RÁPIDO)
     // =================================================================
     public IDatabase GetDatabase()
     {
-        if (_connection == null || !_connection.IsConnected)
-        {
-            Connect();
-        }
+        // Al llamar a .Value, el patrón Lazy hace su magia. 
+        // Si no existe, la crea rapidísimo. Si ya existe, la devuelve en 0.001ms.
+        var connection = _lazyConnection.Value;
 
-        // SOLUCIÓN CS8602: Validamos explícitamente que no sea null
-        if (_connection == null)
+        if (connection == null)
         {
             throw new Exception("No se pudo establecer la conexión con Redis.");
         }
 
-        return _connection.GetDatabase();
+        return connection.GetDatabase();
     }
 
-    // Mantenemos la propiedad por si la usas en otra parte del proyecto
     public IDatabase Database => GetDatabase();
 }

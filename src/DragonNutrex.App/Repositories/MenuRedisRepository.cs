@@ -1,5 +1,9 @@
+using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Text.Json;
+using System.Threading.Tasks;
+using System.Linq;
 using DragonNutrex.App.Interfaces;
 using DragonNutrex.App.Models;
 using StackExchange.Redis;
@@ -15,7 +19,6 @@ public class MenuRedisRepository : IRepository<Menu>
 
     public MenuRedisRepository(RedisConnection redisConnection)
     {
-        // ⚠️ Requiere el método GetDatabase() en RedisConnection.cs
         _db = redisConnection.GetDatabase();
     }
 
@@ -32,17 +35,16 @@ public class MenuRedisRepository : IRepository<Menu>
     }
 
     // =====================================================
-    // UPDATE
+    // UPDATE (🔥 MODO INFALIBLE - UPSERT)
     // =====================================================
     public void Update(Menu entity)
     {
         var key = $"{PREFIX}:{entity.Id}";
 
-        if (!_db.KeyExists(key))
-            throw new Exception("Menú no encontrado.");
-
+        // Sobrescribimos y reaseguramos su existencia en la lista maestra
         var entries = ToHash(entity);
         _db.HashSet(key, entries);
+        _db.SetAdd(SET_KEY, entity.Id.ToString());
     }
 
     // =====================================================
@@ -60,7 +62,7 @@ public class MenuRedisRepository : IRepository<Menu>
     }
 
     // =====================================================
-    // GET ALL
+    // GET ALL (Síncrono - Mantenido por compatibilidad)
     // =====================================================
     public List<Menu> GetAll()
     {
@@ -81,6 +83,52 @@ public class MenuRedisRepository : IRepository<Menu>
     }
 
     // =====================================================
+    // GET ALL ASYNC (🚀 LA AUTOPISTA DE ALTA VELOCIDAD)
+    // =====================================================
+    public async Task<List<Menu>> GetAllAsync()
+    {
+        var ids = await _db.SetMembersAsync(SET_KEY);
+        var menus = new List<Menu>();
+
+        if (ids.Length == 0) return menus;
+
+        // Pipelining: Empacamos todas las consultas en una sola caja
+        var batch = _db.CreateBatch();
+        var tareasRedis = new List<Task<HashEntry[]>>();
+        var idsProcesados = new List<string>();
+
+        foreach (var id in ids)
+        {
+            var rawId = id.ToString().Trim();
+            var key = $"{PREFIX}:{rawId}";
+            
+            tareasRedis.Add(batch.HashGetAllAsync(key));
+            idsProcesados.Add(rawId);
+        }
+
+        // Un solo viaje a la red
+        batch.Execute(); 
+        await Task.WhenAll(tareasRedis);
+
+        // Armamos la lista localmente
+        for (int i = 0; i < tareasRedis.Count; i++)
+        {
+            var entries = tareasRedis[i].Result;
+            if (entries.Length > 0)
+            {
+                var menu = FromHash(entries);
+                if (Guid.TryParse(idsProcesados[i], out var parsedId))
+                {
+                    menu.Id = parsedId;
+                }
+                menus.Add(menu);
+            }
+        }
+
+        return menus;
+    }
+
+    // =====================================================
     // GET BY ID
     // =====================================================
     public Menu? GetById(Guid id)
@@ -91,7 +139,9 @@ public class MenuRedisRepository : IRepository<Menu>
         if (entries.Length == 0)
             return null;
 
-        return FromHash(entries);
+        var menu = FromHash(entries);
+        menu.Id = id; // Aseguramos sincronización
+        return menu;
     }
 
     // =====================================================
@@ -118,15 +168,12 @@ public class MenuRedisRepository : IRepository<Menu>
             x => x.Value.ToString()
         );
 
-        // 1. Parseo seguro de GUIDs
         _ = Guid.TryParse(dict.GetValueOrDefault("Id"), out var id);
         _ = Guid.TryParse(dict.GetValueOrDefault("UsuarioId"), out var usuarioId);
 
-        // 2. Parseo seguro de Fechas
         var fechaStr = dict.GetValueOrDefault("Fecha", DateTime.UtcNow.ToString("O"));
         _ = DateTime.TryParse(fechaStr, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out var fecha);
 
-        // 3. Deserialización segura de JSON para la lista de comidas
         var registrosStr = dict.GetValueOrDefault("Registros", "[]");
         List<RegistroComida> registros;
         try
@@ -137,7 +184,6 @@ public class MenuRedisRepository : IRepository<Menu>
         }
         catch (JsonException)
         {
-            // Si el JSON en Redis está corrupto, devolvemos una lista vacía en lugar de romper la app
             registros = new List<RegistroComida>(); 
         }
 

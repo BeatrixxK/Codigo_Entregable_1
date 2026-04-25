@@ -1,103 +1,90 @@
-// =====================================================
-// IMPORTACIONES
-// =====================================================
-
-// Modelos (Menu, RegistroComida, etc.)
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using DragonNutrex.App.Models;
-
-// Servicio de menús (lógica de negocio)
 using DragonNutrex.App.Services;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace DragonNutrex.App.Controllers;
 
-// =====================================================
-// CLASE MENU CONTROLLER
-// =====================================================
-// Actúa como intermediario entre la UI y el servicio de menús
-// ✔ conecta servicio con UI
 public class MenuController
 {
-    // Servicio de menús
     private readonly MenuService _service;
+    private readonly IMemoryCache _cache;
+    private const string MENUS_CACHE_KEY = "lista_menus_maestra";
 
-    // =====================================================
-    // CONSTRUCTOR
-    // =====================================================
-    // Recibe el servicio para usar la lógica de negocio
-    public MenuController(MenuService service)
+    public MenuController(MenuService service, IMemoryCache cache)
     {
         _service = service;
+        _cache = cache;
     }
 
     // =====================================================
-    // MÉTODO CREAR MENU
+    // MÉTODO ASÍNCRONO (El que necesita MiProgreso.razor)
     // =====================================================
-    // Envía el menú al servicio para validación y guardado
+    public async Task<List<Menu>> ObtenerMenusAsync()
+    {
+        // 1. Intentamos leer de la RAM para que sea instantáneo
+        if (_cache.TryGetValue(MENUS_CACHE_KEY, out List<Menu>? menusCache))
+        {
+            return menusCache ?? new List<Menu>();
+        }
+
+        // 2. Si no está en RAM, vamos a Redis de forma asíncrona
+        var menusDesdeDb = await _service.ObtenerMenusAsync();
+
+        // 3. Guardamos en RAM por 30 minutos
+        var opcionesCache = new MemoryCacheEntryOptions()
+            .SetAbsoluteExpiration(TimeSpan.FromMinutes(30));
+
+        _cache.Set(MENUS_CACHE_KEY, menusDesdeDb, opcionesCache);
+
+        return menusDesdeDb ?? new List<Menu>();
+    }
+
+    // =====================================================
+    // MÉTODO SÍNCRONO (Por compatibilidad)
+    // =====================================================
+    public List<Menu> ObtenerMenus()
+    {
+        if (_cache.TryGetValue(MENUS_CACHE_KEY, out List<Menu>? menusCache))
+        {
+            return menusCache ?? new List<Menu>();
+        }
+
+        var menusDesdeDb = _service.ObtenerMenus();
+
+        var opcionesCache = new MemoryCacheEntryOptions()
+            .SetAbsoluteExpiration(TimeSpan.FromMinutes(30));
+
+        _cache.Set(MENUS_CACHE_KEY, menusDesdeDb, opcionesCache);
+
+        return menusDesdeDb ?? new List<Menu>();
+    }
+
+    // =====================================================
+    // ESCRITURA (Limpian el caché para evitar datos viejos)
+    // =====================================================
     public void CrearMenu(Menu menu)
     {
         _service.CrearMenu(menu);
+        LimpiarCache();
     }
 
-    // =====================================================
-    // MÉTODO ACTUALIZAR MENU
-    // =====================================================
-    // Envía el menú al servicio para actualización
     public void ActualizarMenu(Menu menu)
     {
         _service.ActualizarMenu(menu);
+        LimpiarCache();
     }
 
-    // =====================================================
-    // MÉTODO ELIMINAR MENU
-    // =====================================================
-    // Envía el ID al servicio para eliminar el menú
     public void EliminarMenu(Guid id)
     {
         _service.EliminarMenu(id);
+        LimpiarCache();
     }
 
-    // =====================================================
-    // MÉTODO OBTENER MENUS
-    // =====================================================
-    // Solicita al servicio la lista de menús
-    public List<Menu> ObtenerMenus()
+    private void LimpiarCache()
     {
-        return _service.ObtenerMenus();
-    }
-
-    // =====================================================
-    // MÉTODO OBTENER MENU
-    // =====================================================
-    // Solicita un menú específico por ID
-    public Menu? ObtenerMenu(Guid id)
-    {
-        return _service.ObtenerMenu(id);
-    }
-
-    // =====================================================
-    // MÉTODO AGREGAR PRODUCTO
-    // =====================================================
-    // Agrega un producto a un menú con cantidad específica
-    public void AgregarProducto(Menu menu, Guid productoId, decimal cantidad)
-    {
-        _service.AgregarProducto(menu, productoId, cantidad);
-    }
-
-    // =====================================================
-    // MÉTODO ELIMINAR REGISTRO
-    // =====================================================
-    // Elimina un producto (registro) dentro del menú
-    public void EliminarRegistro(Menu menu, Guid registroId)
-    {
-        _service.EliminarRegistro(menu, registroId);
-    }
-
-    // =====================================================
-    // MÉTODO ACTUALIZAR REGISTRO
-    // =====================================================
-    // Actualiza la cantidad de un producto dentro del menú
-    public void ActualizarRegistro(Menu menu, Guid registroId, decimal nuevaCantidad)
-    {
-        _service.ActualizarRegistro(menu, registroId, nuevaCantidad);
+        _cache.Remove(MENUS_CACHE_KEY);
     }
 }

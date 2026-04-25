@@ -119,4 +119,13 @@ public class UsuarioService
         if (string.IsNullOrWhiteSpace(usuario.TipoDieta))
             throw new Exception("El tipo de dieta es obligatorio.");
     }
+
+
+// =====================================================
+    // MÉTODO ASÍNCRONO (LA NUEVA AUTOPISTA)
+    // =====================================================
+    public async Task<List<Usuario>> ObtenerUsuariosAsync()
+    {
+        return await _repository.GetAllAsync();
+    }
 }

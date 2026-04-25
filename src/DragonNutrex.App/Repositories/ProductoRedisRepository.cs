@@ -1,4 +1,8 @@
+using System;
+using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
+using System.Threading.Tasks;
 using DragonNutrex.App.Interfaces;
 using DragonNutrex.App.Models;
 using StackExchange.Redis;
@@ -14,7 +18,6 @@ public class ProductoRedisRepository : IRepository<Producto>
 
     public ProductoRedisRepository(RedisConnection redisConnection)
     {
-        // Depende de la corrección en RedisConnection.cs para resolver CS1061
         _db = redisConnection.GetDatabase();
     }
 
@@ -31,17 +34,17 @@ public class ProductoRedisRepository : IRepository<Producto>
     }
 
     // =====================================================
-    // UPDATE
+    // UPDATE (🔥 MODO INFALIBLE - UPSERT)
     // =====================================================
     public void Update(Producto entity)
     {
         var key = $"{PREFIX}:{entity.Id}";
 
-        if (!_db.KeyExists(key))
-            throw new Exception("Producto no encontrado.");
-
+        // Eliminamos el KeyExists. Ahora si el admin actualiza, 
+        // simplemente sobrescribimos y aseguramos que esté en la lista.
         var entries = ToHash(entity);
         _db.HashSet(key, entries);
+        _db.SetAdd(SET_KEY, entity.Id.ToString());
     }
 
     // =====================================================
@@ -59,7 +62,7 @@ public class ProductoRedisRepository : IRepository<Producto>
     }
 
     // =====================================================
-    // GET ALL
+    // GET ALL (Síncrono - Mantenido por compatibilidad)
     // =====================================================
     public List<Producto> GetAll()
     {
@@ -80,6 +83,52 @@ public class ProductoRedisRepository : IRepository<Producto>
     }
 
     // =====================================================
+    // GET ALL ASYNC (🚀 LA AUTOPISTA DE ALTA VELOCIDAD)
+    // =====================================================
+    public async Task<List<Producto>> GetAllAsync()
+    {
+        var ids = await _db.SetMembersAsync(SET_KEY);
+        var productos = new List<Producto>();
+
+        if (ids.Length == 0) return productos;
+
+        // Empacamos todas las peticiones en una sola caja (Pipelining)
+        var batch = _db.CreateBatch();
+        var tareasRedis = new List<Task<HashEntry[]>>();
+        var idsProcesados = new List<string>();
+
+        foreach (var id in ids)
+        {
+            var rawId = id.ToString().Trim();
+            var key = $"{PREFIX}:{rawId}";
+            
+            tareasRedis.Add(batch.HashGetAllAsync(key));
+            idsProcesados.Add(rawId);
+        }
+
+        // Enviamos la caja en un solo viaje de red a Redis Cloud
+        batch.Execute(); 
+        await Task.WhenAll(tareasRedis);
+
+        // Desempacamos
+        for (int i = 0; i < tareasRedis.Count; i++)
+        {
+            var entries = tareasRedis[i].Result;
+            if (entries.Length > 0)
+            {
+                var producto = FromHash(entries);
+                if (Guid.TryParse(idsProcesados[i], out var parsedId))
+                {
+                    producto.Id = parsedId;
+                }
+                productos.Add(producto);
+            }
+        }
+
+        return productos;
+    }
+
+    // =====================================================
     // GET BY ID
     // =====================================================
     public Producto? GetById(Guid id)
@@ -90,7 +139,9 @@ public class ProductoRedisRepository : IRepository<Producto>
         if (entries.Length == 0)
             return null;
 
-        return FromHash(entries);
+        var producto = FromHash(entries);
+        producto.Id = id; // Aseguramos que el ID empate con el buscado
+        return producto;
     }
 
     // =====================================================
@@ -110,7 +161,7 @@ public class ProductoRedisRepository : IRepository<Producto>
     }
 
     // =====================================================
-    // MAPPER → HASH A OBJETO (MEJORADO)
+    // MAPPER → HASH A OBJETO
     // =====================================================
     private Producto FromHash(HashEntry[] entries)
     {
@@ -119,7 +170,6 @@ public class ProductoRedisRepository : IRepository<Producto>
             x => x.Value.ToString()
         );
 
-        // Uso de Parseo seguro para evitar excepciones si los valores son nulos o están corruptos
         _ = Guid.TryParse(dict.GetValueOrDefault("Id"), out var id);
         _ = decimal.TryParse(dict.GetValueOrDefault("Calorias", "0"), NumberStyles.Any, CultureInfo.InvariantCulture, out var calorias);
         _ = decimal.TryParse(dict.GetValueOrDefault("Proteinas", "0"), NumberStyles.Any, CultureInfo.InvariantCulture, out var proteinas);

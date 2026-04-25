@@ -23,23 +23,31 @@
 
             <div class="mb-3">
                 <input type="text" class="form-control" placeholder="Usuario" @bind="usuarioInput"
-                       style="background-color: #e0e0e0; border: none; height: 50px; border-radius: 4px; font-size: 1.1rem;" />
+                       style="background-color: #e0e0e0; border: none; height: 50px; border-radius: 4px; font-size: 1.1rem;" disabled="@estaCargando" />
             </div>
             <div class="mb-4">
                 <input type="password" class="form-control" placeholder="Contraseña" @bind="passwordInput"
-                       style="background-color: #000000; color: white; border: none; height: 50px; border-radius: 4px; font-size: 1.1rem;" />
+                       style="background-color: #000000; color: white; border: none; height: 50px; border-radius: 4px; font-size: 1.1rem;" disabled="@estaCargando" />
             </div>
 
             @if (!string.IsNullOrEmpty(mensajeSistema))
             {
-                <div class="alert @(esExito ? "alert-success" : "alert-danger") p-2 mb-3">@mensajeSistema</div>
+                <div class="alert @(esExito ? "alert-success" : "alert-danger") p-2 mb-3" style="word-wrap: break-word;">@mensajeSistema</div>
             }
 
             <div class="d-flex justify-content-center gap-3 mb-4">
-                <button class="btn" style="background-color: #008f39; color: white; padding: 12px 40px; border-radius: 4px; font-weight: bold; font-size: 1.1rem;" @onclick="Entrar">
-                    Ingresar
+                <button class="btn d-flex align-items-center justify-content-center gap-2" style="background-color: #008f39; color: white; padding: 12px 40px; border-radius: 4px; font-weight: bold; font-size: 1.1rem; min-width: 160px;" @onclick="Entrar" disabled="@estaCargando">
+                    @if (estaCargando)
+                    {
+                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                        <span>Entrando...</span>
+                    }
+                    else
+                    {
+                        <span>Ingresar</span>
+                    }
                 </button>
-                <button class="btn" style="background-color: #008f39; color: white; padding: 12px 40px; border-radius: 4px; font-weight: bold; font-size: 1.1rem;">
+                <button class="btn" style="background-color: #008f39; color: white; padding: 12px 40px; border-radius: 4px; font-weight: bold; font-size: 1.1rem;" disabled="@estaCargando">
                     Registrarse
                 </button>
             </div>
@@ -88,9 +96,10 @@
     private string usuarioRecuperacion = "";
     private string nuevaPassword = "";
     
-    // Alertas compartidas
+    // Alertas y estados visuales
     private string mensajeSistema = "";
     private bool esExito = false;
+    private bool estaCargando = false; 
 
     private void AlternarModo(bool recuperar)
     {
@@ -101,7 +110,7 @@
         esExito = false;
     }
 
-    private void Entrar() 
+    private async Task Entrar() 
     {
         mensajeSistema = "";
         esExito = false;
@@ -120,33 +129,54 @@
             return;
         }
 
-        // 2. Validación real contra la base de datos SQLite para usuarios
-        var todosLosUsuarios = _usuarioController.ObtenerUsuarios() ?? new List<Usuario>();
-        var userDb = todosLosUsuarios.FirstOrDefault(u => u.Nombre.ToLower() == usuarioInput.ToLower() && u.Password == passwordInput);
+        estaCargando = true;
+        StateHasChanged(); 
+        await Task.Delay(50); 
 
-        if (userDb == null)
+        try
         {
-            mensajeSistema = "Usuario o contraseña incorrectos.";
-            return;
+            // 2. Validación asíncrona y segura
+            var todosLosUsuarios = await _usuarioController.ObtenerUsuariosAsync();
+            var userDb = todosLosUsuarios.FirstOrDefault(u => u.Nombre.ToLower() == usuarioInput.ToLower() && u.Password == passwordInput);
+
+            if (userDb == null)
+            {
+                // 🔥 EL CHISMOSO VISUAL 🔥
+                var nombresEnBd = todosLosUsuarios.Any() 
+                    ? string.Join(" | ", todosLosUsuarios.Select(u => $"[{u.Nombre} / {u.Password}]")) 
+                    : "LA BASE DE DATOS ESTÁ VACÍA";
+
+                mensajeSistema = $"Rechazado. En memoria tengo: {nombresEnBd}";
+                return; 
+            }
+
+            if (!userDb.Activo)
+            {
+                mensajeSistema = "Esta cuenta ha sido desactivada por el administrador.";
+                return;
+            }
+
+            // 3. Iniciamos sesión
+            UserSession.NombreUsuario = userDb.Nombre;
+
+            // 4. Redirección final
+            if (UserSession.IsAdmin)
+            {
+                Nav.NavigateTo("/admin/usuarios", forceLoad: true);
+            }
+            else
+            {
+                Nav.NavigateTo("/mi-progreso", forceLoad: true); 
+            }
         }
-
-        if (!userDb.Activo)
+        catch (Exception ex)
         {
-            mensajeSistema = "Esta cuenta ha sido desactivada por el administrador.";
-            return;
+            mensajeSistema = $"Ocurrió un error al conectar: {ex.Message}";
         }
-
-        // 3. Iniciamos sesión con el usuario validado
-        UserSession.NombreUsuario = userDb.Nombre;
-
-        // 4. Redirección final controlada leyendo la propiedad automática IsAdmin
-        if (UserSession.IsAdmin)
+        finally
         {
-            Nav.NavigateTo("/admin/usuarios");
-        }
-        else
-        {
-            Nav.NavigateTo("/mi-progreso"); 
+            estaCargando = false;
+            StateHasChanged();
         }
     }
 
@@ -176,22 +206,16 @@
             return;
         }
 
-        // Actualizamos la contraseña del usuario
         userDb.Password = nuevaPassword;
-        
-        // IMPORTANTE: Asegúrate de que tu UsuarioController tenga un método para guardar
-        // _usuarioController.ActualizarUsuario(userDb); 
+        _usuarioController.ActualizarUsuario(userDb); 
 
         esExito = true;
         mensajeSistema = "¡Contraseña actualizada! Ya puedes iniciar sesión.";
         
-        // Limpiamos los campos y preparamos el login
         usuarioInput = usuarioRecuperacion;
         passwordInput = "";
         usuarioRecuperacion = "";
         nuevaPassword = "";
-        
-        // Cambiamos a la vista normal para que el usuario ingrese con su nueva clave
         modoRecuperacion = false; 
     }
 }

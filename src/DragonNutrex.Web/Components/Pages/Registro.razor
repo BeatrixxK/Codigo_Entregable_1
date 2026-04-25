@@ -1,0 +1,138 @@
+@page "/registro"
+@layout DragonNutrex.Web.Components.Layout.EmptyLayout
+@inject NavigationManager Nav
+@using DragonNutrex.App.Models
+@using DragonNutrex.App.Controllers
+@inject UsuarioController _usuarioController
+@rendermode InteractiveServer
+
+<PageTitle>Dragon Nutrex - Registro</PageTitle>
+
+<div style="background-color: #a5d6a7; min-height: 100vh; display: flex; align-items: center; justify-content: center; font-family: 'Segoe UI', sans-serif; padding: 20px;">
+    <div class="text-center" style="width: 100%; max-width: 500px; background-color: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+        
+        <h2 style="color: #1b5e20; font-weight: bold; margin-bottom: 20px;">Únete a Dragon Nutrex 🐉</h2>
+
+        @if (!string.IsNullOrEmpty(mensajeError))
+        {
+            <div class="alert alert-danger p-2 mb-3">@mensajeError</div>
+        }
+
+        <div class="mb-3 text-start">
+            <label class="fw-bold" style="color: #1b5e20;">Usuario</label>
+            <input type="text" class="form-control" placeholder="Ej: Usuario 2" @bind="nuevoUsuario.Nombre" />
+        </div>
+
+        <div class="mb-3 text-start">
+            <label class="fw-bold" style="color: #1b5e20;">Contraseña</label>
+            <input type="password" class="form-control" placeholder="Mínimo 6 caracteres" @bind="nuevoUsuario.Password" />
+        </div>
+
+        <div class="row mb-3">
+            <div class="col text-start">
+                <label class="fw-bold" style="color: #1b5e20;">Peso (kg)</label>
+                <input type="number" step="0.1" class="form-control" @bind="nuevoUsuario.Peso" />
+            </div>
+            <div class="col text-start">
+                <label class="fw-bold" style="color: #1b5e20;">Altura (cm)</label>
+                <input type="number" step="0.1" class="form-control" @bind="nuevoUsuario.Altura" />
+            </div>
+        </div>
+
+        <div class="mb-3 text-start">
+            <label class="fw-bold" style="color: #1b5e20;">Nivel de Actividad</label>
+            <select class="form-select" @bind="nuevoUsuario.Actividad">
+                <option value="">Selecciona...</option>
+                <option value="Sedentario">Sedentario</option>
+                <option value="Ligero">Ligero</option>
+                <option value="Moderado">Moderado</option>
+                <option value="Intenso">Intenso</option>
+            </select>
+        </div>
+
+        <div class="mb-3 text-start">
+            <label class="fw-bold" style="color: #1b5e20;">Objetivo</label>
+            <select class="form-select" @bind="nuevoUsuario.Objetivo">
+                <option value="">Selecciona...</option>
+                <option value="Perder Peso">Perder Peso</option>
+                <option value="Mantener Peso">Mantener Peso</option>
+                <option value="Ganar Masa Muscular">Ganar Masa Muscular</option>
+            </select>
+        </div>
+
+        <div class="mb-4 text-start">
+            <label class="fw-bold" style="color: #1b5e20;">Tipo de Dieta</label>
+            <select class="form-select" @bind="nuevoUsuario.TipoDieta">
+                <option value="">Selecciona...</option>
+                <option value="Normal">Normal</option>
+                <option value="Keto">Keto</option>
+                <option value="Vegana">Vegana</option>
+                <option value="Vegetariana">Vegetariana</option>
+            </select>
+        </div>
+
+        <div class="d-grid gap-2">
+            <button class="btn" style="background-color: #008f39; color: white; font-weight: bold; font-size: 1.1rem;" @onclick="RegistrarUsuario">
+                Crear mi cuenta
+            </button>
+            <button class="btn btn-outline-secondary fw-bold" @onclick="VolverAlLogin">
+                Cancelar
+            </button>
+        </div>
+
+    </div>
+</div>
+
+@code {
+    private Usuario nuevoUsuario = new Usuario 
+    { 
+        Id = Guid.NewGuid(),
+        Activo = true // Las cuentas nuevas nacen activas
+    };
+    
+    private string mensajeError = "";
+
+    private void RegistrarUsuario()
+    {
+        mensajeError = "";
+
+        // 1. Validaciones básicas
+        if (string.IsNullOrWhiteSpace(nuevoUsuario.Nombre) || string.IsNullOrWhiteSpace(nuevoUsuario.Password))
+        {
+            mensajeError = "El usuario y la contraseña son obligatorios.";
+            return;
+        }
+
+        if (nuevoUsuario.Peso <= 0 || nuevoUsuario.Altura <= 0)
+        {
+            mensajeError = "El peso y la altura deben ser mayores a cero.";
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(nuevoUsuario.Actividad) || 
+            string.IsNullOrWhiteSpace(nuevoUsuario.Objetivo) || 
+            string.IsNullOrWhiteSpace(nuevoUsuario.TipoDieta))
+        {
+            mensajeError = "Por favor completa todos los campos desplegables.";
+            return;
+        }
+
+        try
+        {
+            // 2. ¡La magia ocurre aquí! Se guarda en Redis y se destruye el Caché viejo
+            _usuarioController.CrearUsuario(nuevoUsuario);
+            
+            // 3. Nos regresamos al Login listos para entrar
+            Nav.NavigateTo("/");
+        }
+        catch (Exception ex)
+        {
+            mensajeError = $"Error al registrar: {ex.Message}";
+        }
+    }
+
+    private void VolverAlLogin()
+    {
+        Nav.NavigateTo("/");
+    }
+}

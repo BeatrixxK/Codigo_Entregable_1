@@ -43,7 +43,6 @@
             <tbody>
                 @if (listaUsuarios.Any())
                 {
-                    // Aplicamos el filtro dinámico a la lista antes de dibujarla
                     var usuariosFiltrados = listaUsuarios
                         .Where(u => string.IsNullOrWhiteSpace(filtroBusqueda) || 
                                     u.Nombre.Contains(filtroBusqueda, StringComparison.OrdinalIgnoreCase))
@@ -96,8 +95,6 @@
 @code {
     private List<Usuario> listaUsuarios = new();
     private string mensajeAlerta = "";
-    
-    // Variable para capturar lo que el admin escribe en tiempo real
     private string filtroBusqueda = "";
 
     protected override void OnInitialized()
@@ -112,7 +109,6 @@
 
     private void CargarUsuarios()
     {
-        // Cargamos todos los usuarios (excepto el admin maestro si tienes uno)
         listaUsuarios = _usuarioController.ObtenerUsuarios()?
             .Where(u => u.Nombre.ToLower() != "admin")
             .ToList() ?? new List<Usuario>();
@@ -121,17 +117,19 @@
     private void AlternarEstado(Usuario u)
     {
         u.Activo = !u.Activo;
-        // IMPORTANTE: Asegúrate de descomentar esto cuando tu base de datos esté lista
-        // _usuarioController.ActualizarUsuario(u); 
+        
+        // ¡ACTUALIZADO! Guarda en Redis y avisa al caché que se limpie
+        _usuarioController.ActualizarUsuario(u); 
         
         mensajeAlerta = $"El usuario {u.Nombre} ahora está {(u.Activo ? "Activo" : "Inactivo")}.";
     }
 
     private void ResetearPassword(Usuario u)
     {
-        u.Password = "Dragon123*"; // Contraseña temporal por defecto
-        // IMPORTANTE: Asegúrate de descomentar esto cuando tu base de datos esté lista
-        // _usuarioController.ActualizarUsuario(u); 
+        u.Password = "Dragon123*"; 
+        
+        // ¡ACTUALIZADO! Guarda en Redis y avisa al caché que se limpie
+        _usuarioController.ActualizarUsuario(u); 
         
         mensajeAlerta = $"Contraseña de {u.Nombre} reseteada a: Dragon123*";
     }

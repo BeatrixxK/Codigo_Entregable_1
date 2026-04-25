@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Threading.Tasks;
 using DragonNutrex.App.Interfaces;
 using DragonNutrex.App.Models;
 using StackExchange.Redis;
@@ -11,7 +12,6 @@ namespace DragonNutrex.App.Repositories;
 public class UsuarioRedisRepository : IRepository<Usuario>
 {
     private readonly IDatabase _db;
-
     private const string PREFIX = "usuario";
     private const string SET_KEY = "usuarios:ids";
 
@@ -20,75 +20,63 @@ public class UsuarioRedisRepository : IRepository<Usuario>
         _db = redisConnection.GetDatabase();
     }
 
-    // =====================================================
-    // CREATE
-    // =====================================================
-    public void Create(Usuario entity)
-    {
+    public void Create(Usuario entity) { /* Igual que antes */ 
         var key = $"{PREFIX}:{entity.Id}";
-        var entries = ToHash(entity);
-
-        _db.HashSet(key, entries);
+        _db.HashSet(key, ToHash(entity));
         _db.SetAdd(SET_KEY, entity.Id.ToString());
     }
 
-    // =====================================================
-    // UPDATE (🔥 MODO INFALIBLE - UPSERT)
-    // =====================================================
-    public void Update(Usuario entity)
-    {
+    public void Update(Usuario entity) { /* Igual que antes */ 
         var key = $"{PREFIX}:{entity.Id}";
-
-        // Hemos eliminado el "if (!_db.KeyExists)" que causaba el error.
-        // Ahora, el sistema simplemente sobreescribe los datos asegurando el guardado.
-        
-        var entries = ToHash(entity);
-        _db.HashSet(key, entries);
-        
-        // Lo re-vinculamos a la lista maestra por si era un usuario huérfano
+        _db.HashSet(key, ToHash(entity));
         _db.SetAdd(SET_KEY, entity.Id.ToString());
     }
 
-    // =====================================================
-    // DELETE
-    // =====================================================
-    public void Delete(Guid id)
-    {
+    public void Delete(Guid id) { /* Igual que antes */ 
         var key = $"{PREFIX}:{id}";
-
-        if (!_db.KeyExists(key))
-            throw new Exception("Usuario no encontrado.");
-
         _db.KeyDelete(key);
         _db.SetRemove(SET_KEY, id.ToString());
     }
 
+    public List<Usuario> GetAll() {
+        return GetAllAsync().GetAwaiter().GetResult(); // Solo por compatibilidad vieja
+    }
+
     // =====================================================
-    // GET ALL (🔥 SINCRONIZACIÓN PERFECTA DE IDs)
+    // EL NUEVO MOTOR ASÍNCRONO SIN BLOQUEOS
     // =====================================================
-    public List<Usuario> GetAll()
+    public async Task<List<Usuario>> GetAllAsync()
     {
-        var ids = _db.SetMembers(SET_KEY);
+        var ids = await _db.SetMembersAsync(SET_KEY);
         var usuarios = new List<Usuario>();
+
+        if (ids.Length == 0) return usuarios;
+
+        var batch = _db.CreateBatch();
+        var tareasRedis = new List<Task<HashEntry[]>>();
+        var idsProcesados = new List<string>();
 
         foreach (var id in ids)
         {
             var rawId = id.ToString().Trim();
             var key = $"{PREFIX}:{rawId}";
-            
-            var entries = _db.HashGetAll(key);
+            tareasRedis.Add(batch.HashGetAllAsync(key));
+            idsProcesados.Add(rawId);
+        }
 
+        batch.Execute(); 
+        await Task.WhenAll(tareasRedis); // ¡Aquí la pantalla NO se congela!
+
+        for (int i = 0; i < tareasRedis.Count; i++)
+        {
+            var entries = tareasRedis[i].Result;
             if (entries.Length > 0)
             {
                 var usuario = FromHash(entries);
-                
-                // Forzamos que el objeto en memoria de C# tenga exactamente 
-                // el mismo ID de la llave de Redis, para evitar errores al guardar.
-                if (Guid.TryParse(rawId, out var parsedId))
+                if (Guid.TryParse(idsProcesados[i], out var parsedId))
                 {
                     usuario.Id = parsedId;
                 }
-                
                 usuarios.Add(usuario);
             }
         }
@@ -96,68 +84,38 @@ public class UsuarioRedisRepository : IRepository<Usuario>
         return usuarios;
     }
 
-    // =====================================================
-    // GET BY ID
-    // =====================================================
-    public Usuario? GetById(Guid id)
-    {
+    public Usuario? GetById(Guid id) {
         var key = $"{PREFIX}:{id}";
         var entries = _db.HashGetAll(key);
-
-        if (entries.Length == 0)
-            return null;
-
+        if (entries.Length == 0) return null;
         var usuario = FromHash(entries);
-        usuario.Id = id; // Sincronización también aplicada aquí
+        usuario.Id = id; 
         return usuario;
     }
 
-    // =====================================================
-    // MAPPER → OBJETO A HASH
-    // =====================================================
-    private HashEntry[] ToHash(Usuario u)
-    {
-        return new HashEntry[]
-        {
-            new("Id", u.Id.ToString()),
-            new("Nombre", u.Nombre ?? string.Empty),
+    private HashEntry[] ToHash(Usuario u) {
+        return new HashEntry[] {
+            new("Id", u.Id.ToString()), new("Nombre", u.Nombre ?? ""),
             new("Peso", u.Peso.ToString(CultureInfo.InvariantCulture)),
             new("Altura", u.Altura.ToString(CultureInfo.InvariantCulture)),
-            new("Actividad", u.Actividad ?? string.Empty),
-            new("Objetivo", u.Objetivo ?? string.Empty),
-            new("TipoDieta", u.TipoDieta ?? string.Empty),
-            new("Password", u.Password ?? string.Empty)
+            new("Actividad", u.Actividad ?? ""), new("Objetivo", u.Objetivo ?? ""),
+            new("TipoDieta", u.TipoDieta ?? ""), new("Password", u.Password ?? ""),
+            new("Activo", u.Activo.ToString())
         };
     }
 
-    // =====================================================
-    // MAPPER → HASH A OBJETO
-    // =====================================================
-    private Usuario FromHash(HashEntry[] entries)
-    {
-        var dict = entries.ToDictionary(
-            x => x.Name.ToString(),
-            x => x.Value.ToString()
-        );
-
-        if (!Guid.TryParse(dict.GetValueOrDefault("Id"), out var id))
-        {
-            id = Guid.NewGuid();
-        }
-
+    private Usuario FromHash(HashEntry[] entries) {
+        var dict = entries.ToDictionary(x => x.Name.ToString(), x => x.Value.ToString());
+        if (!Guid.TryParse(dict.GetValueOrDefault("Id"), out var id)) id = Guid.NewGuid();
         _ = decimal.TryParse(dict.GetValueOrDefault("Peso", "0"), NumberStyles.Any, CultureInfo.InvariantCulture, out var peso);
         _ = decimal.TryParse(dict.GetValueOrDefault("Altura", "0"), NumberStyles.Any, CultureInfo.InvariantCulture, out var altura);
+        _ = bool.TryParse(dict.GetValueOrDefault("Activo", "True"), out var activo); 
 
-        return new Usuario
-        {
-            Id = id,
-            Nombre = dict.GetValueOrDefault("Nombre", string.Empty),
-            Peso = peso,
-            Altura = altura,
-            Actividad = dict.GetValueOrDefault("Actividad", string.Empty),
-            Objetivo = dict.GetValueOrDefault("Objetivo", string.Empty),
-            TipoDieta = dict.GetValueOrDefault("TipoDieta", string.Empty),
-            Password = dict.GetValueOrDefault("Password", string.Empty)
+        return new Usuario {
+            Id = id, Nombre = dict.GetValueOrDefault("Nombre", ""), Peso = peso, Altura = altura,
+            Actividad = dict.GetValueOrDefault("Actividad", ""), Objetivo = dict.GetValueOrDefault("Objetivo", ""),
+            TipoDieta = dict.GetValueOrDefault("TipoDieta", ""), Password = dict.GetValueOrDefault("Password", ""),
+            Activo = activo
         };
     }
 }
