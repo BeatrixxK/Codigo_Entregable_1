@@ -14,7 +14,8 @@ public class MenuRedisRepository : IRepository<Menu>
 {
     private readonly IDatabase _db;
 
-    private const string PREFIX = "menu";
+    // Prefijo con "M" mayúscula para coincidir con la BD
+    private const string PREFIX = "Menu"; 
     private const string SET_KEY = "menus:ids";
 
     public MenuRedisRepository(RedisConnection redisConnection)
@@ -35,13 +36,12 @@ public class MenuRedisRepository : IRepository<Menu>
     }
 
     // =====================================================
-    // UPDATE (🔥 MODO INFALIBLE - UPSERT)
+    // UPDATE
     // =====================================================
     public void Update(Menu entity)
     {
         var key = $"{PREFIX}:{entity.Id}";
 
-        // Sobrescribimos y reaseguramos su existencia en la lista maestra
         var entries = ToHash(entity);
         _db.HashSet(key, entries);
         _db.SetAdd(SET_KEY, entity.Id.ToString());
@@ -62,7 +62,7 @@ public class MenuRedisRepository : IRepository<Menu>
     }
 
     // =====================================================
-    // GET ALL (Síncrono - Mantenido por compatibilidad)
+    // GET ALL
     // =====================================================
     public List<Menu> GetAll()
     {
@@ -83,7 +83,7 @@ public class MenuRedisRepository : IRepository<Menu>
     }
 
     // =====================================================
-    // GET ALL ASYNC (🚀 LA AUTOPISTA DE ALTA VELOCIDAD)
+    // GET ALL ASYNC
     // =====================================================
     public async Task<List<Menu>> GetAllAsync()
     {
@@ -92,7 +92,6 @@ public class MenuRedisRepository : IRepository<Menu>
 
         if (ids.Length == 0) return menus;
 
-        // Pipelining: Empacamos todas las consultas en una sola caja
         var batch = _db.CreateBatch();
         var tareasRedis = new List<Task<HashEntry[]>>();
         var idsProcesados = new List<string>();
@@ -106,11 +105,9 @@ public class MenuRedisRepository : IRepository<Menu>
             idsProcesados.Add(rawId);
         }
 
-        // Un solo viaje a la red
         batch.Execute(); 
         await Task.WhenAll(tareasRedis);
 
-        // Armamos la lista localmente
         for (int i = 0; i < tareasRedis.Count; i++)
         {
             var entries = tareasRedis[i].Result;
@@ -140,7 +137,7 @@ public class MenuRedisRepository : IRepository<Menu>
             return null;
 
         var menu = FromHash(entries);
-        menu.Id = id; // Aseguramos sincronización
+        menu.Id = id; 
         return menu;
     }
 
@@ -154,12 +151,16 @@ public class MenuRedisRepository : IRepository<Menu>
             new("Id", m.Id.ToString()),
             new("UsuarioId", m.UsuarioId.ToString()),
             new("Fecha", m.Fecha.ToString("O", CultureInfo.InvariantCulture)),
-            new("Registros", JsonSerializer.Serialize(m.Registros ?? new List<RegistroComida>()))
+            new("Registros", JsonSerializer.Serialize(m.Registros ?? new List<RegistroComida>())),
+            new("TotalCalorias", m.TotalCalorias.ToString(CultureInfo.InvariantCulture)),
+            new("TotalProteinas", m.TotalProteinas.ToString(CultureInfo.InvariantCulture)),
+            new("TotalCarbohidratos", m.TotalCarbohidratos.ToString(CultureInfo.InvariantCulture)),
+            new("TotalGrasas", m.TotalGrasas.ToString(CultureInfo.InvariantCulture))
         };
     }
 
     // =====================================================
-    // MAPPER → HASH A OBJETO (MEJORADO)
+    // MAPPER → HASH A OBJETO (CON REPARTO DE MACROS)
     // =====================================================
     private Menu FromHash(HashEntry[] entries)
     {
@@ -171,20 +172,55 @@ public class MenuRedisRepository : IRepository<Menu>
         _ = Guid.TryParse(dict.GetValueOrDefault("Id"), out var id);
         _ = Guid.TryParse(dict.GetValueOrDefault("UsuarioId"), out var usuarioId);
 
+        // 1. FECHA
         var fechaStr = dict.GetValueOrDefault("Fecha", DateTime.UtcNow.ToString("O"));
-        _ = DateTime.TryParse(fechaStr, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out var fecha);
-
-        var registrosStr = dict.GetValueOrDefault("Registros", "[]");
-        List<RegistroComida> registros;
-        try
+        if (!DateTime.TryParseExact(fechaStr, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out var fecha))
         {
-            registros = string.IsNullOrWhiteSpace(registrosStr)
-                ? new List<RegistroComida>()
-                : JsonSerializer.Deserialize<List<RegistroComida>>(registrosStr) ?? new List<RegistroComida>();
+            _ = DateTime.TryParse(fechaStr, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out fecha);
         }
-        catch (JsonException)
+
+        // 2. REGISTROS
+        var registrosStr = dict.GetValueOrDefault("Registros", "[]");
+        var registros = new List<RegistroComida>();
+        bool esDePython = false;
+
+        if (!string.IsNullOrWhiteSpace(registrosStr))
         {
-            registros = new List<RegistroComida>(); 
+            if (registrosStr.Trim().StartsWith("[")) 
+            {
+                try { registros = JsonSerializer.Deserialize<List<RegistroComida>>(registrosStr) ?? new(); }
+                catch { }
+            }
+            else 
+            {
+                esDePython = true;
+                registros = registrosStr.Split(',')
+                    .Where(n => !string.IsNullOrWhiteSpace(n))
+                    .Select(nombre => new RegistroComida { 
+                        Id = Guid.NewGuid(),
+                        NombreProducto = nombre.Trim(), 
+                        Cantidad = 1m 
+                    }).ToList();
+            }
+        }
+
+        // 3. TOTALES NUTRICIONALES REALES DE REDIS
+        _ = decimal.TryParse(dict.GetValueOrDefault("TotalCalorias", "0"), NumberStyles.Any, CultureInfo.InvariantCulture, out var cals);
+        _ = decimal.TryParse(dict.GetValueOrDefault("TotalProteinas", "0"), NumberStyles.Any, CultureInfo.InvariantCulture, out var prot);
+        _ = decimal.TryParse(dict.GetValueOrDefault("TotalCarbohidratos", "0"), NumberStyles.Any, CultureInfo.InvariantCulture, out var carb);
+        _ = decimal.TryParse(dict.GetValueOrDefault("TotalGrasas", "0"), NumberStyles.Any, CultureInfo.InvariantCulture, out var gras);
+
+        // 4. EL REPARTO EQUITATIVO (Para que sume correctamente en la UI)
+        if (esDePython && registros.Any())
+        {
+            var cantidadAlimentos = registros.Count;
+            foreach (var r in registros)
+            {
+                r.Calorias = cals / cantidadAlimentos;
+                r.Proteinas = prot / cantidadAlimentos;
+                r.Carbohidratos = carb / cantidadAlimentos;
+                r.Grasas = gras / cantidadAlimentos;
+            }
         }
 
         return new Menu
@@ -192,7 +228,11 @@ public class MenuRedisRepository : IRepository<Menu>
             Id = id,
             UsuarioId = usuarioId,
             Fecha = fecha,
-            Registros = registros
+            Registros = registros,
+            TotalCalorias = cals,
+            TotalProteinas = prot,
+            TotalCarbohidratos = carb,
+            TotalGrasas = gras
         };
     }
 }

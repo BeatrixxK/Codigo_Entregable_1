@@ -22,7 +22,7 @@
             <h3 style="color: #1b5e20; font-weight: bold; margin-bottom: 30px;">Inicia sesión</h3>
 
             <div class="mb-3">
-                <input type="text" class="form-control" placeholder="Usuario" @bind="usuarioInput"
+                <input type="email" class="form-control" placeholder="Correo Electrónico" @bind="usuarioInput"
                        style="background-color: #e0e0e0; border: none; height: 50px; border-radius: 4px; font-size: 1.1rem;" disabled="@estaCargando" />
             </div>
             <div class="mb-4">
@@ -47,7 +47,7 @@
                         <span>Ingresar</span>
                     }
                 </button>
-                <button class="btn" style="background-color: #008f39; color: white; padding: 12px 40px; border-radius: 4px; font-weight: bold; font-size: 1.1rem;" disabled="@estaCargando">
+                <button class="btn" style="background-color: #008f39; color: white; padding: 12px 40px; border-radius: 4px; font-weight: bold; font-size: 1.1rem;" disabled="@estaCargando" @onclick='() => Nav.NavigateTo("/registro")'>
                     Registrarse
                 </button>
             </div>
@@ -59,10 +59,10 @@
         else
         {
             <h2 style="color: #1b5e20; font-weight: bold; margin-bottom: 5px;">Recuperar Contraseña</h2>
-            <p style="color: #1b5e20; margin-bottom: 20px;">Ingresa tu usuario para crear una nueva contraseña.</p>
+            <p style="color: #1b5e20; margin-bottom: 20px;">Ingresa tu correo para crear una nueva contraseña.</p>
 
             <div class="mb-3">
-                <input type="text" class="form-control" placeholder="Nombre de Usuario" @bind="usuarioRecuperacion"
+                <input type="email" class="form-control" placeholder="Correo Electrónico" @bind="usuarioRecuperacion"
                        style="background-color: #e0e0e0; border: none; height: 50px; border-radius: 4px; font-size: 1.1rem;" />
             </div>
             <div class="mb-4">
@@ -117,14 +117,14 @@
 
         if (string.IsNullOrWhiteSpace(usuarioInput) || string.IsNullOrWhiteSpace(passwordInput))
         {
-            mensajeSistema = "Por favor ingrese usuario y contraseña.";
+            mensajeSistema = "Por favor ingrese su correo y contraseña.";
             return;
         }
 
-        // 1. Caso especial para el admin maestro
-        if (usuarioInput.ToLower() == "admin" && passwordInput == "admin")
+        // 1. Caso especial para el admin maestro con el nuevo correo
+        if (usuarioInput.ToLower() == "admin@admin.com" && passwordInput == "admin")
         {
-            UserSession.NombreUsuario = "admin";
+            UserSession.NombreUsuario = "admin@admin.com";
             Nav.NavigateTo("/admin/usuarios");
             return;
         }
@@ -135,18 +135,12 @@
 
         try
         {
-            // 2. Validación asíncrona y segura
-            var todosLosUsuarios = await _usuarioController.ObtenerUsuariosAsync();
-            var userDb = todosLosUsuarios.FirstOrDefault(u => u.Nombre.ToLower() == usuarioInput.ToLower() && u.Password == passwordInput);
+            // 2. Validación asíncrona directa (¡Sin descargar toda la base de datos!)
+            var userDb = await _usuarioController.AutenticarUsuarioAsync(usuarioInput, passwordInput);
 
             if (userDb == null)
             {
-                // 🔥 EL CHISMOSO VISUAL 🔥
-                var nombresEnBd = todosLosUsuarios.Any() 
-                    ? string.Join(" | ", todosLosUsuarios.Select(u => $"[{u.Nombre} / {u.Password}]")) 
-                    : "LA BASE DE DATOS ESTÁ VACÍA";
-
-                mensajeSistema = $"Rechazado. En memoria tengo: {nombresEnBd}";
+                mensajeSistema = "Correo o contraseña incorrectos.";
                 return; 
             }
 
@@ -156,18 +150,11 @@
                 return;
             }
 
-            // 3. Iniciamos sesión
-            UserSession.NombreUsuario = userDb.Nombre;
+            // 3. Iniciamos sesión guardando el correo
+            UserSession.NombreUsuario = userDb.Correo;
 
-            // 4. Redirección final
-            if (UserSession.IsAdmin)
-            {
-                Nav.NavigateTo("/admin/usuarios", forceLoad: true);
-            }
-            else
-            {
-                Nav.NavigateTo("/mi-progreso", forceLoad: true); 
-            }
+            // 4. Redirección final al progreso
+            Nav.NavigateTo("/mi-progreso"); 
         }
         catch (Exception ex)
         {
@@ -180,7 +167,7 @@
         }
     }
 
-    private void AutoresetearPassword()
+    private async Task AutoresetearPassword()
     {
         mensajeSistema = "";
         esExito = false;
@@ -191,12 +178,12 @@
             return;
         }
 
-        var todosLosUsuarios = _usuarioController.ObtenerUsuarios() ?? new List<Usuario>();
-        var userDb = todosLosUsuarios.FirstOrDefault(u => u.Nombre.ToLower() == usuarioRecuperacion.ToLower());
+        // Búsqueda rápida por correo
+        var userDb = await _usuarioController.ObtenerUsuarioPorCorreoAsync(usuarioRecuperacion);
 
         if (userDb == null)
         {
-            mensajeSistema = "El usuario no existe.";
+            mensajeSistema = "El correo no existe en el sistema.";
             return;
         }
 

@@ -97,20 +97,28 @@
     private string mensajeAlerta = "";
     private string filtroBusqueda = "";
 
-    protected override void OnInitialized()
+    // 1. Cambiamos a la versión Asíncrona (Async) para evitar el Deadlock
+    protected override async Task OnInitializedAsync()
     {
+        // Chequeo de seguridad: Si no es admin, lo devolvemos al Login
         if (!Session.IsAdmin) 
         {
-            Nav.NavigateTo("/mi-progreso");
+            Nav.NavigateTo("/"); 
             return;
         }
-        CargarUsuarios();
+        
+        // 2. Llamamos a la carga sin bloquear la pantalla
+        await CargarUsuariosAsync();
     }
 
-    private void CargarUsuarios()
+    // 3. Método Asíncrono para traer los datos desde Redis
+    private async Task CargarUsuariosAsync()
     {
-        listaUsuarios = _usuarioController.ObtenerUsuarios()?
-            .Where(u => u.Nombre.ToLower() != "admin")
+        var todosLosUsuarios = await _usuarioController.ObtenerUsuariosAsync();
+        
+        listaUsuarios = todosLosUsuarios?
+            // Protegemos tanto el nombre viejo como el correo nuevo del admin para que no aparezca en la lista
+            .Where(u => u.Nombre?.ToLower() != "admin" && u.Correo?.ToLower() != "admin@admin.com")
             .ToList() ?? new List<Usuario>();
     }
 
@@ -118,7 +126,7 @@
     {
         u.Activo = !u.Activo;
         
-        // ¡ACTUALIZADO! Guarda en Redis y avisa al caché que se limpie
+        // Guarda en Redis y avisa al caché que se limpie
         _usuarioController.ActualizarUsuario(u); 
         
         mensajeAlerta = $"El usuario {u.Nombre} ahora está {(u.Activo ? "Activo" : "Inactivo")}.";
@@ -128,7 +136,7 @@
     {
         u.Password = "Dragon123*"; 
         
-        // ¡ACTUALIZADO! Guarda en Redis y avisa al caché que se limpie
+        // Guarda en Redis y avisa al caché que se limpie
         _usuarioController.ActualizarUsuario(u); 
         
         mensajeAlerta = $"Contraseña de {u.Nombre} reseteada a: Dragon123*";

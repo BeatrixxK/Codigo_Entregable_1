@@ -1,10 +1,11 @@
+using System;
+
+namespace DragonNutrex.App.Models;
+
 // =====================================================
 // MODELO REGISTRO COMIDA
 // =====================================================
 // Representa un producto consumido dentro de un menú
-// Incluye cantidad y valores nutricionales calculados
-namespace DragonNutrex.App.Models;
-
 public class RegistroComida
 {
     // Identificador único del registro
@@ -17,7 +18,7 @@ public class RegistroComida
     public string NombreProducto { get; set; } = "";
 
     // Cantidad consumida del producto
-    public decimal Cantidad { get; set; }
+    public decimal Cantidad { get; set; } = 1m;
 
     // =====================================================
     // VALORES NUTRICIONALES CALCULADOS

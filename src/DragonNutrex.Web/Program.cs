@@ -68,4 +68,25 @@ app.UseAntiforgery();
 app.MapRazorComponents<DragonNutrex.Web.Components.App>()
     .AddInteractiveServerRenderMode();
 
+
+    // --- BLOQUE TEMPORAL PARA SINCRONIZAR USUARIOS ---
+using (var scope = app.Services.CreateScope())
+{
+    var repo = scope.ServiceProvider.GetRequiredService<DragonNutrex.App.Interfaces.IRepository<DragonNutrex.App.Models.Usuario>>();
+    var db = scope.ServiceProvider.GetRequiredService<DragonNutrex.App.Repositories.RedisConnection>().GetDatabase();
+    
+    // Obtenemos todas las llaves que empiezan con "Usuario:"
+    var server = db.Multiplexer.GetServer(db.Multiplexer.GetEndPoints().First());
+    var keys = server.Keys(pattern: "Usuario:*").ToList();
+
+    foreach (var key in keys)
+    {
+        // Extraemos el ID de la llave (ej: de "Usuario:10" sacamos "10")
+        var idStr = key.ToString().Split(':').Last();
+        // Lo agregamos al set maestro que usa el GetAllAsync
+        db.SetAdd("usuarios:ids", idStr);
+    }
+}
+// ------------------------------------------------
+
 app.Run();

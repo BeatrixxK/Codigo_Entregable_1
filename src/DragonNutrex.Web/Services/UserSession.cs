@@ -5,15 +5,11 @@ public class UserSession
     // Propiedades de la sesión
     public string NombreUsuario { get; set; } = "";
     
-    // Propiedad calculada: es admin si el usuario actual es "admin"
-    public bool IsAdmin => NombreUsuario.ToLower() == "admin"; 
+    // 🔥 CORRECCIÓN: Ahora reconoce el nuevo formato de correo del admin
+    public bool IsAdmin => NombreUsuario.ToLower() == "admin@admin.com" || NombreUsuario.ToLower() == "admin"; 
 
-    
     public void CerrarSesion()
     {
-     
         NombreUsuario = "";
-        
-     
     }
 }

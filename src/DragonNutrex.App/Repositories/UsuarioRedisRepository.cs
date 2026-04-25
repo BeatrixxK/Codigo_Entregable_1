@@ -12,79 +12,135 @@ namespace DragonNutrex.App.Repositories;
 public class UsuarioRedisRepository : IRepository<Usuario>
 {
     private readonly IDatabase _db;
-    private const string PREFIX = "usuario";
+    
+    // =====================================================
+    // 🔥 TUS LLAVES MAESTRAS EXACTAS
+    // =====================================================
+    private const string PREFIX = "Usuario"; 
     private const string SET_KEY = "usuarios:ids";
+    private const string EMAIL_INDEX_PREFIX = "Usuario:email";
 
     public UsuarioRedisRepository(RedisConnection redisConnection)
     {
         _db = redisConnection.GetDatabase();
     }
 
-    public void Create(Usuario entity) { /* Igual que antes */ 
+    // =====================================================
+    // ESCRITURA (Mantienen el Índice Secundario actualizado)
+    // =====================================================
+    public void Create(Usuario entity) 
+    { 
         var key = $"{PREFIX}:{entity.Id}";
+        var emailKey = $"{EMAIL_INDEX_PREFIX}:{entity.Correo.ToLower()}"; 
+
         _db.HashSet(key, ToHash(entity));
         _db.SetAdd(SET_KEY, entity.Id.ToString());
+        _db.StringSet(emailKey, entity.Id.ToString()); 
     }
 
-    public void Update(Usuario entity) { /* Igual que antes */ 
+    public void Update(Usuario entity) 
+    { 
         var key = $"{PREFIX}:{entity.Id}";
+        var emailKey = $"{EMAIL_INDEX_PREFIX}:{entity.Correo.ToLower()}"; 
+
         _db.HashSet(key, ToHash(entity));
         _db.SetAdd(SET_KEY, entity.Id.ToString());
+        _db.StringSet(emailKey, entity.Id.ToString());
     }
 
-    public void Delete(Guid id) { /* Igual que antes */ 
+    public void Delete(Guid id) 
+    { 
         var key = $"{PREFIX}:{id}";
+        
+        // Buscamos el correo viejo para borrar también su índice secundario
+        var user = GetById(id);
+        if (user != null && !string.IsNullOrWhiteSpace(user.Correo))
+        {
+            _db.KeyDelete($"{EMAIL_INDEX_PREFIX}:{user.Correo.ToLower()}");
+        }
+
         _db.KeyDelete(key);
         _db.SetRemove(SET_KEY, id.ToString());
     }
 
-    public List<Usuario> GetAll() {
-        return GetAllAsync().GetAwaiter().GetResult(); // Solo por compatibilidad vieja
+    public List<Usuario> GetAll() 
+    {
+        return GetAllAsync().GetAwaiter().GetResult(); 
     }
 
     // =====================================================
-    // EL NUEVO MOTOR ASÍNCRONO SIN BLOQUEOS
+    // MOTOR ASÍNCRONO DIRECTO (A prueba de índices rotos)
     // =====================================================
     public async Task<List<Usuario>> GetAllAsync()
     {
-        var ids = await _db.SetMembersAsync(SET_KEY);
-        var usuarios = new List<Usuario>();
+        var server = _db.Multiplexer.GetServer(_db.Multiplexer.GetEndPoints().First());
+        
+        // 1. Buscamos todas las llaves que empiecen con "Usuario:" 
+        // y descartamos las que dicen "email" para no chocar con el índice secundario.
+        var keys = server.Keys(pattern: $"{PREFIX}:*")
+                         .Where(k => !k.ToString().ToLower().Contains("email"))
+                         .ToArray();
 
-        if (ids.Length == 0) return usuarios;
+        var usuarios = new List<Usuario>();
+        if (keys.Length == 0) return usuarios;
 
         var batch = _db.CreateBatch();
         var tareasRedis = new List<Task<HashEntry[]>>();
-        var idsProcesados = new List<string>();
 
-        foreach (var id in ids)
+        // 2. Descargamos todos los Hashes en paralelo (Ultra rápido)
+        foreach (var key in keys)
         {
-            var rawId = id.ToString().Trim();
-            var key = $"{PREFIX}:{rawId}";
             tareasRedis.Add(batch.HashGetAllAsync(key));
-            idsProcesados.Add(rawId);
         }
 
         batch.Execute(); 
-        await Task.WhenAll(tareasRedis); // ¡Aquí la pantalla NO se congela!
+        await Task.WhenAll(tareasRedis); 
 
-        for (int i = 0; i < tareasRedis.Count; i++)
+        // 3. Los convertimos en objetos C#
+        foreach (var entries in tareasRedis.Select(t => t.Result))
         {
-            var entries = tareasRedis[i].Result;
             if (entries.Length > 0)
             {
-                var usuario = FromHash(entries);
-                if (Guid.TryParse(idsProcesados[i], out var parsedId))
-                {
-                    usuario.Id = parsedId;
-                }
-                usuarios.Add(usuario);
+                usuarios.Add(FromHash(entries));
             }
         }
 
-        return usuarios;
+        // Ordenamos alfabéticamente para que se vea bonito en las tablas
+        return usuarios.OrderBy(u => u.Nombre).ToList();
     }
 
-    public Usuario? GetById(Guid id) {
+    // =====================================================
+    // 🔥 LA JOYA DE LA CORONA: LOGIN A LA VELOCIDAD DE LA LUZ
+    // =====================================================
+    public async Task<Usuario?> GetByCorreoAsync(string correo)
+    {
+        if (string.IsNullOrWhiteSpace(correo)) return null;
+
+        // 1. Buscamos directo en el Índice Secundario usando la constante maestra
+        var llaveCorreo = $"{EMAIL_INDEX_PREFIX}:{correo.ToLower()}";
+        var idDelUsuario = await _db.StringGetAsync(llaveCorreo);
+
+        // Si no existe, el correo no está registrado
+        if (!idDelUsuario.HasValue) 
+        {
+            return null; 
+        }
+
+        // 2. Vamos directo a abrir la carpeta HASH de ese usuario
+        var llaveUsuario = $"{PREFIX}:{idDelUsuario}";
+        var entries = await _db.HashGetAllAsync(llaveUsuario);
+
+        // 3. Convertimos y retornamos (0.001s)
+        if (entries.Length > 0)
+        {
+            return FromHash(entries);
+        }
+
+        return null; 
+    }
+
+    public Usuario? GetById(Guid id) 
+    {
         var key = $"{PREFIX}:{id}";
         var entries = _db.HashGetAll(key);
         if (entries.Length == 0) return null;
@@ -93,18 +149,27 @@ public class UsuarioRedisRepository : IRepository<Usuario>
         return usuario;
     }
 
-    private HashEntry[] ToHash(Usuario u) {
+    // =====================================================
+    // MAPEO DE DATOS
+    // =====================================================
+    private HashEntry[] ToHash(Usuario u) 
+    {
         return new HashEntry[] {
-            new("Id", u.Id.ToString()), new("Nombre", u.Nombre ?? ""),
+            new("Id", u.Id.ToString()), 
+            new("Nombre", u.Nombre ?? ""),
+            new("Usuario", u.Correo ?? ""), // Guardamos como "Usuario" en Redis
             new("Peso", u.Peso.ToString(CultureInfo.InvariantCulture)),
             new("Altura", u.Altura.ToString(CultureInfo.InvariantCulture)),
-            new("Actividad", u.Actividad ?? ""), new("Objetivo", u.Objetivo ?? ""),
-            new("TipoDieta", u.TipoDieta ?? ""), new("Password", u.Password ?? ""),
+            new("Actividad", u.Actividad ?? ""), 
+            new("Objetivo", u.Objetivo ?? ""),
+            new("TipoDieta", u.TipoDieta ?? ""), 
+            new("Password", u.Password ?? ""),
             new("Activo", u.Activo.ToString())
         };
     }
 
-    private Usuario FromHash(HashEntry[] entries) {
+    private Usuario FromHash(HashEntry[] entries) 
+    {
         var dict = entries.ToDictionary(x => x.Name.ToString(), x => x.Value.ToString());
         if (!Guid.TryParse(dict.GetValueOrDefault("Id"), out var id)) id = Guid.NewGuid();
         _ = decimal.TryParse(dict.GetValueOrDefault("Peso", "0"), NumberStyles.Any, CultureInfo.InvariantCulture, out var peso);
@@ -112,9 +177,15 @@ public class UsuarioRedisRepository : IRepository<Usuario>
         _ = bool.TryParse(dict.GetValueOrDefault("Activo", "True"), out var activo); 
 
         return new Usuario {
-            Id = id, Nombre = dict.GetValueOrDefault("Nombre", ""), Peso = peso, Altura = altura,
-            Actividad = dict.GetValueOrDefault("Actividad", ""), Objetivo = dict.GetValueOrDefault("Objetivo", ""),
-            TipoDieta = dict.GetValueOrDefault("TipoDieta", ""), Password = dict.GetValueOrDefault("Password", ""),
+            Id = id, 
+            Nombre = dict.GetValueOrDefault("Nombre", ""), 
+            Correo = dict.GetValueOrDefault("Usuario", ""), // Leemos el campo "Usuario"
+            Peso = peso, 
+            Altura = altura,
+            Actividad = dict.GetValueOrDefault("Actividad", ""), 
+            Objetivo = dict.GetValueOrDefault("Objetivo", ""),
+            TipoDieta = dict.GetValueOrDefault("TipoDieta", ""), 
+            Password = dict.GetValueOrDefault("Password", ""),
             Activo = activo
         };
     }

@@ -20,7 +20,48 @@ public class UsuarioController
     }
 
     // =====================================================
-    // MÉTODO ASÍNCRONO REAL (Para el Login - Sin cuelgues)
+    // 🔥 NUEVO: LOGIN ULTRA RÁPIDO (Por Correo)
+    // =====================================================
+    public async Task<Usuario?> AutenticarUsuarioAsync(string correo, string password)
+    {
+        var userDb = await ObtenerUsuarioPorCorreoAsync(correo);
+        
+        if (userDb != null && userDb.Password == password && userDb.Activo)
+        {
+            return userDb;
+        }
+        return null;
+    }
+
+    // =====================================================
+    // 🔥 NUEVO: BÚSQUEDA INDIVIDUAL CON CACHÉ (Carga en 0ms)
+    // =====================================================
+    public async Task<Usuario?> ObtenerUsuarioPorCorreoAsync(string correo)
+    {
+        if (string.IsNullOrWhiteSpace(correo)) return null;
+
+        string cacheKey = $"user_{correo.ToLower()}";
+        
+        // 1. Buscamos en RAM primero para que MiProgreso cargue al instante
+        if (_cache.TryGetValue(cacheKey, out Usuario? userCache))
+        {
+            return userCache;
+        }
+
+        // 2. Si no está, vamos a la base de datos directo a buscar ese correo
+        var usuarioDb = await _service.GetByCorreoAsync(correo);
+
+        // 3. Lo guardamos en RAM por 30 minutos
+        if (usuarioDb != null)
+        {
+            _cache.Set(cacheKey, usuarioDb, TimeSpan.FromMinutes(30));
+        }
+
+        return usuarioDb;
+    }
+
+    // =====================================================
+    // MÉTODO ASÍNCRONO MAESTRO (Para la vista de Admin)
     // =====================================================
     public async Task<List<Usuario>> ObtenerUsuariosAsync()
     {
@@ -31,7 +72,6 @@ public class UsuarioController
 
         var usuariosDesdeDb = await _service.ObtenerUsuariosAsync();
 
-        // Eliminamos el SetSize(1) para evitar excepciones silenciosas en .NET
         var opcionesCache = new MemoryCacheEntryOptions()
             .SetAbsoluteExpiration(TimeSpan.FromMinutes(60)); 
 
@@ -41,7 +81,7 @@ public class UsuarioController
     }
 
     // =====================================================
-    // MÉTODO SÍNCRONO (Mantenido para no romper otras pantallas)
+    // MÉTODO SÍNCRONO MAESTRO (Por compatibilidad vieja)
     // =====================================================
     public List<Usuario> ObtenerUsuarios()
     {
@@ -61,24 +101,25 @@ public class UsuarioController
     }
 
     // =====================================================
-    // MÉTODOS DE ESCRITURA (Invalidan el Caché instantáneamente)
+    // MÉTODOS DE ESCRITURA (Limpian la lista y el caché individual)
     // =====================================================
     public void CrearUsuario(Usuario usuario)
     {
         _service.CrearUsuario(usuario);
-        LimpiarCache();
+        LimpiarCaches(usuario.Correo);
     }
 
     public void ActualizarUsuario(Usuario usuario)
     {
         _service.ActualizarUsuario(usuario);
-        LimpiarCache();
+        LimpiarCaches(usuario.Correo);
     }
 
     public void EliminarUsuario(Guid id)
     {
+        var usuarioViejo = ObtenerUsuario(id);
         _service.EliminarUsuario(id);
-        LimpiarCache();
+        LimpiarCaches(usuarioViejo?.Correo);
     }
 
     public Usuario? ObtenerUsuario(Guid id)
@@ -87,10 +128,15 @@ public class UsuarioController
     }
 
     // =====================================================
-    // AYUDANTE: LIMPIAR CACHÉ
+    // AYUDANTE: DESTRUCTOR DE CACHÉ
     // =====================================================
-    private void LimpiarCache()
+    private void LimpiarCaches(string? correo)
     {
-        _cache.Remove(USUARIOS_CACHE_KEY);
+        _cache.Remove(USUARIOS_CACHE_KEY); // Limpia la lista del Admin
+        
+        if (!string.IsNullOrWhiteSpace(correo))
+        {
+            _cache.Remove($"user_{correo.ToLower()}"); // Limpia el caché individual de ese usuario
+        }
     }
 }
