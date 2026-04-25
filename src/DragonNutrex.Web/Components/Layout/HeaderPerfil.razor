@@ -108,18 +108,27 @@ else
     private string actividadEdit = "Sedentaria";
     private string objetivoEdit = "Bajar peso";
 
-    protected override void OnInitialized()
+    // 1. Cambiamos a OnInitializedAsync para no bloquear el hilo
+    protected override async Task OnInitializedAsync()
     {
-        CargarDatosUsuario();
+        await CargarDatosUsuario();
     }
 
-    private void CargarDatosUsuario()
+    private async Task CargarDatosUsuario()
     {
         if (Session != null && !string.IsNullOrEmpty(Session.NombreUsuario))
         {
-            var usuarios = _usuarioController.ObtenerUsuarios() ?? new();
-            usuario = usuarios.FirstOrDefault(u => u.Nombre.ToLower() == Session.NombreUsuario.ToLower());
-            if (usuario != null) CalcularIMCOriginal();
+            // 2. Usamos await correctamente con el nuevo método del controlador
+            var usuarios = await _usuarioController.ObtenerTodosAsync();
+            
+            // 3. 🔥 CLAVE: Comparamos contra el CORREO, que es lo que guardamos en el login
+            usuario = usuarios.FirstOrDefault(u => u.Correo.ToLower() == Session.NombreUsuario.ToLower());
+            
+            if (usuario != null) 
+            {
+                CalcularIMCOriginal();
+                StateHasChanged(); // Forzamos el refresco visual
+            }
         }
     }
 

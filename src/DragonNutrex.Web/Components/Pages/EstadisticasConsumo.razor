@@ -102,16 +102,16 @@
     private List<DietaStat> dietasPorcentaje = new();
     private List<UsuarioTop> usuariosTopMenus = new();
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         if (!Session.IsAdmin) Nav.NavigateTo("/mi-progreso");
-        CalcularEstadisticas();
+        await CalcularEstadisticas();
     }
 
-    private void CalcularEstadisticas()
+    private async Task CalcularEstadisticas()
     {
         var todosLosMenus = _menuController.ObtenerMenus() ?? new List<Menu>();
-        var todosLosUsuarios = _usuarioController.ObtenerUsuarios() ?? new List<Usuario>();
+        var todosLosUsuarios = await _usuarioController.ObtenerTodosAsync() ?? new List<Usuario>();
 
         // Filtramos menús por el rango de fechas seleccionado
         var menusEnRango = todosLosMenus

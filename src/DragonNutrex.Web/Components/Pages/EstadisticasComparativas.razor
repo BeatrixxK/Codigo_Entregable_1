@@ -188,9 +188,9 @@
     private bool mostrarDetalles = false;
     private Menu? menuSeleccionadoParaVer = null;
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        listaUsuarios = _usuarioController.ObtenerUsuarios() ?? new List<Usuario>();
+        listaUsuarios = await _usuarioController.ObtenerTodosAsync() ?? new List<Usuario>();
     }
 
     private void OnUsuarioCambiado(ChangeEventArgs e) 

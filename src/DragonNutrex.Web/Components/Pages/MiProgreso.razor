@@ -170,14 +170,20 @@
         if (string.IsNullOrWhiteSpace(Session.NombreUsuario)) return;
         
         estaCargando = true;
-        // Cargamos usuario usando la nueva vía asíncrona
-        var usuarios = await _usuarioController.ObtenerUsuariosAsync();
-        usuarioActual = usuarios.FirstOrDefault(u => u.Nombre.ToLower() == Session.NombreUsuario.ToLower());
+        
+        // 1. Cargamos usuario comparando contra el CORREO (que es lo que hay en Session.NombreUsuario)
+        var usuarios = await _usuarioController.ObtenerTodosAsync();
+        usuarioActual = usuarios.FirstOrDefault(u => u.Correo.ToLower() == Session.NombreUsuario.ToLower());
             
         if (usuarioActual != null) 
         {
             await EjecutarCargaDatos();
         }
+        else 
+        {
+            mensajeEstado = "❌ No se encontró el perfil de usuario para este correo.";
+        }
+        
         estaCargando = false;
     }
 
@@ -195,8 +201,10 @@
 
         mensajeEstado = "⏳ Sincronizando con Dragon Nutrex Cloud...";
 
-        // Traemos menús de forma asíncrona (Caché + Redis)
+        // 2. Traemos menús y filtramos por el ID del usuario encontrado
         var todosLosMenus = await _menuController.ObtenerMenusAsync();
+        
+        // Filtramos por ID, rango de fechas y aseguramos que no sea nulo
         var menusFiltrados = todosLosMenus
             .Where(m => m.UsuarioId == usuarioActual.Id && m.Fecha.Date >= fechaInicio.Date && m.Fecha.Date <= fechaFin.Date)
             .OrderByDescending(x => x.Fecha)
@@ -206,16 +214,22 @@
         {
             decimal meta = 0;
             try {
-                // Cálculo de dieta (Stats)
+                // Cálculo de dieta basado en los Stats del usuario
                 var res = _statsController.ObtenerResumen(usuarioActual.Id, m.Fecha.Date, m.Fecha.Date.AddHours(23), usuarioActual.TipoDieta);
                 meta = res?.CaloriasObjetivoDieta ?? 0;
-            } catch { }
+            } catch { 
+                meta = 2000; // Valor por defecto si falla el cálculo
+            }
 
             decimal consumido = m.TotalCalorias > 0 ? m.TotalCalorias : (m.Registros?.Sum(r => r.Calorias) ?? 0);
             listaResumenes.Add(new ResumenDiario { Fecha = m.Fecha, Consumido = consumido, Meta = meta });
         }
         
-        mensajeEstado = $"✅ {listaResumenes.Count} días recuperados exitosamente.";
+        mensajeEstado = listaResumenes.Any() 
+            ? $"✅ {listaResumenes.Count} días recuperados exitosamente." 
+            : "ℹ️ No se encontraron menús registrados en este rango.";
+        
+        StateHasChanged(); // Forzamos actualización visual
     }
 
     private async Task VerDetalle(DateTime fecha)
@@ -225,7 +239,6 @@
             
         if (menuVisor != null) 
         {
-            // Cálculos de seguridad para el visor
             if (menuVisor.TotalCalorias <= 0 && menuVisor.Registros != null)
             {
                 menuVisor.TotalCalorias = menuVisor.Registros.Sum(r => r.Calorias);

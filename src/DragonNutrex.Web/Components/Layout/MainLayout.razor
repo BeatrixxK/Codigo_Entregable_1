@@ -3,6 +3,15 @@
 @inject UserSession Session
 @inject NavigationManager Nav
 
+<style>
+    /* 🔥 ESTA ES LA MAGIA QUE ARREGLA EL BOTÓN INVISIBLE */
+    .btn-nav-dragon.active {
+        background-color: #1b5e20 !important; /* Verde oscuro intenso para la página actual */
+        color: white !important;
+        border-color: #1b5e20 !important;
+    }
+</style>
+
 <div class="page">
     <main class="w-100 px-4 py-3">
         <div class="p-3 mb-3 d-flex justify-content-between align-items-center shadow-sm" style="background-color: #e8f5e9; color: #1b5e20; border-radius: 8px; border: 1px solid #c8e6c9;">
@@ -17,16 +26,16 @@
         <div class="d-flex gap-2 mb-4">
             @if (Session.IsAdmin)
             {
-                <a href="/admin/usuarios" class="btn flex-fill btn-nav-dragon shadow-sm">Usuarios</a>
-                <a href="/admin/productos" class="btn flex-fill btn-nav-dragon shadow-sm">Productos</a>
-                <a href="/admin/menus" class="btn flex-fill btn-nav-dragon shadow-sm">Menús</a>
-                <a href="/admin/estadisticas" class="btn flex-fill btn-nav-dragon shadow-sm">Estadísticas</a>
-                <a href="/admin/estadisticas-consumo" class="btn flex-fill btn-nav-dragon shadow-sm">Estadísticas de Consumo</a>
+                <NavLink href="/admin/usuarios" class="btn flex-fill btn-nav-dragon shadow-sm">Usuarios</NavLink>
+                <NavLink href="/admin/productos" class="btn flex-fill btn-nav-dragon shadow-sm">Productos</NavLink>
+                <NavLink href="/admin/menus" class="btn flex-fill btn-nav-dragon shadow-sm">Menús</NavLink>
+                <NavLink href="/admin/estadisticas" class="btn flex-fill btn-nav-dragon shadow-sm">Estadísticas</NavLink>
+                <NavLink href="/admin/estadisticas-consumo" class="btn flex-fill btn-nav-dragon shadow-sm">Estadísticas de Consumo</NavLink>
             }
             else
             {
-                <a href="/admin/menus" class="btn flex-fill btn-nav-dragon shadow-sm">Mis Menús</a>
-                <a href="/mi-progreso" class="btn flex-fill btn-nav-dragon shadow-sm">Mi Progreso (Estadísticas)</a>
+                <NavLink href="/admin/menus" class="btn flex-fill btn-nav-dragon shadow-sm">Mis Menús</NavLink>
+                <NavLink href="/mi-progreso" class="btn flex-fill btn-nav-dragon shadow-sm">Mi Progreso (Estadísticas)</NavLink>
             }
         </div>
 
@@ -50,11 +59,7 @@
 @code {
     private void CerrarSesion()
     {
-        // Limpiamos la memoria de la sesión (Esto apaga automáticamente el IsAdmin)
-        Session.NombreUsuario = string.Empty;
-        
-        // Redirigimos a la pantalla de Login (la raíz)
-        // El 'true' al final fuerza una recarga completa del navegador
+        Session.CerrarSesion();
         Nav.NavigateTo("/", true); 
     }
 }

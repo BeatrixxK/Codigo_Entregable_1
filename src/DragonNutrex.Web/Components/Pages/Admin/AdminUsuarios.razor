@@ -114,7 +114,7 @@
     // 3. Método Asíncrono para traer los datos desde Redis
     private async Task CargarUsuariosAsync()
     {
-        var todosLosUsuarios = await _usuarioController.ObtenerUsuariosAsync();
+        var todosLosUsuarios = await _usuarioController.ObtenerTodosAsync();
         
         listaUsuarios = todosLosUsuarios?
             // Protegemos tanto el nombre viejo como el correo nuevo del admin para que no aparezca en la lista
