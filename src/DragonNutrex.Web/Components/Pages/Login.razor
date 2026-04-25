@@ -124,7 +124,8 @@
         // 1. Caso especial para el admin maestro con el nuevo correo
         if (usuarioInput.ToLower() == "admin@admin.com" && passwordInput == "admin")
         {
-            UserSession.NombreUsuario = "admin@admin.com";
+            // 🔥 CAMBIO APLICADO: Ahora notifica a Blazor que el admin entró
+            UserSession.IniciarSesion("admin@admin.com");
             Nav.NavigateTo("/admin/usuarios");
             return;
         }
@@ -135,7 +136,7 @@
 
         try
         {
-            // 2. Validación asíncrona directa (¡Sin descargar toda la base de datos!)
+            // 2. Validación asíncrona directa
             var userDb = await _usuarioController.AutenticarUsuarioAsync(usuarioInput, passwordInput);
 
             if (userDb == null)
@@ -151,7 +152,8 @@
             }
 
             // 3. Iniciamos sesión guardando el correo
-            UserSession.NombreUsuario = userDb.Correo;
+            // 🔥 CAMBIO APLICADO: Ahora genera el pasaporte oficial para que no te reboten
+            UserSession.IniciarSesion(userDb.Correo);
 
             // 4. Redirección final al progreso
             Nav.NavigateTo("/mi-progreso"); 

@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Components.Authorization; // Agregado para la seguridad
 using DragonNutrex.Web;
 using DragonNutrex.App.Repositories;
 using DragonNutrex.App.Services;
@@ -10,6 +11,12 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+// =====================================================
+// 0. REGISTRAR SEGURIDAD OFICIAL DE BLAZOR
+// =====================================================
+builder.Services.AddCascadingAuthenticationState();
+builder.Services.AddAuthorizationCore();
 
 // =====================================================
 // 1. CARGAR VARIABLES DE ENTORNO Y REDIS
@@ -49,15 +56,17 @@ builder.Services.AddScoped<EstadisticasNutricionService>();
 // =====================================================
 // 4. REGISTRAR CONTROLADORES Y SESIÓN
 // =====================================================
-builder.Services.AddSingleton<UserSession>();
+// 🔥 CORRECCIÓN: Scoped (por usuario) y conectado al Guardia de Seguridad
+builder.Services.AddScoped<UserSession>();
+builder.Services.AddScoped<AuthenticationStateProvider>(provider => provider.GetRequiredService<UserSession>());
+
 builder.Services.AddScoped<UsuarioController>();
 builder.Services.AddScoped<ProductoController>();
 builder.Services.AddScoped<MenuController>();
 builder.Services.AddScoped<EstadisticasNutricionController>();
 
-//Usar caché en la memoria local (SessionStorage / Singleton)
-
-builder.Services.AddMemoryCache(); // Agregamos el servicio de caché en memoria para optimizar la lectura de productos
+// Usar caché en la memoria local (SessionStorage / Singleton)
+builder.Services.AddMemoryCache(); 
 
 var app = builder.Build();
 
@@ -69,7 +78,7 @@ app.MapRazorComponents<DragonNutrex.Web.Components.App>()
     .AddInteractiveServerRenderMode();
 
 
-    // --- BLOQUE TEMPORAL PARA SINCRONIZAR USUARIOS ---
+// --- BLOQUE TEMPORAL PARA SINCRONIZAR USUARIOS ---
 using (var scope = app.Services.CreateScope())
 {
     var repo = scope.ServiceProvider.GetRequiredService<DragonNutrex.App.Interfaces.IRepository<DragonNutrex.App.Models.Usuario>>();
