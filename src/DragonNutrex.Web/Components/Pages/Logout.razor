@@ -1,20 +1,27 @@
 @page "/logout"
-@using DragonNutrex.App.Models
-@inject UserSession Session
+@using DragonNutrex.Web
+@inject UserSession _userSession
 @inject NavigationManager Nav
 
+<PageTitle>Cerrando sesión...</PageTitle>
+
 <div class="text-center mt-5">
-    <p>Cerrando sesión...</p>
+    <div class="spinner-border text-success" role="status">
+        <span class="visually-hidden">Cargando...</span>
+    </div>
+    <h3 class="mt-3" style="color: #1b5e20;">Cerrando sesión de forma segura...</h3>
 </div>
 
 @code {
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        // 1. Limpiamos la memoria
-        Session.NombreUsuario = string.Empty;
-        
-        // 2. Lo pateamos de vuelta al Login recargando la página entera
-        Nav.NavigateTo("/");
-        
+        // 1. Usamos la INSTANCIA inyectada (_userSession), no la clase (UserSession)
+        _userSession.CerrarSesion();
+
+        // 2. Damos un pequeño respiro para que Blazor actualice el estado de seguridad
+        await Task.Delay(500);
+
+        // 3. Redirigimos al Login (forzando la recarga para limpiar cualquier caché visual)
+        Nav.NavigateTo("/", forceLoad: true);
     }
 }
