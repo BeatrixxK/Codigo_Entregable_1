@@ -9,6 +9,12 @@ using StackExchange.Redis;
 
 namespace DragonNutrex.App.Repositories;
 
+/// <summary>
+/// Repositorio de persistencia para la entidad Producto en Redis.
+/// Gestiona todas las operaciones CRUD (Create, Read, Update, Delete) de productos
+/// utilizando Redis como almacén de datos en memoria. Implementa pipelining para
+/// optimizar las operaciones de lectura masiva y proporciona métodos síncronos y asíncronos.
+/// </summary>
 public class ProductoRedisRepository : IRepository<Producto>
 {
     private readonly IDatabase _db;
@@ -16,6 +22,11 @@ public class ProductoRedisRepository : IRepository<Producto>
     private const string PREFIX = "producto";
     private const string SET_KEY = "productos:ids";
 
+    /// <summary>
+    /// Inicializa una nueva instancia del repositorio de productos en Redis.
+    /// Obtiene la conexión a la base de datos Redis desde la instancia de RedisConnection.
+    /// </summary>
+    /// <param name="redisConnection">Instancia de conexión a Redis que proporciona acceso a la base de datos.</param>
     public ProductoRedisRepository(RedisConnection redisConnection)
     {
         _db = redisConnection.GetDatabase();
@@ -24,6 +35,12 @@ public class ProductoRedisRepository : IRepository<Producto>
     // =====================================================
     // CREATE
     // =====================================================
+    /// <summary>
+    /// Crea un nuevo producto en Redis.
+    /// Almacena el producto como un hash con la clave "producto:{id}" y registra su identificador
+    /// en el conjunto "productos:ids" para mantener un índice de todos los productos existentes.
+    /// </summary>
+    /// <param name="entity">Objeto Producto a crear en la base de datos.</param>
     public void Create(Producto entity)
     {
         var key = $"{PREFIX}:{entity.Id}";

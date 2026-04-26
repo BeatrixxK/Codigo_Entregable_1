@@ -94,44 +94,97 @@ else
 }
 
 @code {
+    /// <summary>
+    /// Almacena la información del usuario actual que ha sido cargada desde la base de datos.
+    /// Contiene todos los datos del perfil del usuario incluyendo peso, altura, tipo de dieta y objetivos nutricionales.
+    /// </summary>
     private Usuario? usuario;
+    
+    /// <summary>
+    /// Indica si el componente se encuentra actualmente en modo de edición de perfil.
+    /// </summary>
     private bool enEdicion = false;
+    
+    /// <summary>
+    /// Almacena el valor del Índice de Masa Corporal (IMC) actual del usuario.
+    /// </summary>
     private decimal imcActual = 0;
+    
+    /// <summary>
+    /// Almacena la vista previa del IMC mientras se editan los datos del usuario.
+    /// </summary>
     private decimal imcPreview = 0;
 
+    /// <summary>
+    /// Variable temporal que almacena el peso del usuario durante la edición.
+    /// </summary>
     private decimal pesoEdit;
+    
+    /// <summary>
+    /// Variable temporal que almacena la altura del usuario durante la edición.
+    /// </summary>
     private decimal alturaEdit;
+    
+    /// <summary>
+    /// Variable temporal que almacena el tipo de dieta del usuario durante la edición.
+    /// </summary>
     private string dietaEdit = "";
     
+    /// <summary>
+    /// Almacena el nivel de actividad física actual del usuario para su visualización.
+    /// </summary>
     private string actividadVisual = "Sedentaria";
+    
+    /// <summary>
+    /// Almacena el objetivo nutricional actual del usuario para su visualización.
+    /// </summary>
     private string objetivoVisual = "Bajar peso";
+    
+    /// <summary>
+    /// Variable temporal que almacena el nivel de actividad física durante la edición.
+    /// </summary>
     private string actividadEdit = "Sedentaria";
+    
+    /// <summary>
+    /// Variable temporal que almacena el objetivo nutricional durante la edición.
+    /// </summary>
     private string objetivoEdit = "Bajar peso";
 
-    // 1. Cambiamos a OnInitializedAsync para no bloquear el hilo
+    /// <summary>
+    /// Inicializa el componente de manera asincrónica. Invoca la carga de datos del usuario
+    /// sin bloquear el hilo de ejecución principal. Se ejecuta automáticamente al renderizar el componente.
+    /// </summary>
     protected override async Task OnInitializedAsync()
     {
         await CargarDatosUsuario();
     }
 
+    /// <summary>
+    /// Carga de manera asincrónica los datos del usuario desde la sesión activa y la base de datos.
+    /// Obtiene todos los usuarios disponibles, busca el usuario actual por correo electrónico
+    /// y calcula su Índice de Masa Corporal inicial. Actualiza la interfaz gráfica al completar la carga.
+    /// </summary>
     private async Task CargarDatosUsuario()
     {
         if (Session != null && !string.IsNullOrEmpty(Session.NombreUsuario))
         {
-            // 2. Usamos await correctamente con el nuevo método del controlador
             var usuarios = await _usuarioController.ObtenerTodosAsync();
             
-            // 3. 🔥 CLAVE: Comparamos contra el CORREO, que es lo que guardamos en el login
             usuario = usuarios.FirstOrDefault(u => u.Correo.ToLower() == Session.NombreUsuario.ToLower());
             
             if (usuario != null) 
             {
                 CalcularIMCOriginal();
-                StateHasChanged(); // Forzamos el refresco visual
+                StateHasChanged();
             }
         }
     }
 
+    /// <summary>
+    /// Calcula el Índice de Masa Corporal (IMC) del usuario actual utilizando la fórmula estándar:
+    /// IMC = Peso (kg) / (Altura (m))². Almacena el resultado en la variable imcActual
+    /// para su visualización en la interfaz.
+    /// </summary>
     private void CalcularIMCOriginal()
     {
         if (usuario != null && usuario.Altura > 0)
@@ -141,6 +194,11 @@ else
         }
     }
 
+    /// <summary>
+    /// Activa el modo de edición del perfil de usuario. Copia los valores actuales
+    /// del usuario a variables temporales de edición y genera una vista previa del IMC.
+    /// Permite al usuario modificar peso, altura, tipo de dieta, nivel de actividad y objetivo.
+    /// </summary>
     private void ActivarEdicion()
     {
         if (usuario == null) return;
@@ -155,6 +213,11 @@ else
         enEdicion = true;
     }
 
+    /// <summary>
+    /// Recalcula la vista previa del Índice de Masa Corporal mientras el usuario modifica
+    /// el peso y la altura en modo de edición. Utiliza la fórmula estándar de IMC para
+    /// proporcionar retroalimentación inmediata sobre los cambios.
+    /// </summary>
     private void RecalcularImcPreview()
     {
         if (alturaEdit > 0)
@@ -164,8 +227,18 @@ else
         }
     }
 
+    /// <summary>
+    /// Desactiva el modo de edición del perfil de usuario sin guardar los cambios realizados.
+    /// Descarta todas las modificaciones temporales y retorna a la vista de solo lectura.
+    /// </summary>
     private void CancelarEdicion() => enEdicion = false;
 
+    /// <summary>
+    /// Guarda los cambios del perfil del usuario modificados durante la edición.
+    /// Actualiza el peso, altura, tipo de dieta, nivel de actividad y objetivo
+    /// en la base de datos mediante el controlador. Recalcula el IMC y retorna
+    /// a la vista de solo lectura tras completar la operación.
+    /// </summary>
     private void GuardarPerfil()
     {
         if (usuario != null)
@@ -184,6 +257,13 @@ else
         }
     }
 
+    /// <summary>
+    /// Genera una cadena de estilos CSS en línea que determina el color de fondo y el color de texto
+    /// del badge de IMC según la clasificación de peso del usuario. Clasifica el IMC en cuatro categorías:
+    /// bajo peso (amarillo), peso normal (verde), sobrepeso (naranja) y obesidad (rojo).
+    /// </summary>
+    /// <param name="imc">Valor decimal del Índice de Masa Corporal a clasificar.</param>
+    /// <returns>Cadena de estilos CSS con colores correspondientes a la clasificación de IMC.</returns>
     private string ObtenerColorIMC(decimal imc)
     {
         if (imc < 18.5m) return "background-color: #ffc107; color: #000;"; 
@@ -192,6 +272,13 @@ else
         return "background-color: #dc3545; color: #fff;"; 
     }
 
+    /// <summary>
+    /// Genera la descripción textual correspondiente a la clasificación de Índice de Masa Corporal.
+    /// Traduce los rangos numéricos de IMC en categorías de peso comprensibles para el usuario:
+    /// bajo peso, peso normal, sobrepeso u obesidad.
+    /// </summary>
+    /// <param name="imc">Valor decimal del Índice de Masa Corporal a clasificar.</param>
+    /// <returns>Cadena de texto que describe la clasificación de peso correspondiente al IMC.</returns>
     private string ObtenerTextoIMC(decimal imc)
     {
         if (imc < 18.5m) return "Bajo peso";

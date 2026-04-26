@@ -10,6 +10,13 @@
 @inject IJSRuntime JS
 @rendermode InteractiveServer
 
+@* /// <summary>
+/// Renderiza el panel de control para el seguimiento nutricional y estadísticas.
+/// Permite al administrador filtrar el historial de consumo de los usuarios por rangos de fechas, 
+/// comparar la ingesta calórica contra los objetivos establecidos y exportar reportes detallados.
+/// </summary>
+*@
+
 <PageTitle>Estadísticas y Seguimiento</PageTitle>
 
 <div class="container-fluid">
@@ -183,25 +190,72 @@
 }
 
 @code {
+    /// <summary>
+    /// Contiene la lista general de usuarios disponibles para generar reportes.
+    /// </summary>
     private List<Usuario> listaUsuarios = new();
+    
+    /// <summary>
+    /// Almacena el perfil del usuario seleccionado actualmente para la consulta de estadísticas.
+    /// </summary>
     private Usuario? usuarioActual;
+    
+    /// <summary>
+    /// Define el límite inferior del rango de fechas para la consulta del historial. 
+    /// Por defecto, se inicializa 30 días antes de la fecha actual.
+    /// </summary>
     private DateTime fechaInicio = DateTime.Today.AddDays(-30); 
+    
+    /// <summary>
+    /// Define el límite superior del rango de fechas para la consulta del historial. 
+    /// Por defecto, se inicializa en la fecha actual.
+    /// </summary>
     private DateTime fechaFin = DateTime.Today;
+    
+    /// <summary>
+    /// Almacena el objetivo calórico diario del usuario actual para realizar la comparación.
+    /// </summary>
     private decimal metaCalorias = 0;
     
+    /// <summary>
+    /// Contiene el conjunto de menús que coinciden con los criterios de filtrado (usuario y fechas).
+    /// </summary>
     private List<Menu> menusFiltrados = new(); 
 
+    /// <summary>
+    /// Almacena mensajes de error o advertencia generados durante el procesamiento de datos.
+    /// </summary>
     private string mensajeAlerta = "";
+    
+    /// <summary>
+    /// Indica si el sistema se encuentra procesando una consulta para mostrar un indicador visual de carga.
+    /// </summary>
     private bool estaCalculando = false;
     
+    /// <summary>
+    /// Controla la visibilidad del modal de detalles de un menú específico.
+    /// </summary>
     private bool mostrarDetalles = false;
+    
+    /// <summary>
+    /// Almacena el menú específico seleccionado por el usuario para su inspección detallada.
+    /// </summary>
     private Menu? menuSeleccionadoParaVer = null;
 
+    /// <summary>
+    /// Inicializa el componente solicitando de manera asincrónica la lista completa de usuarios 
+    /// al controlador correspondiente para poblar el menú desplegable.
+    /// </summary>
     protected override async Task OnInitializedAsync()
     {
         listaUsuarios = await _usuarioController.ObtenerTodosAsync() ?? new List<Usuario>();
     }
 
+    /// <summary>
+    /// Captura el cambio de selección en el listado de usuarios, actualiza la referencia 
+    /// al usuario actual y extrae su meta calórica específica para los futuros cálculos.
+    /// </summary>
+    /// <param name="e">Argumentos del evento que contienen el identificador del usuario seleccionado.</param>
     private void OnUsuarioCambiado(ChangeEventArgs e) 
     {
         mensajeAlerta = ""; 
@@ -221,6 +275,10 @@
         StateHasChanged(); 
     }
 
+    /// <summary>
+    /// Ejecuta la consulta principal de estadísticas. Extrae todos los menús registrados 
+    /// y aplica los filtros de usuario y rango de fechas, ordenando el resultado de manera descendente.
+    /// </summary>
     private async Task GenerarComparativa() 
     {
         try 
@@ -263,6 +321,13 @@
         }
     }
 
+    /// <summary>
+    /// Calcula la sumatoria de un macronutriente específico o de las calorías totales 
+    /// recorriendo todos los registros alimenticios de un menú dado.
+    /// </summary>
+    /// <param name="m">El objeto menú a evaluar.</param>
+    /// <param name="tipo">El identificador de texto del valor a sumar (Calorias, Proteinas, Carbohidratos, Grasas).</param>
+    /// <returns>La sumatoria decimal del elemento solicitado.</returns>
     private decimal CalcularTotal(Menu m, string tipo)
     {
         if (m.Registros == null || !m.Registros.Any()) return 0;
@@ -277,12 +342,20 @@
         };
     }
 
+    /// <summary>
+    /// Prepara los datos de un menú específico y despliega la ventana modal 
+    /// para permitir la inspección detallada de sus registros.
+    /// </summary>
+    /// <param name="m">El menú que se mostrará en el visor.</param>
     private void VerDetallesMenu(Menu m)
     {
         menuSeleccionadoParaVer = m;
         mostrarDetalles = true;
     }
 
+    /// <summary>
+    /// Oculta el modal de detalles y limpia la referencia del menú seleccionado en memoria.
+    /// </summary>
     private void CerrarDetalles()
     {
         mostrarDetalles = false;
@@ -292,6 +365,11 @@
     // =====================================================
     // LÓGICA DE LOS BOTONES DE EXPORTACIÓN
     // =====================================================
+    
+    /// <summary>
+    /// Extrae los datos del historial filtrado, procesa la generación de un documento en formato CSV 
+    /// a través del servicio de exportación y desencadena su descarga en el cliente.
+    /// </summary>
     private async Task DescargarCSV()
     {
         var bytes = _exportService.GenerarCsvMenus(menusFiltrados, listaUsuarios);
@@ -299,6 +377,10 @@
         await _exportService.DescargarArchivoEnNavegador(nombre.Replace(" ", "_"), bytes);
     }
 
+    /// <summary>
+    /// Extrae los datos del historial filtrado, procesa la generación de un documento en formato de texto plano (TXT) 
+    /// a través del servicio de exportación y desencadena su descarga en el cliente.
+    /// </summary>
     private async Task DescargarTXT()
     {
         var bytes = _exportService.GenerarTxtMenus(menusFiltrados, listaUsuarios);
@@ -306,11 +388,14 @@
         await _exportService.DescargarArchivoEnNavegador(nombre.Replace(" ", "_"), bytes);
     }
 
+    /// <summary>
+    /// Extrae los datos del historial filtrado, procesa la generación de un documento en formato PDF 
+    /// a través del servicio de exportación y desencadena su descarga de manera segura en el cliente.
+    /// </summary>
     private async Task DescargarPDF()
     {
         try 
         {
-            // 👉 AQUÍ ESTÁ LA CORRECCIÓN: Le pasamos menusFiltrados Y el nombreUsuario
             string nombreUsuario = usuarioActual?.Nombre ?? "Usuario General";
             var bytes = _exportService.GenerarPdfMenus(menusFiltrados, nombreUsuario);
             

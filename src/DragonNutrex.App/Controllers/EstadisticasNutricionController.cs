@@ -102,10 +102,10 @@ public class EstadisticasNutricionController
 
         if (!menusEnRango.Any()) return "Sin datos en estas fechas";
 
-        // Extraemos todos los registros de comida de esos menús (aplanamos la lista)
+        // Extrae todos los registros de comida de esos menús (aplanamos la lista)
         var todosLosRegistros = menusEnRango.SelectMany(m => m.Registros ?? new List<RegistroComida>());
 
-        // Agrupamos por nombre de producto y sumamos las cantidades
+        // Agrupa por nombre de producto y sumamos las cantidades
         var productoTop = todosLosRegistros
             .GroupBy(r => r.NombreProducto)
             .OrderByDescending(g => g.Sum(r => r.Cantidad))

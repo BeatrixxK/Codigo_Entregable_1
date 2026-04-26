@@ -1,4 +1,10 @@
-﻿<Router AppAssembly="typeof(Program).Assembly" NotFoundPage="typeof(Pages.NotFound)">
+﻿@* /// <summary>
+/// Configura el sistema de enrutamiento principal de la aplicación Blazor.
+/// Intercepta las solicitudes de navegación del usuario, busca el componente asociado a la ruta 
+/// dentro del ensamblado actual y lo renderiza utilizando el diseño maestro predeterminado.
+/// </summary>
+*@
+<Router AppAssembly="typeof(Program).Assembly" NotFoundPage="typeof(Pages.NotFound)">
     <Found Context="routeData">
         <RouteView RouteData="routeData" DefaultLayout="typeof(Layout.MainLayout)" />
         <FocusOnNavigate RouteData="routeData" Selector="h1" />

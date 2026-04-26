@@ -12,10 +12,20 @@ using Microsoft.JSInterop;
 
 namespace DragonNutrex.App.Services;
 
+/// <summary>
+/// Servicio encargado de generar y exportar reportes en múltiples formatos (CSV, TXT, PDF).
+/// Proporciona funcionalidades para exportar información de usuarios, menús, productos y estadísticas globales del sistema Dragon Nutrex.
+/// Utiliza la librería QuestPDF para generar documentos PDF de alta calidad.
+/// </summary>
 public class ExportacionService
 {
     private readonly IJSRuntime _js;
 
+    /// <summary>
+    /// Inicializa una nueva instancia del servicio de exportación.
+    /// Configura la licencia de QuestPDF en modo Community y almacena la referencia del runtime JavaScript.
+    /// </summary>
+    /// <param name="js">Instancia de IJSRuntime para facilitar la descarga de archivos en el navegador del cliente.</param>
     public ExportacionService(IJSRuntime js)
     {
         QuestPDF.Settings.License = LicenseType.Community;

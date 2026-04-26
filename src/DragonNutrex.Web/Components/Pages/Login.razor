@@ -7,6 +7,13 @@
 @inject UsuarioController _usuarioController
 @rendermode InteractiveServer 
 
+@* /// <summary>
+/// Renderiza la interfaz principal de autenticación de Dragon Nutrex.
+/// Gestiona el inicio de sesión seguro para usuarios regulares y administradores, 
+/// e incluye la funcionalidad integrada para la recuperación y cambio de contraseñas.
+/// </summary>
+*@
+
 <PageTitle>Dragon Nutrex - Inicia Sesión</PageTitle>
 
 <div style="background-color: #a5d6a7; min-height: 100vh; display: flex; align-items: center; justify-content: center; font-family: 'Segoe UI', sans-serif;">
@@ -88,19 +95,55 @@
 </div>
 
 @code {
+    /// <summary>
+    /// Almacena el correo electrónico introducido por el usuario en el formulario de inicio de sesión.
+    /// </summary>
     private string usuarioInput = "";
+    
+    /// <summary>
+    /// Almacena la contraseña introducida por el usuario en el formulario de inicio de sesión.
+    /// </summary>
     private string passwordInput = "";
     
-    // Variables para el modo recuperación
+    /// <summary>
+    /// Determina si la interfaz visual debe renderizar el formulario de recuperación de contraseña 
+    /// en lugar del formulario de inicio de sesión estándar.
+    /// </summary>
     private bool modoRecuperacion = false;
+    
+    /// <summary>
+    /// Almacena el correo electrónico ingresado para el proceso de restablecimiento de contraseña.
+    /// </summary>
     private string usuarioRecuperacion = "";
+    
+    /// <summary>
+    /// Almacena la nueva contraseña solicitada por el usuario durante el flujo de recuperación.
+    /// </summary>
     private string nuevaPassword = "";
     
-    // Alertas y estados visuales
+    /// <summary>
+    /// Almacena los mensajes de información, advertencia o error emitidos por el sistema para 
+    /// ser desplegados en la interfaz gráfica.
+    /// </summary>
     private string mensajeSistema = "";
+    
+    /// <summary>
+    /// Indica si la última operación solicitada (como el cambio de contraseña) se completó 
+    /// de manera satisfactoria para aplicar los estilos de éxito correspondientes en la alerta.
+    /// </summary>
     private bool esExito = false;
+    
+    /// <summary>
+    /// Indica si el sistema se encuentra procesando una solicitud de autenticación para bloquear 
+    /// temporalmente los botones y desplegar el indicador visual de carga (spinner).
+    /// </summary>
     private bool estaCargando = false; 
 
+    /// <summary>
+    /// Alterna la vista principal entre el formulario de inicio de sesión y la pantalla de recuperación.
+    /// Limpia los campos de entrada y los mensajes del sistema al realizar la transición de vistas.
+    /// </summary>
+    /// <param name="recuperar">Verdadero para activar el modo de recuperación; falso para regresar al acceso normal.</param>
     private void AlternarModo(bool recuperar)
     {
         modoRecuperacion = recuperar;
@@ -110,6 +153,11 @@
         esExito = false;
     }
 
+    /// <summary>
+    /// Valida las credenciales ingresadas contra la base de datos de manera asincrónica.
+    /// Verifica el estado de la cuenta, establece el pasaporte de sesión activa si la validación es exitosa 
+    /// y redirige al usuario a su respectivo panel de control según su nivel de privilegios.
+    /// </summary>
     private async Task Entrar() 
     {
         mensajeSistema = "";
@@ -121,10 +169,9 @@
             return;
         }
 
-        // 1. Caso especial para el admin maestro con el nuevo correo
+        // Caso especial para el administrador maestro del sistema
         if (usuarioInput.ToLower() == "admin@admin.com" && passwordInput == "admin")
         {
-            // 🔥 CAMBIO APLICADO: Ahora notifica a Blazor que el admin entró
             UserSession.IniciarSesion("admin@admin.com");
             Nav.NavigateTo("/admin/usuarios");
             return;
@@ -136,7 +183,6 @@
 
         try
         {
-            // 2. Validación asíncrona directa
             var userDb = await _usuarioController.AutenticarUsuarioAsync(usuarioInput, passwordInput);
 
             if (userDb == null)
@@ -151,11 +197,7 @@
                 return;
             }
 
-            // 3. Iniciamos sesión guardando el correo
-            // 🔥 CAMBIO APLICADO: Ahora genera el pasaporte oficial para que no te reboten
             UserSession.IniciarSesion(userDb.Correo);
-
-            // 4. Redirección final al progreso
             Nav.NavigateTo("/mi-progreso"); 
         }
         catch (Exception ex)
@@ -169,6 +211,11 @@
         }
     }
 
+    /// <summary>
+    /// Busca el correo proporcionado en los registros del sistema y, si existe y la cuenta está habilitada, 
+    /// sobrescribe su clave de acceso con la nueva contraseña ingresada mediante el controlador de usuarios.
+    /// Posteriormente, retorna la interfaz al modo principal de inicio de sesión.
+    /// </summary>
     private async Task AutoresetearPassword()
     {
         mensajeSistema = "";
@@ -180,7 +227,6 @@
             return;
         }
 
-        // Búsqueda rápida por correo
         var userDb = await _usuarioController.ObtenerUsuarioPorCorreoAsync(usuarioRecuperacion);
 
         if (userDb == null)

@@ -6,10 +6,22 @@ using QuestPDF.Infrastructure; // Añade esto
 
 namespace DragonNutrex.App.Services;
 
+/// <summary>
+/// Servicio que proporciona funcionalidades para generar reportes en diferentes formatos, incluyendo CSV, TXT y PDF.
+/// </summary>
 public class ReportService
 {
     // ... tus métodos anteriores de CSV y TXT ...
 
+    /// <summary>
+    /// Genera un documento PDF que contiene un reporte de consumo nutricional basado en una lista de menús.
+    /// El reporte incluye información sobre calorías, proteínas, carbohidratos y grasas totales por fecha.
+    /// Configura la licencia de QuestPDF, define la estructura de la página con encabezado, contenido y pie de página,
+    /// y compila el documento en un arreglo de bytes para su descarga o almacenamiento.
+    /// </summary>
+    /// <param name="menus">Lista de objetos Menu que contienen los datos nutricionales a reportar.</param>
+    /// <param name="nombreAdmin">Nombre del administrador responsable de la generación del reporte.</param>
+    /// <returns>Un arreglo de bytes que representa el archivo PDF generado.</returns>
     public byte[] GenerarConsumoPDF(List<Menu> menus, string nombreAdmin)
     {
         // Configura la licencia comunitaria obligatoria de QuestPDF
@@ -40,7 +52,11 @@ public class ReportService
         // Retorna el PDF compilado como un arreglo de bytes
         return document.GeneratePdf();
 
-        // Arma el encabezado principal con el nombre de la empresa y metadatos
+        /// <summary>
+        /// Compone el encabezado del documento PDF, incluyendo el nombre de la empresa, título del reporte, nombre del administrador y fecha de generación.
+        /// Utiliza una fila con un elemento relativo para el texto y un elemento constante para un separador visual.
+        /// </summary>
+        /// <param name="container">Contenedor donde se agrega el encabezado.</param>
         void ComposeHeader(IContainer container)
         {
             container.Row(row =>
@@ -58,7 +74,12 @@ public class ReportService
             });
         }
 
-        // Arma la tabla de datos central
+        /// <summary>
+        /// Compone el contenido principal del documento PDF, que consiste en una tabla con los datos nutricionales de los menús.
+        /// Define las columnas de la tabla, aplica estilos al encabezado y llena las filas con los datos de cada menú.
+        /// </summary>
+        /// <param name="container">Contenedor donde se agrega el contenido.</param>
+        /// <param name="menus">Lista de menús utilizados para poblar la tabla.</param>
         void ComposeContent(IContainer container, List<Menu> menus)
         {
             container.PaddingVertical(1, Unit.Centimetre).Column(column =>

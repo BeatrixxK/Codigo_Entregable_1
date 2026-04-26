@@ -171,7 +171,7 @@
         
         estaCargando = true;
         
-        // 1. Cargamos usuario comparando contra el CORREO (que es lo que hay en Session.NombreUsuario)
+        // 1. Carga usuario comparando contra el CORREO (que es lo que hay en Session.NombreUsuario)
         var usuarios = await _usuarioController.ObtenerTodosAsync();
         usuarioActual = usuarios.FirstOrDefault(u => u.Correo.ToLower() == Session.NombreUsuario.ToLower());
             
@@ -201,10 +201,10 @@
 
         mensajeEstado = "⏳ Sincronizando con Dragon Nutrex Cloud...";
 
-        // 2. Traemos menús y filtramos por el ID del usuario encontrado
+        // 2. Trae menús y filtramos por el ID del usuario encontrado
         var todosLosMenus = await _menuController.ObtenerMenusAsync();
         
-        // Filtramos por ID, rango de fechas y aseguramos que no sea nulo
+        // Filtra por ID, rango de fechas y aseguramos que no sea nulo
         var menusFiltrados = todosLosMenus
             .Where(m => m.UsuarioId == usuarioActual.Id && m.Fecha.Date >= fechaInicio.Date && m.Fecha.Date <= fechaFin.Date)
             .OrderByDescending(x => x.Fecha)

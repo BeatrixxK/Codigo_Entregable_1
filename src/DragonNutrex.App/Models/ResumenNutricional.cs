@@ -1,67 +1,63 @@
-// =====================================================
-// MODELO RESUMEN NUTRICIONAL
-// =====================================================
-// Representa el resultado del análisis nutricional diario
-// de un usuario (comparación consumo vs objetivo)
+/// <summary>Representa el resultado del análisis nutricional diario de un usuario, comparando el consumo real con los objetivos nutricionales.</summary>
 namespace DragonNutrex.App.Models;
 
 public class ResumenNutricional
 {
-    // Nombre del usuario
+    /// <summary>Identifica el nombre del usuario para el que se realiza el análisis.</summary>
     public string NombreUsuario { get; set; } = "";
 
-    // Fecha del análisis
+    /// <summary>Indica la fecha en la que se realizó el análisis nutricional.</summary>
     public DateTime Fecha { get; set; }
 
     // =====================================================
     // DATOS DEL IMC
     // =====================================================
 
-    // Índice de Masa Corporal
+    /// <summary>Contiene el valor calculado del índice de masa corporal del usuario.</summary>
     public decimal Imc { get; set; }
 
-    // Categoría del IMC (Normal, Sobrepeso, etc.)
+    /// <summary>Clasifica el IMC en categorías como Normal, Sobrepeso, Obeso, etc.</summary>
     public string CategoriaImc { get; set; } = "";
 
     // =====================================================
     // CONSUMO REAL DEL USUARIO
     // =====================================================
 
-    // Calorías consumidas
+    /// <summary>Registra las calorías totales consumidas por el usuario en el día.</summary>
     public decimal CaloriasConsumidas { get; set; }
 
-    // Proteínas consumidas
+    /// <summary>Registra las proteínas totales consumidas por el usuario en el día.</summary>
     public decimal ProteinasConsumidas { get; set; }
 
-    // Carbohidratos consumidos
+    /// <summary>Registra los carbohidratos totales consumidos por el usuario en el día.</summary>
     public decimal CarbohidratosConsumidos { get; set; }
 
-    // Grasas consumidas
+    /// <summary>Registra las grasas totales consumidas por el usuario en el día.</summary>
     public decimal GrasasConsumidas { get; set; }
 
     // =====================================================
     // OBJETIVOS NUTRICIONALES
     // =====================================================
 
-    // Calorías objetivo
+    /// <summary>Define las calorías objetivo que el usuario debe consumir diariamente.</summary>
     public decimal CaloriasObjetivo { get; set; }
 
-    // Proteínas objetivo
+    /// <summary>Define las proteínas objetivo que el usuario debe consumir diariamente.</summary>
     public decimal ProteinasObjetivo { get; set; }
 
-    // Carbohidratos objetivo
+    /// <summary>Define los carbohidratos objetivo que el usuario debe consumir diariamente.</summary>
     public decimal CarbohidratosObjetivo { get; set; }
 
-    // Grasas objetivo
+    /// <summary>Define las grasas objetivo que el usuario debe consumir diariamente.</summary>
     public decimal GrasasObjetivo { get; set; }
 
     // =====================================================
     // RESULTADO FINAL
     // =====================================================
 
-    // Estado calórico (déficit, exceso o balance)
+    /// <summary>Determina el estado calórico basado en la comparación entre consumo y objetivo, como déficit, exceso o balance.</summary>
     public string EstadoCalorico { get; set; } = "";
 
-    // Recomendación basada en el análisis
+    /// <summary>Proporciona una recomendación personalizada basada en el análisis del consumo nutricional.</summary>
     public string Recomendacion { get; set; } = "";
 }

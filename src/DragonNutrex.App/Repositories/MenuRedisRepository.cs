@@ -10,22 +10,41 @@ using StackExchange.Redis;
 
 namespace DragonNutrex.App.Repositories;
 
+/// <summary>
+/// Repositorio que gestiona la persistencia de entidades de menú en Redis.
+/// Proporciona operaciones CRUD completas con soporte para acceso síncrono y asíncrono.
+/// Los menús se almacenan como estructuras hash en Redis con un conjunto de IDs para facilitar el acceso.
+/// </summary>
 public class MenuRedisRepository : IRepository<Menu>
 {
     private readonly IDatabase _db;
 
-    // Prefijo con "M" mayúscula para coincidir con la BD
-    private const string PREFIX = "Menu"; 
+    /// <summary>
+    /// Prefijo utilizado para construir las claves de los menús en Redis.
+    /// Utiliza "Menu" con mayúscula para mantener coherencia con la base de datos.
+    /// </summary>
+    private const string PREFIX = "Menu";
+
+    /// <summary>
+    /// Clave del conjunto (set) que almacena todos los identificadores de menús registrados.
+    /// Permite recuperar rápidamente la lista completa de menús existentes.
+    /// </summary>
     private const string SET_KEY = "menus:ids";
 
+    /// <summary>
+    /// Inicializa una nueva instancia del repositorio de menús en Redis.
+    /// </summary>
+    /// <param name="redisConnection">Conexión a la base de datos Redis.</param>
     public MenuRedisRepository(RedisConnection redisConnection)
     {
         _db = redisConnection.GetDatabase();
     }
 
-    // =====================================================
-    // CREATE
-    // =====================================================
+    /// <summary>
+    /// Crea un nuevo menú en la base de datos Redis.
+    /// Almacena la entidad como un hash con todas sus propiedades y registra su identificador en el conjunto de menús.
+    /// </summary>
+    /// <param name="entity">Entidad de menú a crear.</param>
     public void Create(Menu entity)
     {
         var key = $"{PREFIX}:{entity.Id}";

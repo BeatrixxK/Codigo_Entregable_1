@@ -9,6 +9,11 @@ using StackExchange.Redis;
 
 namespace DragonNutrex.App.Repositories;
 
+/// <summary>
+/// Repositorio de datos para la entidad Usuario utilizando Redis como base de datos.
+/// Implementa operaciones CRUD (Crear, Leer, Actualizar, Eliminar) con almacenamiento en memoria
+/// utilizando estructuras Hash y un índice secundario por correo electrónico para consultas optimizadas.
+/// </summary>
 public class UsuarioRedisRepository : IRepository<Usuario>
 {
     private readonly IDatabase _db;
@@ -20,6 +25,10 @@ public class UsuarioRedisRepository : IRepository<Usuario>
     private const string SET_KEY = "usuarios:ids";
     private const string EMAIL_INDEX_PREFIX = "Usuario:email";
 
+    /// <summary>
+    /// Inicializa una nueva instancia del repositorio de usuarios en Redis.
+    /// </summary>
+    /// <param name="redisConnection">Conexión a la base de datos Redis configurada.</param>
     public UsuarioRedisRepository(RedisConnection redisConnection)
     {
         _db = redisConnection.GetDatabase();

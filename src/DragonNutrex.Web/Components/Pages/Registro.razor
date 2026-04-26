@@ -6,6 +6,13 @@
 @inject UsuarioController _usuarioController
 @rendermode InteractiveServer
 
+@* /// <summary>
+/// Renderiza la interfaz de registro para nuevos usuarios de Dragon Nutrex.
+/// Captura los datos personales, físicos y nutricionales básicos, valida la información 
+/// ingresada y procesa la creación de la nueva cuenta en el sistema.
+/// </summary>
+*@
+
 <PageTitle>Dragon Nutrex - Registro</PageTitle>
 
 <div style="background-color: #a5d6a7; min-height: 100vh; display: flex; align-items: center; justify-content: center; font-family: 'Segoe UI', sans-serif; padding: 20px;">
@@ -84,31 +91,46 @@
 </div>
 
 @code {
+    /// <summary>
+    /// Almacena los datos del nuevo usuario que se está registrando en el sistema.
+    /// Inicializa un identificador único y establece el estado de la cuenta como activa por defecto.
+    /// </summary>
     private Usuario nuevoUsuario = new Usuario 
     { 
         Id = Guid.NewGuid(),
-        Activo = true // Las cuentas nuevas nacen activas
+        Activo = true
     };
     
+    /// <summary>
+    /// Contiene los mensajes de validación o error generados durante el proceso de registro 
+    /// para alertar al usuario sobre datos faltantes o incorrectos en la interfaz.
+    /// </summary>
     private string mensajeError = "";
 
+    /// <summary>
+    /// Valida que todos los campos obligatorios del formulario de registro estén completos y posean valores lógicos.
+    /// Crea el nuevo registro de usuario en la base de datos a través del controlador correspondiente 
+    /// y redirige a la pantalla de inicio de sesión si el proceso concluye de forma exitosa.
+    /// </summary>
     private void RegistrarUsuario()
     {
         mensajeError = "";
 
-        // 1. Validaciones básicas
+        // Valida la integridad de las credenciales de acceso ingresadas.
         if (string.IsNullOrWhiteSpace(nuevoUsuario.Nombre) || string.IsNullOrWhiteSpace(nuevoUsuario.Password))
         {
             mensajeError = "El usuario y la contraseña son obligatorios.";
             return;
         }
 
+        // Valida que las métricas físicas posean valores matemáticamente lógicos.
         if (nuevoUsuario.Peso <= 0 || nuevoUsuario.Altura <= 0)
         {
             mensajeError = "El peso y la altura deben ser mayores a cero.";
             return;
         }
 
+        // Valida que las selecciones de los menús desplegables hayan sido completadas.
         if (string.IsNullOrWhiteSpace(nuevoUsuario.Actividad) || 
             string.IsNullOrWhiteSpace(nuevoUsuario.Objetivo) || 
             string.IsNullOrWhiteSpace(nuevoUsuario.TipoDieta))
@@ -119,10 +141,10 @@
 
         try
         {
-            // 2. ¡La magia ocurre aquí! Se guarda en Redis y se destruye el Caché viejo
+            // Almacena el usuario en la base de datos gestionada por Redis y refresca el caché.
             _usuarioController.CrearUsuario(nuevoUsuario);
             
-            // 3. Nos regresamos al Login listos para entrar
+            // Redirige al flujo principal de inicio de sesión una vez completado el registro.
             Nav.NavigateTo("/");
         }
         catch (Exception ex)
@@ -131,6 +153,10 @@
         }
     }
 
+    /// <summary>
+    /// Cancela el proceso de registro actual y redirige al usuario de vuelta 
+    /// a la pantalla principal de inicio de sesión.
+    /// </summary>
     private void VolverAlLogin()
     {
         Nav.NavigateTo("/");

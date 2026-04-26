@@ -10,23 +10,29 @@ using DragonNutrex.App.Models;
 
 namespace DragonNutrex.App.Services;
 
-// =====================================================
-// CLASE NUTRICION SERVICE
-// =====================================================
-// Maneja la lógica de negocio relacionada con nutrición
-// Calcula IMC, objetivos nutricionales y recomendaciones
+/// <summary>
+/// Servicio de nutrición que gestiona la lógica de negocio relacionada con cálculos nutricionales.
+/// Proporciona funcionalidades para calcular el índice de masa corporal (IMC), determinar objetivos 
+/// nutricionales personalizados y generar recomendaciones basadas en el consumo calórico diario.
+/// </summary>
 public class NutricionService
 {
-    // Repositorio de usuarios
+    /// <summary>
+    /// Repositorio genérico que proporciona acceso a los datos de usuarios almacenados en la base de datos.
+    /// </summary>
     private readonly IRepository<Usuario> _usuarioRepository;
 
-    // Repositorio de menús
+    /// <summary>
+    /// Repositorio genérico que proporciona acceso a los datos de menús diarios y su información nutricional.
+    /// </summary>
     private readonly IRepository<Menu> _menuRepository;
 
-    // =====================================================
-    // CONSTRUCTOR
-    // =====================================================
-    // Recibe los repositorios necesarios para consultar datos
+    /// <summary>
+    /// Inicializa una nueva instancia del servicio de nutrición.
+    /// Recibe las inyecciones de dependencia necesarias para acceder a los repositorios de usuarios y menús.
+    /// </summary>
+    /// <param name="usuarioRepository">Repositorio que gestiona las operaciones CRUD de usuarios.</param>
+    /// <param name="menuRepository">Repositorio que gestiona las operaciones CRUD de menús.</param>
     public NutricionService(
         IRepository<Usuario> usuarioRepository,
         IRepository<Menu> menuRepository)

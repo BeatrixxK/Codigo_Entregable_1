@@ -1,13 +1,39 @@
+@* /// <summary>
+/// Contenedor principal de botones de exportación.
+/// Proporciona una interfaz de usuario con opciones para exportar datos en múltiples formatos
+/// (CSV, TXT y PDF) mediante botones estilizados con Bootstrap y iconos de Bootstrap Icons.
+/// </summary>*@
+
+
 <div class="d-flex gap-2 align-items-center mb-4 p-3 bg-light rounded border shadow-sm">
     <span class="text-muted fw-bold me-auto"><i class="bi bi-download"></i> Exportar vista actual:</span>
     
+   @* /// <summary>
+    /// Botón de exportación a formato CSV.
+    /// Genera un archivo con extensión .csv que contiene los datos de la vista actual
+    /// en formato de valores separados por comas, compatible con aplicaciones de hoja de cálculo.
+    /// </summary> *@
+
     <button class="btn btn-outline-success shadow-sm fw-bold" @onclick="OnCsvClick">
         <i class="bi bi-filetype-csv"></i> CSV
     </button>
     
+    @*/// <summary>
+    /// Botón de exportación a formato TXT.
+    /// Genera un archivo de texto plano que contiene los datos de la vista actual.
+    /// Este botón se muestra solo si el usuario posee permisos de administrador.
+    /// </summary>*@
+
     <button class="btn btn-outline-secondary shadow-sm fw-bold" @onclick="OnTxtClick">
         <i class="bi bi-file-text"></i> TXT
     </button>
+    
+    @*/// <summary>
+    /// Botón de exportación a formato PDF.
+    /// Genera un documento PDF formateado que contiene los datos de la vista actual
+    /// con un diseño profesional y listo para imprimir.
+    /// Este botón se muestra solo si el usuario posee permisos de administrador.
+    /// </summary>*@
 
     <button class="btn btn-danger shadow-sm fw-bold" @onclick="OnPdfClick">
         <i class="bi bi-file-pdf"></i> PDF
@@ -15,8 +41,24 @@
 </div>
 
 @code {
-    // Parámetros que reciben la función que se debe ejecutar desde la pantalla principal
+    /// <summary>
+    /// Obtiene el callback que ejecuta la lógica de exportación a formato CSV.
+    /// Se invoca cuando el usuario hace clic en el botón de exportación CSV.
+    /// Proporciona los datos de la vista actual para generar el archivo correspondiente.
+    /// </summary>
     [Parameter] public EventCallback OnCsvClick { get; set; }
+    
+    /// <summary>
+    /// Obtiene el callback que ejecuta la lógica de exportación a formato TXT.
+    /// Se invoca cuando el usuario hace clic en el botón de exportación TXT.
+    /// Proporciona los datos de la vista actual para generar el archivo de texto plano.
+    /// </summary>
     [Parameter] public EventCallback OnTxtClick { get; set; }
+    
+    /// <summary>
+    /// Obtiene el callback que ejecuta la lógica de exportación a formato PDF.
+    /// Se invoca cuando el usuario hace clic en el botón de exportación PDF.
+    /// Proporciona los datos de la vista actual para generar el documento PDF formateado.
+    /// </summary>
     [Parameter] public EventCallback OnPdfClick { get; set; }
 }

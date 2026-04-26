@@ -3,10 +3,17 @@
 @inject UserSession Session
 @inject NavigationManager Nav
 
+@* /// <summary>
+    /// Provee el diseño principal (Main Layout) de la aplicación Dragon Nutrex.
+    /// Define la estructura visual, los estilos de navegación activa y gestiona 
+    /// la visualización condicional de los módulos según el rol del usuario (Admin o Usuario).
+    /// </summary>
+*@
+
 <style>
-    /* 🔥 ESTA ES LA MAGIA QUE ARREGLA EL BOTÓN INVISIBLE */
+    /* Estilo para resaltar la navegación de la página activa */
     .btn-nav-dragon.active {
-        background-color: #1b5e20 !important; /* Verde oscuro intenso para la página actual */
+        background-color: #1b5e20 !important; 
         color: white !important;
         border-color: #1b5e20 !important;
     }
@@ -14,6 +21,7 @@
 
 <div class="page">
     <main class="w-100 px-4 py-3">
+        @* Encabezado dinámico que muestra el estado de la sesión actual *@
         <div class="p-3 mb-3 d-flex justify-content-between align-items-center shadow-sm" style="background-color: #e8f5e9; color: #1b5e20; border-radius: 8px; border: 1px solid #c8e6c9;">
             <div>
                 <h5 class="fw-bold mb-0">Seleccione un módulo para agregar, visualizar, editar o eliminar datos y realizar cálculos.</h5>
@@ -23,6 +31,7 @@
             <img src="images/logosecundario.png" alt="Dragon Nutrex Logo Secundario" style="max-height: 130px; width: auto; object-fit: contain; margin-left: 15px;" />
         </div>
 
+        @* Barra de navegación modular segmentada por permisos de acceso *@
         <div class="d-flex gap-2 mb-4">
             @if (Session.IsAdmin)
             {
@@ -48,6 +57,7 @@
             @Body
         </article>
 
+        @* Sección de finalización de sesión segura *@
         <div class="text-end mt-5 pt-3 border-top">
             <a href="/logout" class="btn btn-sm btn-outline-danger fw-bold px-4 shadow-sm">
                 🚪 Cerrar sesión
@@ -57,6 +67,13 @@
 </div>
 
 @code {
+    /// <summary>
+    /// Ejecuta el proceso de finalización de la sesión del usuario.
+    /// 
+    /// Luego, invoca el método de limpieza de credenciales en el objeto Session y 
+    /// utiliza el NavigationManager para redirigir a la raíz de la aplicación
+    /// forzando una recarga de componentes para invalidar estados residuales.
+    /// </summary>
     private void CerrarSesion()
     {
         Session.CerrarSesion();

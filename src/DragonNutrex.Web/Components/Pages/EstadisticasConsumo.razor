@@ -10,6 +10,14 @@
 @inject NavigationManager Nav
 @rendermode InteractiveServer
 
+@* /// <summary>
+/// Renderiza el panel de control (Dashboard) de estadísticas globales de la plataforma.
+/// Genera métricas generales como los productos más consumidos, la distribución de dietas 
+/// entre los usuarios y el nivel de actividad de registro, permitiendo exportar 
+/// estos resultados consolidados en distintos formatos.
+/// </summary>
+*@
+
 <PageTitle>Estadísticas de Consumo</PageTitle>
 
 <div class="container-fluid mt-4" style="max-width: 1000px;">
@@ -104,37 +112,68 @@
 </div>
 
 @code {
+    /// <summary>
+    /// Establece el límite inferior del rango de fechas para el cálculo de estadísticas globales.
+    /// Se inicializa por defecto 30 días antes del día actual.
+    /// </summary>
     private DateTime fechaInicio = DateTime.Today.AddDays(-30);
+    
+    /// <summary>
+    /// Establece el límite superior del rango de fechas para el cálculo de estadísticas globales.
+    /// Se inicializa por defecto en la fecha actual.
+    /// </summary>
     private DateTime fechaFin = DateTime.Today;
 
-    // Modelos internos para las listas de resultados
+    /// <summary>
+    /// Almacena el resultado del procesamiento de los cinco productos más agregados en los menús.
+    /// </summary>
     private List<TopProducto> topProductos = new();
+    
+    /// <summary>
+    /// Almacena la distribución porcentual de los diferentes tipos de dieta registrados por los usuarios.
+    /// </summary>
     private List<DietaStat> dietasPorcentaje = new();
+    
+    /// <summary>
+    /// Almacena la lista de usuarios ordenados de mayor a menor según la cantidad de menús que han registrado.
+    /// </summary>
     private List<UsuarioTop> usuariosTopMenus = new();
     
-    // Lista de menús y usuarios filtrados accesibles para las descargas
+    /// <summary>
+    /// Contiene la lista general de menús procesados que se enmarcan dentro del rango de fechas seleccionado.
+    /// </summary>
     private List<Menu> menusFiltrados = new();
+    
+    /// <summary>
+    /// Contiene el catálogo completo de usuarios registrados en el sistema para cruzar datos.
+    /// </summary>
     private List<Usuario> todosLosUsuarios = new();
 
+    /// <summary>
+    /// Verifica los permisos de sesión al inicializar el componente. Redirige a los usuarios 
+    /// no administradores a su panel personal y ejecuta el cálculo inicial de métricas.
+    /// </summary>
     protected override async Task OnInitializedAsync()
     {
         if (!Session.IsAdmin) Nav.NavigateTo("/mi-progreso");
         await CalcularEstadisticas();
     }
 
+    /// <summary>
+    /// Procesa la totalidad de menús y usuarios de la base de datos para generar los indicadores 
+    /// del tablero (dashboard). Filtra la información por fechas, agrupa los alimentos por frecuencia 
+    /// de consumo, calcula la proporción de dietas y cuenta la participación de los usuarios.
+    /// </summary>
     private async Task CalcularEstadisticas()
     {
         var todosLosMenus = _menuController.ObtenerMenus() ?? new List<Menu>();
         
-        // CORRECCIÓN AQUÍ: Quitamos el "var" para guardar los datos en la variable global
         todosLosUsuarios = await _usuarioController.ObtenerTodosAsync() ?? new List<Usuario>();
 
-        // Filtramos menús por el rango de fechas seleccionado y lo guardamos a nivel de clase
         menusFiltrados = todosLosMenus
             .Where(m => m.Fecha.Date >= fechaInicio.Date && m.Fecha.Date <= fechaFin.Date)
             .ToList();
 
-        // 1. Calcular Top 5 Productos
         topProductos = menusFiltrados
             .Where(m => m.Registros != null)
             .SelectMany(m => m.Registros!)
@@ -144,7 +183,6 @@
             .Take(5)
             .ToList();
 
-        // 2. Calcular Porcentajes de Dieta
         int totalUsuarios = todosLosUsuarios.Count;
         if (totalUsuarios > 0)
         {
@@ -158,7 +196,6 @@
                 .ToList();
         }
 
-        // 3. Calcular Usuarios con más Menús
         usuariosTopMenus = menusFiltrados
             .GroupBy(m => m.UsuarioId)
             .Select(g => new UsuarioTop {
@@ -172,37 +209,56 @@
     // =====================================================
     // MÉTODOS PARA LOS BOTONES DE EXPORTACIÓN
     // =====================================================
+    
+    /// <summary>
+    /// Invoca el servicio de exportación para generar y descargar un archivo CSV 
+    /// que contiene la base de datos en crudo de los menús filtrados.
+    /// </summary>
     private async Task DescargarCSV()
     {
-        // CORRECCIÓN AQUÍ: Enviamos la lista de usuarios al motor
         var bytes = _exportService.GenerarCsvMenus(menusFiltrados, todosLosUsuarios);
         await _exportService.DescargarArchivoEnNavegador($"Estadisticas_Data_{DateTime.Now:yyyyMMdd}.csv", bytes);
     }
 
+    /// <summary>
+    /// Invoca el servicio de exportación para generar y descargar un archivo de texto (TXT) 
+    /// estructurado con los detalles de los menús filtrados.
+    /// </summary>
     private async Task DescargarTXT()
     {
-        // CORRECCIÓN AQUÍ: Enviamos la lista de usuarios al motor
         var bytes = _exportService.GenerarTxtMenus(menusFiltrados, todosLosUsuarios);
         await _exportService.DescargarArchivoEnNavegador($"Estadisticas_Data_{DateTime.Now:yyyyMMdd}.txt", bytes);
     }
 
+    /// <summary>
+    /// Invoca el servicio de exportación para generar y descargar un reporte gerencial en formato PDF 
+    /// que resume los indicadores principales del tablero (dashboard).
+    /// </summary>
     private async Task DescargarPDF()
     {
         var dictDietas = dietasPorcentaje.ToDictionary(d => d.Nombre, d => d.Porcentaje);
         var listaTopUsuarios = usuariosTopMenus.Select(u => new KeyValuePair<string, int>(u.NombreUsuario, u.TotalMenus)).ToList();
         
-        // Transforma la lista de productos de la vista al formato que exige el servicio PDF
         var listaTopProductos = topProductos.Select(p => new KeyValuePair<string, decimal>(p.Nombre, p.Cantidad)).ToList();
         
         var rango = $"{fechaInicio:dd/MM/yyyy} - {fechaFin:dd/MM/yyyy}";
 
-        // Envía la lista completa (listaTopProductos) en el tercer parámetro
         var bytes = _exportService.GenerarPdfEstadisticas(dictDietas, listaTopUsuarios, listaTopProductos, rango);
         await _exportService.DescargarArchivoEnNavegador($"Estadisticas_Reporte_{DateTime.Now:yyyyMMdd}.pdf", bytes);
     }
 
-    // Clases auxiliares para la UI
+    /// <summary>
+    /// Modelo auxiliar que estructura la información de un producto y la cantidad total de porciones consumidas.
+    /// </summary>
     class TopProducto { public string Nombre { get; set; } = ""; public decimal Cantidad { get; set; } }
+    
+    /// <summary>
+    /// Modelo auxiliar que estructura la información de un tipo de dieta y su distribución porcentual.
+    /// </summary>
     class DietaStat { public string Nombre { get; set; } = ""; public double Porcentaje { get; set; } }
+    
+    /// <summary>
+    /// Modelo auxiliar que asocia el nombre de un usuario con la cantidad total de menús que ha registrado.
+    /// </summary>
     class UsuarioTop { public string NombreUsuario { get; set; } = ""; public int TotalMenus { get; set; } }
 }

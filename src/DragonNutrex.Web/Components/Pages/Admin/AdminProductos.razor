@@ -1,3 +1,4 @@
+
 @page "/admin/productos"
 @using DragonNutrex.Web
 @using DragonNutrex.App.Controllers
@@ -9,6 +10,8 @@
 @inject ExportacionService _exportService
 @inject NavigationManager Nav
 @rendermode InteractiveServer
+
+@*/// Página de administración para gestionar el catálogo de productos. Permite crear, editar y eliminar productos, así como exportar la lista en CSV, TXT o PDF. Solo accesible para usuarios con permisos de administrador.*@
 
 <PageTitle>Gestión de Productos</PageTitle>
 
@@ -153,6 +156,10 @@
 }
 
 @code {
+    /// <summary>
+    /// Clase que representa la página de administración de productos en la aplicación Blazor.
+    /// Permite gestionar el catálogo de productos mediante operaciones CRUD y exportación de datos.
+    /// </summary>
     private List<Producto> listaProductos = new();
     private List<Producto> productosFiltrados = new();
     
@@ -165,12 +172,20 @@
     private string mensajeExito = "";
     private string filtroBusqueda = "";
 
+    /// <summary>
+    /// Inicializa la página verificando que el usuario tenga permisos de administrador y cargando la lista de productos.
+    /// Si no es administrador, redirige a la página principal.
+    /// </summary>
     protected override void OnInitialized()
     {
         if (!Session.IsAdmin) Nav.NavigateTo("/");
         CargarLista();
     }
 
+    /// <summary>
+    /// Carga la lista completa de productos desde el controlador de productos y aplica el filtro de búsqueda actual.
+    /// Actualiza la lista filtrada para reflejar los cambios en la interfaz.
+    /// </summary>
     private void CargarLista() 
     {
         var data = _productoController.ObtenerProductos();
@@ -178,12 +193,21 @@
         AplicarFiltro();
     }
 
+    /// <summary>
+    /// Maneja el evento de entrada en el campo de búsqueda, actualizando el filtro y aplicándolo a la lista de productos.
+    /// Permite filtrar productos en tiempo real mientras el usuario escribe.
+    /// </summary>
+    /// <param name="e">Argumentos del evento de cambio que contienen el valor de entrada del usuario.</param>
     private void FiltrarTabla(ChangeEventArgs e)
     {
         filtroBusqueda = e.Value?.ToString() ?? "";
         AplicarFiltro();
     }
 
+    /// <summary>
+    /// Aplica el filtro de búsqueda a la lista de productos, mostrando solo aquellos cuyo nombre contenga el texto de búsqueda.
+    /// Si no hay filtro, muestra todos los productos.
+    /// </summary>
     private void AplicarFiltro()
     {
         if (string.IsNullOrWhiteSpace(filtroBusqueda))
@@ -198,6 +222,11 @@
         }
     }
 
+    /// <summary>
+    /// Selecciona un producto de la tabla para editarlo, copiando sus propiedades al formulario de edición.
+    /// Solo permite selección si el usuario es administrador.
+    /// </summary>
+    /// <param name="p">El producto seleccionado de la lista.</param>
     private void Seleccionar(Producto p)
     {
         if (!Session.IsAdmin) return;
@@ -209,6 +238,10 @@
         mensaje = ""; 
     }
 
+    /// <summary>
+    /// Guarda un nuevo producto o actualiza uno existente después de validar que el nombre no esté vacío y no exista duplicado.
+    /// Muestra un modal de éxito si la operación es correcta, o un mensaje de error en caso contrario.
+    /// </summary>
     private void Guardar()
     {
         if (string.IsNullOrWhiteSpace(nuevoProducto.Nombre)) 
@@ -250,6 +283,10 @@
         }
     }
 
+    /// <summary>
+    /// Elimina el producto seleccionado de la base de datos, actualiza la lista y limpia el formulario.
+    /// Muestra un mensaje de confirmación o error según el resultado de la operación.
+    /// </summary>
     private void Eliminar()
     {
         if (productoSeleccionado != null)
@@ -271,30 +308,50 @@
     // =====================================================
     // MÉTODOS DE EXPORTACIÓN
     // =====================================================
+    /// <summary>
+    /// Genera un archivo CSV con la lista completa de productos y lo descarga en el navegador del usuario.
+    /// Utiliza el servicio de exportación para crear el contenido del archivo.
+    /// </summary>
     private async Task DescargarCSV()
     {
         var bytes = _exportService.GenerarCsvProductos(listaProductos);
         await _exportService.DescargarArchivoEnNavegador($"Catalogo_Productos_{DateTime.Now:yyyyMMdd}.csv", bytes);
     }
 
+    /// <summary>
+    /// Genera un archivo TXT con la lista completa de productos y lo descarga en el navegador del usuario.
+    /// Utiliza el servicio de exportación para crear el contenido del archivo.
+    /// </summary>
     private async Task DescargarTXT()
     {
         var bytes = _exportService.GenerarTxtProductos(listaProductos);
         await _exportService.DescargarArchivoEnNavegador($"Catalogo_Productos_{DateTime.Now:yyyyMMdd}.txt", bytes);
     }
 
+    /// <summary>
+    /// Genera un archivo PDF con la lista completa de productos y lo descarga en el navegador del usuario.
+    /// Utiliza el servicio de exportación para crear el contenido del archivo.
+    /// </summary>
     private async Task DescargarPDF()
     {
         var bytes = _exportService.GenerarPdfProductos(listaProductos);
         await _exportService.DescargarArchivoEnNavegador($"Catalogo_Productos_{DateTime.Now:yyyyMMdd}.pdf", bytes);
     }
 
+    /// <summary>
+    /// Muestra un mensaje de error en la interfaz, agregando un icono de advertencia al texto proporcionado.
+    /// </summary>
+    /// <param name="msj">El mensaje de error a mostrar.</param>
     private void MostrarError(string msj)
     {
         mensaje = "⚠️ " + msj;
         esError = true;
     }
 
+    /// <summary>
+    /// Limpia el formulario de entrada, deselecciona cualquier producto y resetea los mensajes de estado.
+    /// Prepara la interfaz para crear un nuevo producto.
+    /// </summary>
     private void LimpiarFormulario() 
     { 
         nuevoProducto = new Producto(); 
@@ -303,6 +360,10 @@
         esError = false;
     }
 
+    /// <summary>
+    /// Cierra el modal de éxito, limpia el formulario y actualiza el estado de la interfaz.
+    /// Permite al usuario continuar con otras operaciones después de una acción exitosa.
+    /// </summary>
     private void CerrarModal()
     {
         mostrarModalExito = false;

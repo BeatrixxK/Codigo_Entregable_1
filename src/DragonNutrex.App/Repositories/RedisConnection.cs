@@ -3,12 +3,27 @@ using StackExchange.Redis;
 
 namespace DragonNutrex.App.Repositories;
 
+/// <summary>
+/// Gestiona la conexión con el servidor Redis utilizando el patrón Lazy para garantizar
+/// inicialización única y seguridad en concurrencia. Proporciona acceso centralizado a la
+/// base de datos Redis con configuración optimizada de timeouts y KeepAlive.
+/// </summary>
 public class RedisConnection
 {
-    // 🔥 EL FRANCOTIRADOR: Lazy garantiza que la conexión se arme UNA SOLA VEZ, 
-    // sin importar cuántos hilos la pidan al mismo tiempo. Cero bloqueos.
+    /// <summary>
+    /// Almacena la conexión multiplexor de Redis encapsulada en un Lazy. Garantiza que
+    /// la conexión se establezca una única vez, independientemente de cuántos hilos accedan
+    /// simultáneamente, eliminando bloqueos innecesarios y asegurando thread-safety.
+    /// </summary>
     private readonly Lazy<ConnectionMultiplexer> _lazyConnection;
 
+    /// <summary>
+    /// Inicializa una nueva instancia de RedisConnection con la cadena de conexión especificada.
+    /// Configura los parámetros de timeout y comportamiento de fallos para optimizar la
+    /// estabilidad y velocidad de las operaciones con Redis.
+    /// </summary>
+    /// <param name="connectionString">Cadena de conexión a Redis en formato estándar (ej: "localhost:6379").</param>
+    /// <exception cref="ArgumentException">Se lanza cuando la cadena de conexión está vacía o contiene solo espacios en blanco.</exception>
     public RedisConnection(string connectionString)
     {
         if (string.IsNullOrWhiteSpace(connectionString))

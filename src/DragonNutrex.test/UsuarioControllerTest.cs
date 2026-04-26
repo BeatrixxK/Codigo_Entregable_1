@@ -9,20 +9,39 @@ using DragonNutrex.App.Interfaces;
 
 namespace DragonNutrex.Tests;
 
+/// <summary>
+/// Agrupa y ejecuta las pruebas unitarias diseñadas para validar el comportamiento 
+/// del controlador de usuarios (UsuarioController). Utiliza el marco xUnit y 
+/// la biblioteca Moq para aislar la lógica mediante la simulación de repositorios.
+/// </summary>
 public class UsuarioControllerTest
 {
+    /// <summary>
+    /// Almacena la instancia del servicio de salida de xUnit, permitiendo 
+    /// la inyección de mensajes estructurados en la consola de resultados de las pruebas.
+    /// </summary>
     private readonly ITestOutputHelper _output; // 👈 NUEVO: Variable para guardar el impresor
 
-    // 👈 NUEVO: Constructor. xUnit nos inyecta el impresor automáticamente aquí.
+    /// <summary>
+    /// Inicializa una nueva instancia de la clase de pruebas y captura el servicio 
+    /// de impresión de consola proporcionado automáticamente por la arquitectura de xUnit.
+    /// </summary>
+    /// <param name="output">Interfaz de xUnit para la salida de texto durante la prueba.</param>
     public UsuarioControllerTest(ITestOutputHelper output)
     {
         _output = output;
     }
 
+    /// <summary>
+    /// Verifica de manera asincrónica que el método de obtención general del controlador 
+    /// retorne exitosamente una lista poblada de usuarios. 
+    /// Simula el repositorio de datos, ejecuta la petición y evalúa que el resultado 
+    /// no sea nulo y contenga la cantidad exacta de registros esperados.
+    /// </summary>
     [Fact]
     public async Task ObtenerTodosAsync_DeberiaRetornarListaDeUsuarios()
     {
-        // 1. ARRANGE
+        // 1. ARRANGE (Preparación)
         var usuariosSimulados = new List<Usuario>
         {
             new Usuario { Id = System.Guid.NewGuid(), Nombre = "Andrea", Correo = "andrea@test.com" },
@@ -35,10 +54,10 @@ public class UsuarioControllerTest
 
         var controller = new UsuarioController(mockRepo.Object);
 
-        // 2. ACT
+        // 2. ACT (Ejecución)
         var resultado = await controller.ObtenerTodosAsync();
 
-        // 3. ASSERT
+        // 3. ASSERT (Validación)
         Assert.NotNull(resultado);
         Assert.Equal(2, resultado.Count);
         

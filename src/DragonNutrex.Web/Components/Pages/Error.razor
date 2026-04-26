@@ -1,6 +1,13 @@
 ﻿@page "/Error"
 @using System.Diagnostics
 
+@* /// <summary>
+/// Renderiza la página de error global de la aplicación.
+/// Captura y muestra información de diagnóstico de excepciones no controladas 
+/// para facilitar el rastreo y la depuración del sistema.
+/// </summary>
+*@
+
 <PageTitle>Error</PageTitle>
 
 <h1 class="text-danger">Error.</h1>
@@ -25,12 +32,30 @@
 </p>
 
 @code{
+    /// <summary>
+    /// Obtiene el contexto HTTP de la solicitud actual mediante la inyección de dependencias 
+    /// en cascada. Permite acceder a los datos de la conexión que generó el error.
+    /// </summary>
     [CascadingParameter]
     private HttpContext? HttpContext { get; set; }
 
+    /// <summary>
+    /// Almacena el identificador único de la solicitud (Request ID) que provocó el fallo.
+    /// Se utiliza para cruzar información con los registros (logs) del servidor.
+    /// </summary>
     private string? RequestId { get; set; }
+
+    /// <summary>
+    /// Determina si la interfaz gráfica debe mostrar el bloque del identificador de solicitud.
+    /// Retorna verdadero solo si el RequestId contiene un valor válido.
+    /// </summary>
     private bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
 
+    /// <summary>
+    /// Inicializa el componente en su ciclo de vida. 
+    /// Captura el identificador de la actividad actual del sistema o, en su defecto, 
+    /// extrae el identificador de rastreo del contexto HTTP para asignarlo a la vista.
+    /// </summary>
     protected override void OnInitialized() =>
         RequestId = Activity.Current?.Id ?? HttpContext?.TraceIdentifier;
 }

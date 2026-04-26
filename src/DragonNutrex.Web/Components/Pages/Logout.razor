@@ -3,6 +3,13 @@
 @inject UserSession _userSession
 @inject NavigationManager Nav
 
+@* /// <summary>
+/// Renderiza una pantalla de visualización temporal mientras el sistema procesa el cierre de sesión.
+/// Se encarga de limpiar el estado de autenticación del usuario actual y redirigir 
+/// de forma segura a la pantalla principal de inicio de sesión.
+/// </summary>
+*@
+
 <PageTitle>Cerrando sesión...</PageTitle>
 
 <div class="text-center mt-5">
@@ -13,15 +20,22 @@
 </div>
 
 @code {
+    /// <summary>
+    /// Ejecuta el proceso de cierre de sesión al inicializar el componente.
+    /// Invoca el método de limpieza de la sesión inyectada, aplica una breve pausa asincrónica 
+    /// para asegurar la correcta actualización del estado de seguridad interno de Blazor, 
+    /// y finalmente redirige a la raíz de la aplicación forzando una recarga completa 
+    /// para eliminar cualquier caché visual o dato residual en memoria.
+    /// </summary>
     protected override async Task OnInitializedAsync()
     {
-        // 1. Usamos la INSTANCIA inyectada (_userSession), no la clase (UserSession)
+        // 1. Usa la INSTANCIA inyectada (_userSession), no la clase (UserSession)
         _userSession.CerrarSesion();
 
-        // 2. Damos un pequeño respiro para que Blazor actualice el estado de seguridad
+        // 2. Da un pequeño respiro para que Blazor actualice el estado de seguridad
         await Task.Delay(500);
 
-        // 3. Redirigimos al Login (forzando la recarga para limpiar cualquier caché visual)
+        // 3. Redirige al Login (forzando la recarga para limpiar cualquier caché visual)
         Nav.NavigateTo("/", forceLoad: true);
     }
 }
