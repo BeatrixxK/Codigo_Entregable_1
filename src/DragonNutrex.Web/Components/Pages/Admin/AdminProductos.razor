@@ -2,14 +2,28 @@
 @using DragonNutrex.Web
 @using DragonNutrex.App.Controllers
 @using DragonNutrex.App.Models
+@using DragonNutrex.App.Services
+
 @inject UserSession Session
 @inject ProductoController _productoController
+@inject ExportacionService _exportService
+@inject NavigationManager Nav
 @rendermode InteractiveServer
 
 <PageTitle>Gestión de Productos</PageTitle>
 
 <div class="container-fluid">
-    <h3 class="fw-bold mb-4" style="color: #1b5e20;">Gestión de Productos</h3>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="fw-bold mb-0" style="color: #1b5e20;">Gestión de Productos</h3>
+        
+        @if (Session.IsAdmin)
+        {
+            <BotonesExportacion 
+                OnCsvClick="DescargarCSV" 
+                OnTxtClick="DescargarTXT" 
+                OnPdfClick="DescargarPDF" />
+        }
+    </div>
 
     @if (!string.IsNullOrEmpty(mensaje) && !mostrarModalExito)
     {
@@ -139,41 +153,37 @@
 }
 
 @code {
-    // Listas base y filtrada
     private List<Producto> listaProductos = new();
     private List<Producto> productosFiltrados = new();
     
     private Producto nuevoProducto = new Producto();
     private Producto? productoSeleccionado;
     
-    // Variables de estado
     private string mensaje = "";
     private bool esError = false;
     private bool mostrarModalExito = false;
     private string mensajeExito = "";
-    
-    // Variable para el buscador
     private string filtroBusqueda = "";
 
-    protected override void OnInitialized() => CargarLista();
+    protected override void OnInitialized()
+    {
+        if (!Session.IsAdmin) Nav.NavigateTo("/");
+        CargarLista();
+    }
 
     private void CargarLista() 
     {
         var data = _productoController.ObtenerProductos();
         listaProductos = data != null ? data.ToList() : new List<Producto>();
-        
-        // Al cargar, aplicamos el filtro por si ya había texto
         AplicarFiltro();
     }
 
-    // Nuevo método para filtrar en tiempo real
     private void FiltrarTabla(ChangeEventArgs e)
     {
         filtroBusqueda = e.Value?.ToString() ?? "";
         AplicarFiltro();
     }
 
-    // Lógica interna del filtro
     private void AplicarFiltro()
     {
         if (string.IsNullOrWhiteSpace(filtroBusqueda))
@@ -191,7 +201,6 @@
     private void Seleccionar(Producto p)
     {
         if (!Session.IsAdmin) return;
-
         productoSeleccionado = p;
         nuevoProducto = new Producto { 
             Id = p.Id, Nombre = p.Nombre, Calorias = p.Calorias, 
@@ -210,14 +219,13 @@
 
         try
         {
-            // Validar que no exista otro producto con el mismo nombre (Ignorando mayúsculas)
             bool nombreYaExiste = listaProductos.Any(p => 
                 p.Nombre.Equals(nuevoProducto.Nombre, StringComparison.OrdinalIgnoreCase) && 
                 p.Id != nuevoProducto.Id);
 
             if (nombreYaExiste)
             {
-                MostrarError($"Ya existe un producto llamado '{nuevoProducto.Nombre}'. Usa otro nombre o actualiza el existente.");
+                MostrarError($"Ya existe un producto llamado '{nuevoProducto.Nombre}'.");
                 return;
             }
 
@@ -225,41 +233,33 @@
             {
                 nuevoProducto.Id = Guid.NewGuid();
                 _productoController.CrearProducto(nuevoProducto); 
-                
-                mensajeExito = $"El producto '{nuevoProducto.Nombre}' se guardó correctamente.";
-                mostrarModalExito = true;
-                esError = false;
-                mensaje = "";
+                mensajeExito = $"Producto '{nuevoProducto.Nombre}' guardado correctamente.";
             }
-            else if (Session.IsAdmin)
+            else
             {
                 _productoController.ActualizarProducto(nuevoProducto); 
-                
                 mensajeExito = "Producto actualizado correctamente.";
-                mostrarModalExito = true;
-                esError = false;
-                mensaje = "";
             }
 
-            CargarLista(); // Recarga la base de datos y vuelve a aplicar el filtro
+            mostrarModalExito = true;
+            CargarLista();
         }
         catch (Exception ex)
         {
-            MostrarError($"Error al guardar en la base de datos: {ex.Message}");
+            MostrarError($"Error al guardar: {ex.Message}");
         }
     }
 
     private void Eliminar()
     {
-        if (Session.IsAdmin && productoSeleccionado != null)
+        if (productoSeleccionado != null)
         {
             try
             {
                 _productoController.EliminarProducto(productoSeleccionado.Id); 
                 mensaje = "🗑️ Producto eliminado.";
-                esError = false;
                 LimpiarFormulario();
-                CargarLista(); // Recarga la base de datos y vuelve a aplicar el filtro
+                CargarLista();
             }
             catch (Exception ex)
             {
@@ -268,11 +268,31 @@
         }
     }
 
+    // =====================================================
+    // MÉTODOS DE EXPORTACIÓN
+    // =====================================================
+    private async Task DescargarCSV()
+    {
+        var bytes = _exportService.GenerarCsvProductos(listaProductos);
+        await _exportService.DescargarArchivoEnNavegador($"Catalogo_Productos_{DateTime.Now:yyyyMMdd}.csv", bytes);
+    }
+
+    private async Task DescargarTXT()
+    {
+        var bytes = _exportService.GenerarTxtProductos(listaProductos);
+        await _exportService.DescargarArchivoEnNavegador($"Catalogo_Productos_{DateTime.Now:yyyyMMdd}.txt", bytes);
+    }
+
+    private async Task DescargarPDF()
+    {
+        var bytes = _exportService.GenerarPdfProductos(listaProductos);
+        await _exportService.DescargarArchivoEnNavegador($"Catalogo_Productos_{DateTime.Now:yyyyMMdd}.pdf", bytes);
+    }
+
     private void MostrarError(string msj)
     {
         mensaje = "⚠️ " + msj;
         esError = true;
-        StateHasChanged();
     }
 
     private void LimpiarFormulario() 

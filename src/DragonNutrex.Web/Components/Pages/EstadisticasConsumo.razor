@@ -1,6 +1,9 @@
 @page "/admin/estadisticas-consumo"
 @using DragonNutrex.App.Models
 @using DragonNutrex.App.Controllers
+@using DragonNutrex.App.Services
+
+@inject ExportacionService _exportService
 @inject UsuarioController _usuarioController
 @inject MenuController _menuController
 @inject UserSession Session
@@ -10,7 +13,14 @@
 <PageTitle>Estadísticas de Consumo</PageTitle>
 
 <div class="container-fluid mt-4" style="max-width: 1000px;">
-    <h3 class="fw-bold mb-4" style="color: #1b5e20;">📊 Estadísticas de Consumo Globales</h3>
+    <h3 class="fw-bold mb-4 text-center" style="color: #1b5e20;">📊 Estadísticas de Consumo Globales</h3>
+
+    <div class="d-flex justify-content-center mb-4">
+        <BotonesExportacion 
+            OnCsvClick="DescargarCSV" 
+            OnTxtClick="DescargarTXT" 
+            OnPdfClick="DescargarPDF" />
+    </div>
 
     <div class="card mb-4 shadow-sm border-0" style="background-color: #f8f9fa;">
         <div class="card-body row align-items-end g-3">
@@ -65,7 +75,7 @@
         </div>
 
         <div class="col-md-12">
-            <div class="card shadow-sm border-0">
+            <div class="card shadow-sm border-0 mb-5">
                 <div class="card-header text-white bg-dark">
                     <h6 class="mb-0 fw-bold">🔥 Usuarios más Activos (Menús Registrados)</h6>
                 </div>
@@ -101,6 +111,10 @@
     private List<TopProducto> topProductos = new();
     private List<DietaStat> dietasPorcentaje = new();
     private List<UsuarioTop> usuariosTopMenus = new();
+    
+    // Lista de menús y usuarios filtrados accesibles para las descargas
+    private List<Menu> menusFiltrados = new();
+    private List<Usuario> todosLosUsuarios = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -111,15 +125,17 @@
     private async Task CalcularEstadisticas()
     {
         var todosLosMenus = _menuController.ObtenerMenus() ?? new List<Menu>();
-        var todosLosUsuarios = await _usuarioController.ObtenerTodosAsync() ?? new List<Usuario>();
+        
+        // CORRECCIÓN AQUÍ: Quitamos el "var" para guardar los datos en la variable global
+        todosLosUsuarios = await _usuarioController.ObtenerTodosAsync() ?? new List<Usuario>();
 
-        // Filtramos menús por el rango de fechas seleccionado
-        var menusEnRango = todosLosMenus
+        // Filtramos menús por el rango de fechas seleccionado y lo guardamos a nivel de clase
+        menusFiltrados = todosLosMenus
             .Where(m => m.Fecha.Date >= fechaInicio.Date && m.Fecha.Date <= fechaFin.Date)
             .ToList();
 
         // 1. Calcular Top 5 Productos
-        topProductos = menusEnRango
+        topProductos = menusFiltrados
             .Where(m => m.Registros != null)
             .SelectMany(m => m.Registros!)
             .GroupBy(r => r.NombreProducto)
@@ -128,7 +144,7 @@
             .Take(5)
             .ToList();
 
-        // 2. Calcular Porcentajes de Dieta (Esto se basa en todos los usuarios, independiente de la fecha)
+        // 2. Calcular Porcentajes de Dieta
         int totalUsuarios = todosLosUsuarios.Count;
         if (totalUsuarios > 0)
         {
@@ -142,8 +158,8 @@
                 .ToList();
         }
 
-        // 3. Calcular Usuarios con más Menús (Afectado por rango de fechas)
-        usuariosTopMenus = menusEnRango
+        // 3. Calcular Usuarios con más Menús
+        usuariosTopMenus = menusFiltrados
             .GroupBy(m => m.UsuarioId)
             .Select(g => new UsuarioTop {
                 NombreUsuario = todosLosUsuarios.FirstOrDefault(u => u.Id == g.Key)?.Nombre ?? "Usuario Desconocido",
@@ -151,6 +167,38 @@
             })
             .OrderByDescending(u => u.TotalMenus)
             .ToList();
+    }
+
+    // =====================================================
+    // MÉTODOS PARA LOS BOTONES DE EXPORTACIÓN
+    // =====================================================
+    private async Task DescargarCSV()
+    {
+        // CORRECCIÓN AQUÍ: Enviamos la lista de usuarios al motor
+        var bytes = _exportService.GenerarCsvMenus(menusFiltrados, todosLosUsuarios);
+        await _exportService.DescargarArchivoEnNavegador($"Estadisticas_Data_{DateTime.Now:yyyyMMdd}.csv", bytes);
+    }
+
+    private async Task DescargarTXT()
+    {
+        // CORRECCIÓN AQUÍ: Enviamos la lista de usuarios al motor
+        var bytes = _exportService.GenerarTxtMenus(menusFiltrados, todosLosUsuarios);
+        await _exportService.DescargarArchivoEnNavegador($"Estadisticas_Data_{DateTime.Now:yyyyMMdd}.txt", bytes);
+    }
+
+    private async Task DescargarPDF()
+    {
+        var dictDietas = dietasPorcentaje.ToDictionary(d => d.Nombre, d => d.Porcentaje);
+        var listaTopUsuarios = usuariosTopMenus.Select(u => new KeyValuePair<string, int>(u.NombreUsuario, u.TotalMenus)).ToList();
+        
+        // Transforma la lista de productos de la vista al formato que exige el servicio PDF
+        var listaTopProductos = topProductos.Select(p => new KeyValuePair<string, decimal>(p.Nombre, p.Cantidad)).ToList();
+        
+        var rango = $"{fechaInicio:dd/MM/yyyy} - {fechaFin:dd/MM/yyyy}";
+
+        // Envía la lista completa (listaTopProductos) en el tercer parámetro
+        var bytes = _exportService.GenerarPdfEstadisticas(dictDietas, listaTopUsuarios, listaTopProductos, rango);
+        await _exportService.DescargarArchivoEnNavegador($"Estadisticas_Reporte_{DateTime.Now:yyyyMMdd}.pdf", bytes);
     }
 
     // Clases auxiliares para la UI

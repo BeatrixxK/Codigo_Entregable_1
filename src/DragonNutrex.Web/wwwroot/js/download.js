@@ -1,4 +1,3 @@
-// Este script ayuda a Blazor a entregar archivos al navegador
 window.downloadFileFromStream = async (fileName, contentStreamReference) => {
     const arrayBuffer = await contentStreamReference.arrayBuffer();
     const blob = new Blob([arrayBuffer]);

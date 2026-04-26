@@ -1,0 +1,22 @@
+<div class="d-flex gap-2 align-items-center mb-4 p-3 bg-light rounded border shadow-sm">
+    <span class="text-muted fw-bold me-auto"><i class="bi bi-download"></i> Exportar vista actual:</span>
+    
+    <button class="btn btn-outline-success shadow-sm fw-bold" @onclick="OnCsvClick">
+        <i class="bi bi-filetype-csv"></i> CSV
+    </button>
+    
+    <button class="btn btn-outline-secondary shadow-sm fw-bold" @onclick="OnTxtClick">
+        <i class="bi bi-file-text"></i> TXT
+    </button>
+
+    <button class="btn btn-danger shadow-sm fw-bold" @onclick="OnPdfClick">
+        <i class="bi bi-file-pdf"></i> PDF
+    </button>
+</div>
+
+@code {
+    // Parámetros que reciben la función que se debe ejecutar desde la pantalla principal
+    [Parameter] public EventCallback OnCsvClick { get; set; }
+    [Parameter] public EventCallback OnTxtClick { get; set; }
+    [Parameter] public EventCallback OnPdfClick { get; set; }
+}

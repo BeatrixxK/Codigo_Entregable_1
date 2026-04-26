@@ -1,7 +1,10 @@
 @page "/admin/usuarios"
 @using DragonNutrex.App.Models
 @using DragonNutrex.App.Controllers
+@using DragonNutrex.App.Services
+
 @inject UsuarioController _usuarioController
+@inject ExportacionService _exportService
 @inject UserSession Session
 @inject NavigationManager Nav
 @rendermode InteractiveServer
@@ -9,7 +12,17 @@
 <PageTitle>Gestión de Usuarios</PageTitle>
 
 <div class="container-fluid mt-4" style="max-width: 1000px;">
-    <h3 class="fw-bold mb-4" style="color: #1b5e20;">👥 Mantenimiento de Usuarios</h3>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="fw-bold mb-0" style="color: #1b5e20;">👥 Mantenimiento de Usuarios</h3>
+        
+        @if (Session.IsAdmin)
+        {
+            <BotonesExportacion 
+                OnCsvClick="DescargarCSV" 
+                OnTxtClick="DescargarTXT" 
+                OnPdfClick="DescargarPDF" />
+        }
+    </div>
 
     @if (!string.IsNullOrEmpty(mensajeAlerta))
     {
@@ -97,27 +110,22 @@
     private string mensajeAlerta = "";
     private string filtroBusqueda = "";
 
-    // 1. Cambiamos a la versión Asíncrona (Async) para evitar el Deadlock
     protected override async Task OnInitializedAsync()
     {
-        // Chequeo de seguridad: Si no es admin, lo devolvemos al Login
         if (!Session.IsAdmin) 
         {
             Nav.NavigateTo("/"); 
             return;
         }
         
-        // 2. Llamamos a la carga sin bloquear la pantalla
         await CargarUsuariosAsync();
     }
 
-    // 3. Método Asíncrono para traer los datos desde Redis
     private async Task CargarUsuariosAsync()
     {
         var todosLosUsuarios = await _usuarioController.ObtenerTodosAsync();
         
         listaUsuarios = todosLosUsuarios?
-            // Protegemos tanto el nombre viejo como el correo nuevo del admin para que no aparezca en la lista
             .Where(u => u.Nombre?.ToLower() != "admin" && u.Correo?.ToLower() != "admin@admin.com")
             .ToList() ?? new List<Usuario>();
     }
@@ -125,20 +133,36 @@
     private void AlternarEstado(Usuario u)
     {
         u.Activo = !u.Activo;
-        
-        // Guarda en Redis y avisa al caché que se limpie
         _usuarioController.ActualizarUsuario(u); 
-        
         mensajeAlerta = $"El usuario {u.Nombre} ahora está {(u.Activo ? "Activo" : "Inactivo")}.";
     }
 
     private void ResetearPassword(Usuario u)
     {
         u.Password = "Dragon123*"; 
-        
-        // Guarda en Redis y avisa al caché que se limpie
         _usuarioController.ActualizarUsuario(u); 
-        
         mensajeAlerta = $"Contraseña de {u.Nombre} reseteada a: Dragon123*";
+    }
+
+    // =====================================================
+    // MÉTODOS DE EXPORTACIÓN (Conectados al Service)
+    // =====================================================
+    private async Task DescargarCSV()
+    {
+        // Genera el archivo usando punto y coma (;) para evitar problemas con decimales
+        var bytes = _exportService.GenerarCsvUsuarios(listaUsuarios);
+        await _exportService.DescargarArchivoEnNavegador($"Directorio_Usuarios_{DateTime.Now:yyyyMMdd}.csv", bytes);
+    }
+
+    private async Task DescargarTXT()
+    {
+        var bytes = _exportService.GenerarTxtUsuarios(listaUsuarios);
+        await _exportService.DescargarArchivoEnNavegador($"Directorio_Usuarios_{DateTime.Now:yyyyMMdd}.txt", bytes);
+    }
+
+    private async Task DescargarPDF()
+    {
+        var bytes = _exportService.GenerarPdfUsuarios(listaUsuarios);
+        await _exportService.DescargarArchivoEnNavegador($"Directorio_Usuarios_{DateTime.Now:yyyyMMdd}.pdf", bytes);
     }
 }

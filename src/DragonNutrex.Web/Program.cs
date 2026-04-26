@@ -52,6 +52,8 @@ builder.Services.AddScoped<UsuarioService>();
 builder.Services.AddScoped<ProductoService>();
 builder.Services.AddScoped<MenuService>();
 builder.Services.AddScoped<EstadisticasNutricionService>();
+builder.Services.AddScoped<ReportService>();
+builder.Services.AddScoped<ExportacionService>();
 
 // =====================================================
 // 4. REGISTRAR CONTROLADORES Y SESIÓN

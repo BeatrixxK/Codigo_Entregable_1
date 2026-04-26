@@ -1,14 +1,24 @@
 @page "/admin/reportes"
 @using DragonNutrex.App.Controllers
 @using DragonNutrex.App.Services
+@using DragonNutrex.App.Models
+
+@inject UsuarioController _usuarioController
 @inject EstadisticasNutricionController _statsController
 @inject ExportacionService _exportService
-@inject IJSRuntime JS
+@rendermode InteractiveServer
 
 <PageTitle>Reportes Globales - Dragon Nutrex</PageTitle>
 
 <div class="container mt-4">
-    <h2 class="text-danger mb-4"><i class="bi bi-graph-up"></i> Estadísticas del Sistema</h2>
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+        <h2 class="text-danger mb-0"><i class="bi bi-graph-up"></i> Estadísticas del Sistema</h2>
+        
+        <BotonesExportacion 
+            OnCsvClick="DescargarCSV" 
+            OnTxtClick="DescargarTXT" 
+            OnPdfClick="DescargarPDF" />
+    </div>
 
     <div class="row">
         <div class="col-md-6 mb-4">
@@ -35,52 +45,43 @@
             </div>
         </div>
     </div>
-
-    <div class="card shadow-sm mt-2">
-        <div class="card-header bg-success text-white">Exportar Datos</div>
-        <div class="card-body">
-            <p>Descarga los reportes consolidados en diferentes formatos:</p>
-            <div class="d-flex gap-3">
-                <button class="btn btn-outline-primary" @onclick="DescargarCSV">
-                    <i class="bi bi-filetype-csv"></i> Descargar CSV
-                </button>
-                
-                <button class="btn btn-outline-secondary" @onclick="DescargarTXT">
-                    <i class="bi bi-file-text"></i> Descargar TXT
-                </button>
-
-                <button class="btn btn-danger" @onclick="DescargarPDF">
-                    <i class="bi bi-file-pdf"></i> Descargar PDF (+10 pts)
-                </button>
-            </div>
-        </div>
-    </div>
 </div>
 
 @code {
+    // Almacenamos la lista de usuarios para que los reportes CSV y TXT la puedan usar
+    private List<Usuario> listaUsuarios = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Cargamos los datos de la base de datos al entrar a la pantalla
+        listaUsuarios = await _usuarioController.ObtenerTodosAsync() ?? new();
+    }
+
+    // =====================================================
+    // FUNCIONES QUE SE EJECUTAN AL HACER CLIC EN LOS BOTONES
+    // =====================================================
     private async Task DescargarCSV() {
-        // En un caso real, obtendrías la lista de usuarios del controlador
-        var bytes = _exportService.GenerarCsvUsuarios(new()); // Usamos lista vacía para prueba
-        await GuardarArchivo("Reporte_Usuarios.csv", bytes);
+        var bytes = _exportService.GenerarCsvUsuarios(listaUsuarios); 
+        await _exportService.DescargarArchivoEnNavegador($"Reporte_Usuarios_{DateTime.Now:yyyyMMdd}.csv", bytes);
     }
 
     private async Task DescargarTXT() {
-        var bytes = _exportService.GenerarTxtUsuarios(new());
-        await GuardarArchivo("Reporte_Usuarios.txt", bytes);
+        var bytes = _exportService.GenerarTxtUsuarios(listaUsuarios);
+        await _exportService.DescargarArchivoEnNavegador($"Reporte_Usuarios_{DateTime.Now:yyyyMMdd}.txt", bytes);
     }
 
     private async Task DescargarPDF() {
+        // Recopilamos los datos de las estadísticas para mandarlos al motor de PDF
         var dietas = _statsController.ObtenerPorcentajesDietas();
         var top = _statsController.ObtenerTopUsuariosConMasMenus();
-        var producto = _statsController.ObtenerProductoMasConsumido(DateTime.Today.AddDays(-30), DateTime.Today);
+        var productoString = _statsController.ObtenerProductoMasConsumido(DateTime.Today.AddDays(-30), DateTime.Today);
         
-        var bytes = _exportService.GenerarPdfEstadisticas(dietas, top, producto, "Últimos 30 días");
-        await GuardarArchivo("Reporte_DragonNutrex.pdf", bytes);
-    }
-
-    private async Task GuardarArchivo(string nombre, byte[] bytes) {
-        var stream = new MemoryStream(bytes);
-        using var streamRef = new DotNetStreamReference(stream);
-        await JS.InvokeVoidAsync("downloadFileFromStream", nombre, streamRef);
+        // Creamos una lista segura para que el compilador no confunda los tipos de datos
+        var listaUnProducto = new List<KeyValuePair<string, decimal>> {
+            new KeyValuePair<string, decimal>(productoString, 0)
+        };
+        
+        var bytes = _exportService.GenerarPdfEstadisticas(dietas, top, listaUnProducto, "Últimos 30 días");
+        await _exportService.DescargarArchivoEnNavegador($"Reporte_Global_{DateTime.Now:yyyyMMdd}.pdf", bytes);
     }
 }

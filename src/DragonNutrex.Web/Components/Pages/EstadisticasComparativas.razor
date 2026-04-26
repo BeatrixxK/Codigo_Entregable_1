@@ -1,9 +1,13 @@
 @page "/admin/estadisticas"
 @using DragonNutrex.App.Controllers
 @using DragonNutrex.App.Models
+@using DragonNutrex.App.Services
+
 @inject EstadisticasNutricionController _statsController
 @inject UsuarioController _usuarioController
 @inject MenuController _menuController
+@inject ExportacionService _exportService
+@inject IJSRuntime JS
 @rendermode InteractiveServer
 
 <PageTitle>Estadísticas y Seguimiento</PageTitle>
@@ -53,10 +57,17 @@
     }
     else if (usuarioActual != null && menusFiltrados != null)
     {
-        <h4 class="fw-bold mb-3" style="color: #1b5e20;">📅 Seguimiento de Dieta</h4>
+        <div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
+            <h4 class="fw-bold mb-0" style="color: #1b5e20;">📅 Seguimiento de Dieta</h4>
+            
+            <BotonesExportacion 
+                OnCsvClick="DescargarCSV" 
+                OnTxtClick="DescargarTXT" 
+                OnPdfClick="DescargarPDF" />
+        </div>
         
         <div class="alert shadow-sm border-0 py-2 fw-bold d-flex align-items-center mb-4" style="background-color: #e3f2fd; color: #0d47a1; border-radius: 6px;">
-            <span class="me-2 text-success fs-5">✅</span> Datos cargados: @menusFiltrados.Count días encontrados.
+            <span class="me-2 text-success fs-5">✅</span> Datos cargados: @menusFiltrados.Count días encontrados para @usuarioActual.Nombre.
         </div>
 
         <div class="table-responsive shadow-sm border rounded-2 mb-5">
@@ -180,11 +191,9 @@
     
     private List<Menu> menusFiltrados = new(); 
 
-    // Variables de estado
     private string mensajeAlerta = "";
     private bool estaCalculando = false;
     
-    // Variables Modal
     private bool mostrarDetalles = false;
     private Menu? menuSeleccionadoParaVer = null;
 
@@ -202,7 +211,7 @@
             usuarioActual = listaUsuarios.FirstOrDefault(u => u.Id == id);
             
             if (usuarioActual != null) decimal.TryParse(usuarioActual.Objetivo, out metaCalorias);
-            if (metaCalorias <= 0) metaCalorias = 2000; // Valor por defecto si no hay meta
+            if (metaCalorias <= 0) metaCalorias = 2000; 
         }
         else 
         {
@@ -254,7 +263,6 @@
         }
     }
 
-    // Helper para calcular cualquier total de la tabla dinámicamente
     private decimal CalcularTotal(Menu m, string tipo)
     {
         if (m.Registros == null || !m.Registros.Any()) return 0;
@@ -279,5 +287,39 @@
     {
         mostrarDetalles = false;
         menuSeleccionadoParaVer = null;
+    }
+
+    // =====================================================
+    // LÓGICA DE LOS BOTONES DE EXPORTACIÓN
+    // =====================================================
+    private async Task DescargarCSV()
+    {
+        var bytes = _exportService.GenerarCsvMenus(menusFiltrados, listaUsuarios);
+        string nombre = $"Historial_{usuarioActual?.Nombre}_{DateTime.Now:yyyyMMdd}.csv";
+        await _exportService.DescargarArchivoEnNavegador(nombre.Replace(" ", "_"), bytes);
+    }
+
+    private async Task DescargarTXT()
+    {
+        var bytes = _exportService.GenerarTxtMenus(menusFiltrados, listaUsuarios);
+        string nombre = $"Historial_{usuarioActual?.Nombre}_{DateTime.Now:yyyyMMdd}.txt";
+        await _exportService.DescargarArchivoEnNavegador(nombre.Replace(" ", "_"), bytes);
+    }
+
+    private async Task DescargarPDF()
+    {
+        try 
+        {
+            // 👉 AQUÍ ESTÁ LA CORRECCIÓN: Le pasamos menusFiltrados Y el nombreUsuario
+            string nombreUsuario = usuarioActual?.Nombre ?? "Usuario General";
+            var bytes = _exportService.GenerarPdfMenus(menusFiltrados, nombreUsuario);
+            
+            string nombreArchivo = $"Historial_{nombreUsuario}_{DateTime.Now:yyyyMMdd}.pdf";
+            await _exportService.DescargarArchivoEnNavegador(nombreArchivo.Replace(" ", "_"), bytes);
+        }
+        catch (Exception ex)
+        {
+            await JS.InvokeVoidAsync("alert", $"Error al generar el PDF: {ex.Message}");
+        }
     }
 }
