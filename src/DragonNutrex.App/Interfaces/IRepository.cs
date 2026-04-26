@@ -6,6 +6,6 @@ public interface IRepository<T>
     void Update(T entity);
     void Delete(Guid id);
     List<T> GetAll();
-    Task<List<T>> GetAllAsync(); // 👈 AGREGAMOS ESTA LÍNEA
+    Task<List<T>> GetAllAsync(); 
     T? GetById(Guid id);
 }
