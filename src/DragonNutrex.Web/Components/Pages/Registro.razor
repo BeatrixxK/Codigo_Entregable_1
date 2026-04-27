@@ -6,13 +6,6 @@
 @inject UsuarioController _usuarioController
 @rendermode InteractiveServer
 
-@* /// <summary>
-/// Renderiza la interfaz de registro para nuevos usuarios de Dragon Nutrex.
-/// Captura los datos personales, físicos y nutricionales básicos, valida la información 
-/// ingresada y procesa la creación de la nueva cuenta en el sistema.
-/// </summary>
-*@
-
 <PageTitle>Dragon Nutrex - Registro</PageTitle>
 
 <div style="background-color: #a5d6a7; min-height: 100vh; display: flex; align-items: center; justify-content: center; font-family: 'Segoe UI', sans-serif; padding: 20px;">
@@ -22,12 +15,18 @@
 
         @if (!string.IsNullOrEmpty(mensajeError))
         {
-            <div class="alert alert-danger p-2 mb-3">@mensajeError</div>
+            <div class="alert alert-danger p-2 mb-3 shadow-sm border-0 fw-bold">@mensajeError</div>
         }
 
         <div class="mb-3 text-start">
-            <label class="fw-bold" style="color: #1b5e20;">Usuario</label>
-            <input type="text" class="form-control" placeholder="Ej: Usuario 2" @bind="nuevoUsuario.Nombre" />
+            <label class="fw-bold" style="color: #1b5e20;">Nombre de Usuario</label>
+            <input type="text" class="form-control" placeholder="Ej: Flora" @bind="nuevoUsuario.Nombre" />
+        </div>
+
+        @* 🔥 NUEVO CAMPO: Agregamos el Correo que es vital para tu sistema *@
+        <div class="mb-3 text-start">
+            <label class="fw-bold" style="color: #1b5e20;">Correo Electrónico</label>
+            <input type="email" class="form-control" placeholder="ejemplo@correo.com" @bind="nuevoUsuario.Correo" />
         </div>
 
         <div class="mb-3 text-start">
@@ -92,73 +91,65 @@
 
 @code {
     /// <summary>
-    /// Almacena los datos del nuevo usuario que se está registrando en el sistema.
-    /// Inicializa un identificador único y establece el estado de la cuenta como activa por defecto.
+    /// Instancia del nuevo usuario. Se agregan las propiedades en blanco para el placeholder.
     /// </summary>
     private Usuario nuevoUsuario = new Usuario 
     { 
         Id = Guid.NewGuid(),
+        Nombre = "",
+        Correo = "", // <-- Inicializado para el binding
+        Password = "",
         Activo = true
     };
     
-    /// <summary>
-    /// Contiene los mensajes de validación o error generados durante el proceso de registro 
-    /// para alertar al usuario sobre datos faltantes o incorrectos en la interfaz.
-    /// </summary>
     private string mensajeError = "";
 
-    /// <summary>
-    /// Valida que todos los campos obligatorios del formulario de registro estén completos y posean valores lógicos.
-    /// Crea el nuevo registro de usuario en la base de datos a través del controlador correspondiente 
-    /// y redirige a la pantalla de inicio de sesión si el proceso concluye de forma exitosa.
-    /// </summary>
-    private void RegistrarUsuario()
+    private async Task RegistrarUsuario()
     {
         mensajeError = "";
 
-        // Valida la integridad de las credenciales de acceso ingresadas.
-        if (string.IsNullOrWhiteSpace(nuevoUsuario.Nombre) || string.IsNullOrWhiteSpace(nuevoUsuario.Password))
+        // Validamos también el correo
+        if (string.IsNullOrWhiteSpace(nuevoUsuario.Nombre) || 
+            string.IsNullOrWhiteSpace(nuevoUsuario.Correo) || 
+            string.IsNullOrWhiteSpace(nuevoUsuario.Password))
         {
-            mensajeError = "El usuario y la contraseña son obligatorios.";
-            return;
-        }
-
-        // Valida que las métricas físicas posean valores matemáticamente lógicos.
-        if (nuevoUsuario.Peso <= 0 || nuevoUsuario.Altura <= 0)
-        {
-            mensajeError = "El peso y la altura deben ser mayores a cero.";
-            return;
-        }
-
-        // Valida que las selecciones de los menús desplegables hayan sido completadas.
-        if (string.IsNullOrWhiteSpace(nuevoUsuario.Actividad) || 
-            string.IsNullOrWhiteSpace(nuevoUsuario.Objetivo) || 
-            string.IsNullOrWhiteSpace(nuevoUsuario.TipoDieta))
-        {
-            mensajeError = "Por favor completa todos los campos desplegables.";
+            mensajeError = "Nombre, correo y contraseña son obligatorios.";
             return;
         }
 
         try
         {
-            // Almacena el usuario en la base de datos gestionada por Redis y refresca el caché.
-            _usuarioController.CrearUsuario(nuevoUsuario);
+            var usuariosExistentes = await _usuarioController.ObtenerTodosAsync() ?? new List<Usuario>();
             
-            // Redirige al flujo principal de inicio de sesión una vez completado el registro.
+            // Validamos que el CORREO no esté repetido
+            if (usuariosExistentes.Any(u => u.Correo != null && u.Correo.Trim().ToLower() == nuevoUsuario.Correo.Trim().ToLower()))
+            {
+                mensajeError = $"El correo '{nuevoUsuario.Correo}' ya está registrado.";
+                return;
+            }
+
+            if (nuevoUsuario.Peso <= 0 || nuevoUsuario.Altura <= 0)
+            {
+                mensajeError = "El peso y la altura deben ser mayores a cero.";
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(nuevoUsuario.Actividad) || 
+                string.IsNullOrWhiteSpace(nuevoUsuario.Objetivo) || 
+                string.IsNullOrWhiteSpace(nuevoUsuario.TipoDieta))
+            {
+                mensajeError = "Por favor completa todos los campos desplegables.";
+                return;
+            }
+
+            _usuarioController.CrearUsuario(nuevoUsuario);
             Nav.NavigateTo("/");
         }
         catch (Exception ex)
         {
-            mensajeError = $"Error al registrar: {ex.Message}";
+            mensajeError = $"Ocurrió un inconveniente durante el registro: {ex.Message}";
         }
     }
 
-    /// <summary>
-    /// Cancela el proceso de registro actual y redirige al usuario de vuelta 
-    /// a la pantalla principal de inicio de sesión.
-    /// </summary>
-    private void VolverAlLogin()
-    {
-        Nav.NavigateTo("/");
-    }
+    private void VolverAlLogin() => Nav.NavigateTo("/");
 }

@@ -9,6 +9,13 @@
 @inject NavigationManager Nav
 @rendermode InteractiveServer
 
+@* /// <summary>
+/// Provee la interfaz de administración del directorio de usuarios para el perfil maestro.
+/// Permite visualizar, buscar, activar/desactivar, resetear credenciales y eliminar cuentas, 
+/// así como exportar el directorio completo en diversos formatos.
+/// </summary>
+*@
+
 <PageTitle>Gestión de Usuarios</PageTitle>
 
 <div class="container-fluid mt-4" style="max-width: 1000px;">
@@ -26,7 +33,7 @@
 
     @if (!string.IsNullOrEmpty(mensajeAlerta))
     {
-        <div class="alert alert-success py-2 fw-bold shadow-sm border-0 mb-3">
+        <div class="alert alert-success py-2 fw-bold shadow-sm border-0 mb-3" style="background-color: #e8f5e9; color: #1b5e20;">
             @mensajeAlerta
         </div>
     }
@@ -36,7 +43,7 @@
             <div class="input-group shadow-sm">
                 <span class="input-group-text bg-white text-muted border-end-0">🔍</span>
                 <input type="text" class="form-control border-start-0" 
-                       placeholder="Buscar usuario por nombre..." 
+                       placeholder="Buscar usuario por nombre o correo..." 
                        @bind="filtroBusqueda" 
                        @bind:event="oninput" />
             </div>
@@ -47,7 +54,8 @@
         <table class="table table-hover mb-0 bg-white align-middle">
             <thead style="background-color: #1b5e20; color: white;">
                 <tr>
-                    <th>Nombre / Usuario</th>
+                    <th>Nombre</th>
+                    <th>Correo</th>
                     <th>Dieta</th>
                     <th class="text-center">Estado</th>
                     <th class="text-center">Acciones</th>
@@ -58,7 +66,8 @@
                 {
                     var usuariosFiltrados = listaUsuarios
                         .Where(u => string.IsNullOrWhiteSpace(filtroBusqueda) || 
-                                    u.Nombre.Contains(filtroBusqueda, StringComparison.OrdinalIgnoreCase))
+                                    (u.Nombre != null && u.Nombre.Contains(filtroBusqueda, StringComparison.OrdinalIgnoreCase)) ||
+                                    (u.Correo != null && u.Correo.Contains(filtroBusqueda, StringComparison.OrdinalIgnoreCase)))
                         .ToList();
 
                     if (usuariosFiltrados.Any())
@@ -67,6 +76,7 @@
                         {
                             <tr>
                                 <td class="fw-bold">@user.Nombre</td>
+                                <td><span class="text-muted small">@(string.IsNullOrEmpty(user.Correo) ? "SIN CORREO" : user.Correo)</span></td>
                                 <td>@user.TipoDieta</td>
                                 <td class="text-center">
                                     <span class="badge @(user.Activo ? "bg-success" : "bg-danger") rounded-pill">
@@ -74,14 +84,19 @@
                                     </span>
                                 </td>
                                 <td class="text-center">
-                                    <button class="btn btn-sm @(user.Activo ? "btn-outline-danger" : "btn-outline-success") fw-bold me-2" 
-                                            @onclick="() => AlternarEstado(user)">
+                                    <button class="btn btn-sm @(user.Activo ? "btn-outline-danger" : "btn-outline-success") fw-bold me-1" 
+                                            @onclick="() => AlternarEstado(user)" title="Activar/Desactivar">
                                         @(user.Activo ? "Desactivar" : "Activar")
                                     </button>
                                     
-                                    <button class="btn btn-sm btn-outline-warning fw-bold" 
-                                            @onclick="() => ResetearPassword(user)">
+                                    <button class="btn btn-sm btn-outline-warning fw-bold me-1" 
+                                            @onclick="() => ResetearPassword(user)" title="Resetear a Dragon123">
                                         Reset Pwd
+                                    </button>
+
+                                    <button class="btn btn-sm btn-outline-danger fw-bold" 
+                                            @onclick="() => ConfirmarEliminacion(user)" title="Eliminar Permanentemente">
+                                        🗑️
                                     </button>
                                 </td>
                             </tr>
@@ -90,14 +105,14 @@
                     else
                     {
                         <tr>
-                            <td colspan="4" class="text-center text-muted py-4">No se encontraron usuarios que coincidan con la búsqueda.</td>
+                            <td colspan="5" class="text-center text-muted py-4">No se encontraron usuarios que coincidan con la búsqueda.</td>
                         </tr>
                     }
                 }
                 else
                 {
                     <tr>
-                        <td colspan="4" class="text-center text-muted py-4">No hay usuarios registrados.</td>
+                        <td colspan="5" class="text-center text-muted py-4">No hay usuarios registrados.</td>
                     </tr>
                 }
             </tbody>
@@ -105,11 +120,55 @@
     </div>
 </div>
 
+@* MODAL DE CONFIRMACIÓN DE BORRADO *@
+@if (mostrarModalConfirmacion && usuarioParaBorrar != null)
+{
+    <div class="modal fade show d-block" style="background-color: rgba(0,0,0,0.7); position: fixed; top:0; left:0; width:100%; height:100%; z-index: 10000;">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg" style="border-radius: 12px; overflow: hidden;">
+                <div class="modal-header text-white" style="background-color: #dc3545;">
+                    <h5 class="modal-title fw-bold">⚠️ Confirmar Eliminación</h5>
+                    <button type="button" class="btn-close btn-close-white" @onclick="CancelarBorrado"></button>
+                </div>
+                <div class="modal-body py-4">
+                    <p class="mb-2 fs-5">¿Estás completamente seguro de que deseas eliminar a <strong>@usuarioParaBorrar.Nombre</strong>?</p>
+                    <p class="text-muted small mb-0">Esta acción borrará su perfil permanentemente de la base de datos Redis.</p>
+                </div>
+                <div class="modal-footer" style="background-color: #f8f9fa;">
+                    <button class="btn btn-secondary fw-bold px-4" @onclick="CancelarBorrado">Cancelar</button>
+                    <button class="btn btn-danger fw-bold px-4" @onclick="EjecutarBorrado">Sí, Eliminar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
 @code {
+    /// <summary>
+    /// Colección local que almacena el directorio completo de usuarios recuperado de la base de datos.
+    /// </summary>
     private List<Usuario> listaUsuarios = new();
+    
+    /// <summary>
+    /// Mensaje de retroalimentación para notificar al administrador sobre el resultado de sus acciones.
+    /// </summary>
     private string mensajeAlerta = "";
+    
+    /// <summary>
+    /// Criterio de texto utilizado para filtrar dinámicamente la tabla de usuarios.
+    /// </summary>
     private string filtroBusqueda = "";
 
+    /// <summary>
+    /// Variables de estado para gestionar el flujo del modal de confirmación de eliminación.
+    /// </summary>
+    private bool mostrarModalConfirmacion = false;
+    private Usuario? usuarioParaBorrar;
+
+    /// <summary>
+    /// Inicializa el componente verificando los privilegios de la sesión. 
+    /// Si el usuario no es administrador, se interrumpe la carga y se redirige a la página principal.
+    /// </summary>
     protected override async Task OnInitializedAsync()
     {
         if (!Session.IsAdmin) 
@@ -121,6 +180,10 @@
         await CargarUsuariosAsync();
     }
 
+    /// <summary>
+    /// Consume el controlador para obtener todos los registros y excluye de la lista visible 
+    /// a la cuenta maestra del administrador para evitar modificaciones accidentales a la misma.
+    /// </summary>
     private async Task CargarUsuariosAsync()
     {
         var todosLosUsuarios = await _usuarioController.ObtenerTodosAsync();
@@ -130,26 +193,85 @@
             .ToList() ?? new List<Usuario>();
     }
 
+    /// <summary>
+    /// Invierte el estado de acceso de un usuario (Activo/Inactivo) y persiste el cambio en la base de datos.
+    /// </summary>
+    /// <param name="u">El usuario cuyo estado será modificado.</param>
     private void AlternarEstado(Usuario u)
     {
         u.Activo = !u.Activo;
         _usuarioController.ActualizarUsuario(u); 
-        mensajeAlerta = $"El usuario {u.Nombre} ahora está {(u.Activo ? "Activo" : "Inactivo")}.";
+        mensajeAlerta = $"El estado de acceso para {u.Nombre} ha sido actualizado.";
     }
 
+    /// <summary>
+    /// Restablece la contraseña del usuario al valor predeterminado estándar, aplicando 
+    /// la encriptación BCrypt requerida por el sistema de autenticación.
+    /// </summary>
+    /// <param name="u">El usuario objetivo del reseteo.</param>
     private void ResetearPassword(Usuario u)
     {
-        u.Password = "Dragon123*"; 
+        // 🔥 CRÍTICO: Se encripta la contraseña estándar antes de guardarla.
+        u.Password = BCrypt.Net.BCrypt.HashPassword("Dragon123"); 
         _usuarioController.ActualizarUsuario(u); 
-        mensajeAlerta = $"Contraseña de {u.Nombre} reseteada a: Dragon123*";
+        mensajeAlerta = $"La contraseña de {u.Nombre} ha sido reseteada exitosamente a 'Dragon123'.";
+    }
+
+    // =====================================================
+    // MÉTODOS DE ELIMINACIÓN
+    // =====================================================
+
+    /// <summary>
+    /// Prepara el entorno para la eliminación de un usuario y despliega la advertencia visual.
+    /// </summary>
+    private void ConfirmarEliminacion(Usuario u)
+    {
+        usuarioParaBorrar = u;
+        mostrarModalConfirmacion = true;
+        mensajeAlerta = "";
+    }
+
+    /// <summary>
+    /// Oculta el modal de advertencia y aborta el proceso de eliminación.
+    /// </summary>
+    private void CancelarBorrado()
+    {
+        mostrarModalConfirmacion = false;
+        usuarioParaBorrar = null;
+    }
+
+    /// <summary>
+    /// Ejecuta el borrado físico del registro en Redis a través del controlador 
+    /// y refresca la vista del directorio para reflejar los cambios.
+    /// </summary>
+    private async Task EjecutarBorrado()
+    {
+        if (usuarioParaBorrar != null)
+        {
+            try
+            {
+                _usuarioController.EliminarUsuario(usuarioParaBorrar.Id);
+                await CargarUsuariosAsync(); // Refresca la tabla
+                mensajeAlerta = $"El usuario {usuarioParaBorrar.Nombre} fue eliminado permanentemente.";
+            }
+            catch (Exception ex)
+            {
+                mensajeAlerta = $"Error al eliminar: {ex.Message}";
+            }
+            finally
+            {
+                mostrarModalConfirmacion = false;
+                usuarioParaBorrar = null;
+            }
+        }
     }
 
     // =====================================================
     // MÉTODOS DE EXPORTACIÓN (Conectados al Service)
     // =====================================================
+    
     private async Task DescargarCSV()
     {
-        // Genera el archivo usando punto y coma (;) para evitar problemas con decimales
         var bytes = _exportService.GenerarCsvUsuarios(listaUsuarios);
         await _exportService.DescargarArchivoEnNavegador($"Directorio_Usuarios_{DateTime.Now:yyyyMMdd}.csv", bytes);
     }

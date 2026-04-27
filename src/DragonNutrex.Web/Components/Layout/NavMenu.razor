@@ -1,36 +1,100 @@
-﻿@* /// <summary>
-/// Renderiza el menú de navegación lateral izquierdo de la aplicación.
-/// Define la estructura visual de los enlaces principales y gestiona 
-/// el comportamiento de colapso automático para pantallas móviles.
+﻿@using DragonNutrex.Web
+@inject UserSession Session
+@inject NavigationManager Nav
+@rendermode InteractiveServer
+
+@* /// <summary>
+/// Menú de navegación principal superior de Dragon Nutrex.
+/// Utiliza componentes NavLink para evitar recargas completas del navegador (hard reloads),
+/// protegiendo así la persistencia de la sesión en memoria. 
+/// Adapta las opciones dinámicamente según los privilegios del usuario activo.
 /// </summary>
 *@
 
-<div class="top-row ps-3 navbar navbar-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="">DragonNutrex.Web</a>
-    </div>
-</div>
-
-<input type="checkbox" title="Navigation menu" class="navbar-toggler" />
-
-<div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
-    <nav class="nav flex-column">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
-            </NavLink>
-        </div>
-
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="counter">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Counter
-            </NavLink>
-        </div>
-
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="weather">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Weather
-            </NavLink>
+@if (!string.IsNullOrEmpty(Session.NombreUsuario))
+{
+    <nav class="navbar navbar-expand-lg shadow-sm mb-4" style="background-color: #1b5e20;">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand text-white fw-bold d-flex align-items-center gap-2" href="javascript:void(0)" @onclick="IrAlInicio">
+                🐉 Dragon Nutrex
+            </a>
+            
+            <button class="navbar-toggler border-white" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Activar navegación">
+                <span class="navbar-toggler-icon" style="filter: invert(1);"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    
+                    @if (Session.IsAdmin)
+                    {
+                        @* OPCIONES DEL ADMINISTRADOR *@
+                        <li class="nav-item">
+                            <NavLink class="nav-link text-white fw-bold px-3" href="admin/usuarios" Match="NavLinkMatch.All">
+                                👥 Usuarios
+                            </NavLink>
+                        </li>
+                        <li class="nav-item">
+                            <NavLink class="nav-link text-white fw-bold px-3" href="admin/productos">
+                                📦 Productos
+                            </NavLink>
+                        </li>
+                        <li class="nav-item">
+                            <NavLink class="nav-link text-white fw-bold px-3" href="admin/menus">
+                                📋 Gestión de Menús
+                            </NavLink>
+                        </li>
+                    }
+                    else
+                    {
+                        @* OPCIONES DEL PACIENTE/USUARIO REGULAR *@
+                        <li class="nav-item">
+                            <NavLink class="nav-link text-white fw-bold px-3" href="mi-progreso" Match="NavLinkMatch.All">
+                                📅 Mi Progreso
+                            </NavLink>
+                        </li>
+                        <li class="nav-item">
+                            <NavLink class="nav-link text-white fw-bold px-3" href="admin/menus">
+                                🍽️ Mis Menús
+                            </NavLink>
+                        </li>
+                    }
+                </ul>
+                
+                @* PANEL DE PERFIL Y SALIDA *@
+                <div class="d-flex align-items-center gap-3 mt-2 mt-lg-0">
+                    <span class="text-white fw-bold small">
+                        <i class="bi bi-person-circle me-1"></i> @(Session.IsAdmin ? "Panel Administrador" : Session.NombreUsuario)
+                    </span>
+                    <button class="btn btn-outline-light btn-sm fw-bold px-3 rounded-pill" @onclick="CerrarSesion">
+                        Cerrar Sesión
+                    </button>
+                </div>
+            </div>
         </div>
     </nav>
-</div>
+}
+
+@code {
+    /// <summary>
+    /// Redirige al usuario a su respectiva página de inicio dependiendo de su rol,
+    /// evitando el uso de anclas HTML para proteger la sesión.
+    /// </summary>
+    private void IrAlInicio()
+    {
+        if (Session.IsAdmin)
+            Nav.NavigateTo("/admin/usuarios");
+        else
+            Nav.NavigateTo("/mi-progreso");
+    }
+
+    /// <summary>
+    /// Destruye la sesión en memoria del usuario actual y lo devuelve de manera segura
+    /// a la pantalla principal de autenticación.
+    /// </summary>
+    private void CerrarSesion()
+    {
+        Session.CerrarSesion();
+        Nav.NavigateTo("/");
+    }
+}

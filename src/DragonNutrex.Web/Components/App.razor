@@ -18,7 +18,10 @@
     <link rel="stylesheet" href="@Assets["DragonNutrex.Web.styles.css"]" />
     <ImportMap />
     <link rel="icon" type="image/png" href="favicon.png" />
-    <HeadOutlet />
+    
+    @* 🔥 CORRECCIÓN: Al hacer el HeadOutlet interactivo, Blazor puede cambiar los títulos 
+       de las páginas dinámicamente sin forzar una recarga completa del navegador. *@
+    <HeadOutlet @rendermode="InteractiveServer" />
 </head>
 
 <body>
@@ -26,7 +29,6 @@
     <ReconnectModal />
 
     <script src="@Assets["_framework/blazor.web.js"]"></script>
-
     <script src="js/download.js"></script>
 </body>
 

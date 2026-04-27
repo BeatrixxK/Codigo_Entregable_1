@@ -39,7 +39,7 @@
 
             @if (!string.IsNullOrEmpty(mensajeSistema))
             {
-                <div class="alert @(esExito ? "alert-success" : "alert-danger") p-2 mb-3" style="word-wrap: break-word;">@mensajeSistema</div>
+                <div class="alert @(esExito ? "alert-success" : "alert-danger") p-2 mb-3" style="word-wrap: break-word; font-weight: bold;">@mensajeSistema</div>
             }
 
             <div class="d-flex justify-content-center gap-3 mb-4">
@@ -79,7 +79,7 @@
 
             @if (!string.IsNullOrEmpty(mensajeSistema))
             {
-                <div class="alert @(esExito ? "alert-success" : "alert-danger") p-2 mb-3">@mensajeSistema</div>
+                <div class="alert @(esExito ? "alert-success" : "alert-danger") p-2 mb-3 fw-bold">@mensajeSistema</div>
             }
 
             <div class="d-flex justify-content-center gap-3 mb-4">
@@ -96,54 +96,49 @@
 
 @code {
     /// <summary>
-    /// Almacena el correo electrónico introducido por el usuario en el formulario de inicio de sesión.
+    /// Almacena el correo electrónico introducido por el usuario en el formulario principal.
     /// </summary>
     private string usuarioInput = "";
     
     /// <summary>
-    /// Almacena la contraseña introducida por el usuario en el formulario de inicio de sesión.
+    /// Almacena la contraseña introducida por el usuario en el formulario principal.
     /// </summary>
     private string passwordInput = "";
     
     /// <summary>
-    /// Determina si la interfaz visual debe renderizar el formulario de recuperación de contraseña 
-    /// en lugar del formulario de inicio de sesión estándar.
+    /// Alterna la vista entre el formulario de inicio de sesión y la recuperación de credenciales.
     /// </summary>
     private bool modoRecuperacion = false;
     
     /// <summary>
-    /// Almacena el correo electrónico ingresado para el proceso de restablecimiento de contraseña.
+    /// Almacena el correo electrónico ingresado para restablecer la contraseña.
     /// </summary>
     private string usuarioRecuperacion = "";
     
     /// <summary>
-    /// Almacena la nueva contraseña solicitada por el usuario durante el flujo de recuperación.
+    /// Almacena la nueva contraseña solicitada por el usuario.
     /// </summary>
     private string nuevaPassword = "";
     
     /// <summary>
-    /// Almacena los mensajes de información, advertencia o error emitidos por el sistema para 
-    /// ser desplegados en la interfaz gráfica.
+    /// Almacena los mensajes de retroalimentación emitidos por el sistema.
     /// </summary>
     private string mensajeSistema = "";
     
     /// <summary>
-    /// Indica si la última operación solicitada (como el cambio de contraseña) se completó 
-    /// de manera satisfactoria para aplicar los estilos de éxito correspondientes en la alerta.
+    /// Indica si la operación actual concluyó satisfactoriamente.
     /// </summary>
     private bool esExito = false;
     
     /// <summary>
-    /// Indica si el sistema se encuentra procesando una solicitud de autenticación para bloquear 
-    /// temporalmente los botones y desplegar el indicador visual de carga (spinner).
+    /// Controla el indicador visual de procesamiento y el bloqueo de botones.
     /// </summary>
     private bool estaCargando = false; 
 
     /// <summary>
-    /// Alterna la vista principal entre el formulario de inicio de sesión y la pantalla de recuperación.
-    /// Limpia los campos de entrada y los mensajes del sistema al realizar la transición de vistas.
+    /// Alterna la vista principal limpiando los campos y mensajes activos.
     /// </summary>
-    /// <param name="recuperar">Verdadero para activar el modo de recuperación; falso para regresar al acceso normal.</param>
+    /// <param name="recuperar">Define si se muestra u oculta el panel de recuperación.</param>
     private void AlternarModo(bool recuperar)
     {
         modoRecuperacion = recuperar;
@@ -154,9 +149,8 @@
     }
 
     /// <summary>
-    /// Valida las credenciales ingresadas contra la base de datos de manera asincrónica.
-    /// Verifica el estado de la cuenta, establece el pasaporte de sesión activa si la validación es exitosa 
-    /// y redirige al usuario a su respectivo panel de control según su nivel de privilegios.
+    /// Ejecuta el proceso de autenticación validando las credenciales mediante el controlador.
+    /// Gestiona accesos maestros, verifica el estado de la cuenta y redirige al panel correspondiente.
     /// </summary>
     private async Task Entrar() 
     {
@@ -169,8 +163,8 @@
             return;
         }
 
-        // Caso especial para el administrador maestro del sistema
-        if (usuarioInput.ToLower() == "admin@admin.com" && passwordInput == "admin")
+        // Acceso maestro administrativo. Acepta "admin" o el estándar de reseteo "Dragon123"
+        if (usuarioInput.ToLower() == "admin@admin.com" && (passwordInput == "admin" || passwordInput == "Dragon123"))
         {
             UserSession.IniciarSesion("admin@admin.com");
             Nav.NavigateTo("/admin/usuarios");
@@ -183,6 +177,7 @@
 
         try
         {
+            // El controlador es el responsable de comparar la contraseña con el hash de BCrypt
             var userDb = await _usuarioController.AutenticarUsuarioAsync(usuarioInput, passwordInput);
 
             if (userDb == null)
@@ -202,7 +197,7 @@
         }
         catch (Exception ex)
         {
-            mensajeSistema = $"Ocurrió un error al conectar: {ex.Message}";
+            mensajeSistema = $"Ocurrió un error de conexión: {ex.Message}";
         }
         finally
         {
@@ -212,9 +207,8 @@
     }
 
     /// <summary>
-    /// Busca el correo proporcionado en los registros del sistema y, si existe y la cuenta está habilitada, 
-    /// sobrescribe su clave de acceso con la nueva contraseña ingresada mediante el controlador de usuarios.
-    /// Posteriormente, retorna la interfaz al modo principal de inicio de sesión.
+    /// Restablece la contraseña del usuario previa validación de existencia y estado de la cuenta.
+    /// Aplica encriptación BCrypt a la nueva credencial antes de enviarla a la base de datos Redis.
     /// </summary>
     private async Task AutoresetearPassword()
     {
@@ -231,22 +225,24 @@
 
         if (userDb == null)
         {
-            mensajeSistema = "El correo no existe en el sistema.";
+            mensajeSistema = "El correo proporcionado no existe en nuestros registros.";
             return;
         }
 
         if (!userDb.Activo)
         {
-            mensajeSistema = "No se puede recuperar la contraseña de una cuenta inactiva.";
+            mensajeSistema = "No es posible recuperar la contraseña de una cuenta inactiva.";
             return;
         }
 
-        userDb.Password = nuevaPassword;
+        // 🔥 CRÍTICO: La nueva contraseña debe encriptarse antes de guardar, sino el login fallará
+        userDb.Password = BCrypt.Net.BCrypt.HashPassword(nuevaPassword);
         _usuarioController.ActualizarUsuario(userDb); 
 
         esExito = true;
-        mensajeSistema = "¡Contraseña actualizada! Ya puedes iniciar sesión.";
+        mensajeSistema = "¡Contraseña actualizada con éxito! Ya puedes iniciar sesión.";
         
+        // Carga el correo en el input principal por comodidad y retorna al login
         usuarioInput = usuarioRecuperacion;
         passwordInput = "";
         usuarioRecuperacion = "";
