@@ -168,9 +168,13 @@ else
     {
         if (Session != null && !string.IsNullOrEmpty(Session.NombreUsuario))
         {
-            var usuarios = await _usuarioController.ObtenerTodosAsync();
+            var usuarios = await _usuarioController.ObtenerTodosAsync() ?? new List<Usuario>();
             
-            usuario = usuarios.FirstOrDefault(u => u.Correo.ToLower() == Session.NombreUsuario.ToLower());
+            // 🔥 LA BÚSQUEDA A PRUEBA DE BALAS PARA EVITAR QUE COLAPSE EL LAYOUT
+            usuario = usuarios.FirstOrDefault(u => 
+                (!string.IsNullOrEmpty(u.Correo) && u.Correo.Equals(Session.NombreUsuario, StringComparison.OrdinalIgnoreCase)) ||
+                (!string.IsNullOrEmpty(u.Nombre) && u.Nombre.Equals(Session.NombreUsuario, StringComparison.OrdinalIgnoreCase))
+            );
             
             if (usuario != null) 
             {

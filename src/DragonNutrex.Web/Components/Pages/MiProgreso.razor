@@ -8,6 +8,11 @@
 @inject MenuController _menuController
 @rendermode InteractiveServer
 
+@* /// <summary>
+/// Provee la interfaz de seguimiento nutricional individual para los usuarios.
+/// Gestiona la visualización del historial de consumo y metas.
+/// </summary> *@
+
 <PageTitle>Mi Progreso Diario</PageTitle>
 
 <div class="container-fluid mt-4" style="max-width: 900px;">
@@ -96,7 +101,6 @@
     }
 </div>
 
-@* MODAL DEL VISOR *@
 @if (mostrarVisor && menuVisor != null)
 {
     <div class="modal fade show d-block" style="background-color: rgba(0,0,0,0.7); position: fixed; top:0; left:0; width:100%; height:100%; z-index: 9999;">
@@ -161,7 +165,6 @@
     private string mensajeEstado = "";
     private bool estaCargando = false;
     private List<ResumenDiario> listaResumenes = new();
-
     private bool mostrarVisor = false;
     private Menu? menuVisor;
 
@@ -170,18 +173,17 @@
         if (string.IsNullOrWhiteSpace(Session.NombreUsuario)) return;
         
         estaCargando = true;
+        var usuarios = await _usuarioController.ObtenerTodosAsync() ?? new List<Usuario>();
         
-        // 1. Carga usuario comparando contra el CORREO (que es lo que hay en Session.NombreUsuario)
-        var usuarios = await _usuarioController.ObtenerTodosAsync();
-        usuarioActual = usuarios.FirstOrDefault(u => u.Correo.ToLower() == Session.NombreUsuario.ToLower());
+        // 🔥 BÚSQUEDA SEGURA A PRUEBA DE BALAS: Busca por nombre O por correo sin romperse.
+        usuarioActual = usuarios.FirstOrDefault(u => 
+            (!string.IsNullOrEmpty(u.Correo) && u.Correo.Equals(Session.NombreUsuario, StringComparison.OrdinalIgnoreCase)) ||
+            (!string.IsNullOrEmpty(u.Nombre) && u.Nombre.Equals(Session.NombreUsuario, StringComparison.OrdinalIgnoreCase))
+        );
             
         if (usuarioActual != null) 
         {
             await EjecutarCargaDatos();
-        }
-        else 
-        {
-            mensajeEstado = "❌ No se encontró el perfil de usuario para este correo.";
         }
         
         estaCargando = false;
@@ -199,42 +201,28 @@
         listaResumenes.Clear();
         if (usuarioActual == null) return;
 
-        mensajeEstado = "⏳ Sincronizando con Dragon Nutrex Cloud...";
-
-        // 2. Trae menús y filtramos por el ID del usuario encontrado
-        var todosLosMenus = await _menuController.ObtenerMenusAsync();
-        
-        // Filtra por ID, rango de fechas y aseguramos que no sea nulo
+        var todosLosMenus = await _menuController.ObtenerMenusAsync() ?? new List<Menu>();
         var menusFiltrados = todosLosMenus
             .Where(m => m.UsuarioId == usuarioActual.Id && m.Fecha.Date >= fechaInicio.Date && m.Fecha.Date <= fechaFin.Date)
-            .OrderByDescending(x => x.Fecha)
-            .ToList();
+            .OrderByDescending(x => x.Fecha).ToList();
 
         foreach (var m in menusFiltrados)
         {
             decimal meta = 0;
             try {
-                // Cálculo de dieta basado en los Stats del usuario
                 var res = _statsController.ObtenerResumen(usuarioActual.Id, m.Fecha.Date, m.Fecha.Date.AddHours(23), usuarioActual.TipoDieta);
                 meta = res?.CaloriasObjetivoDieta ?? 0;
-            } catch { 
-                meta = 2000; // Valor por defecto si falla el cálculo
-            }
+            } catch { meta = 2000; }
 
             decimal consumido = m.TotalCalorias > 0 ? m.TotalCalorias : (m.Registros?.Sum(r => r.Calorias) ?? 0);
             listaResumenes.Add(new ResumenDiario { Fecha = m.Fecha, Consumido = consumido, Meta = meta });
         }
-        
-        mensajeEstado = listaResumenes.Any() 
-            ? $"✅ {listaResumenes.Count} días recuperados exitosamente." 
-            : "ℹ️ No se encontraron menús registrados en este rango.";
-        
-        StateHasChanged(); // Forzamos actualización visual
+        StateHasChanged();
     }
 
     private async Task VerDetalle(DateTime fecha)
     {
-        var menus = await _menuController.ObtenerMenusAsync();
+        var menus = await _menuController.ObtenerMenusAsync() ?? new List<Menu>();
         menuVisor = menus.FirstOrDefault(m => m.UsuarioId == usuarioActual?.Id && m.Fecha.Date == fecha.Date);
             
         if (menuVisor != null) 

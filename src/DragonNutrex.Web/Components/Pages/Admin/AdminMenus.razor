@@ -8,6 +8,10 @@
 @inject ProductoController _productoController
 @rendermode InteractiveServer
 
+@* /// <summary>
+/// Permite crear y editar menús nutricionales diarios.
+/// </summary> *@
+
 <PageTitle>@(Session.IsAdmin ? "Gestión de Menús" : "Mis Menús")</PageTitle>
 
 <div class="container-fluid">
@@ -38,7 +42,6 @@
                     }
                     else
                     {
-                        @* Vista de Paciente: Caja de texto bloqueada *@
                         <div class="input-group">
                             <span class="input-group-text bg-success text-white"><i class="bi bi-person-circle"></i></span>
                             <input type="text" class="form-control bg-white fw-bold text-dark" value="@nombreUsuarioActual" disabled />
@@ -56,22 +59,18 @@
         </div>
     </div>
 
-    @* Si NO hay usuario seleccionado (Pasa cuando el Admin entra y aún no elige a nadie) *@
     @if (usuarioSeleccionadoId == Guid.Empty)
     {
         <div class="alert shadow-sm border-0 fw-bold d-flex align-items-center mt-5" style="background-color: #e3f2fd; color: #0d47a1;">
             <i class="bi bi-info-circle-fill fs-4 me-3"></i>
-            <div>
-                Por favor, selecciona un usuario en la parte superior para comenzar a gestionar sus planes alimenticios.
-            </div>
+            <div>Por favor, selecciona un usuario para gestionar sus planes.</div>
         </div>
     }
     else
     {
-        @* PANEL DE AGREGAR ALIMENTOS (Solo visible si hay usuario seleccionado) *@
         <div class="row g-2 mb-4 align-items-end p-3 rounded-2 shadow-sm" style="background-color: #ffffff; border: 1px solid #c8e6c9;">
             <div class="col-md-6">
-                <label class="text-success small fw-bold mb-1">Seleccionar Producto de la Base de Datos</label>
+                <label class="text-success small fw-bold mb-1">Seleccionar Producto</label>
                 <select class="form-select shadow-sm" @bind="productoSeleccionadoId">
                     <option value="@Guid.Empty">-- Escoger alimento --</option>
                     @foreach (var p in listaProductos) 
@@ -91,7 +90,6 @@
             </div>
         </div>
 
-        @* TABLA DEL MENÚ ACTUAL (Día seleccionado) *@
         <div class="card border-0 shadow-sm mb-5">
             <div class="card-header bg-white border-bottom py-3">
                 <h5 class="fw-bold mb-0 text-dark">
@@ -139,7 +137,7 @@
             else
             {
                 <div class="card-body text-center py-5">
-                    <p class="text-muted mb-0">No has agregado alimentos para este día. Utiliza el panel superior para comenzar a armar tu menú.</p>
+                    <p class="text-muted mb-0">No has agregado alimentos para este día.</p>
                 </div>
             }
         </div>
@@ -151,7 +149,7 @@
             <table class="table table-hover bg-white align-middle mb-0">
                 <thead class="table-dark">
                     <tr>
-                        <th class="ps-4">Fecha (Click para ver detalle)</th>
+                        <th class="ps-4">Fecha</th>
                         <th>Calorías</th>
                         <th>Alimentos Principales</th>
                         <th class="text-center">Acciones</th>
@@ -164,7 +162,7 @@
                         {
                             decimal totalKcal = m.TotalCalorias > 0 ? m.TotalCalorias : (m.Registros?.Sum(r => r.Calorias) ?? 0);
 
-                            <tr @key="m.Id" style="cursor: pointer; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#e8f5e9'" onmouseout="this.style.backgroundColor='transparent'" @onclick="() => AbrirVisor(m)">
+                            <tr @key="m.Id" style="cursor: pointer;" onmouseover="this.style.backgroundColor='#e8f5e9'" onmouseout="this.style.backgroundColor='transparent'" @onclick="() => AbrirVisor(m)">
                                 <td class="ps-4 fw-bold" style="color: #1b5e20;">
                                     <i class="bi bi-calendar-check me-2"></i> @m.Fecha.ToString("dd/MM/yyyy")
                                 </td>
@@ -182,7 +180,7 @@
                         <tr>
                             <td colspan="4" class="text-center text-muted py-5">
                                 <i class="bi bi-journal-x fs-1 text-muted opacity-50 d-block mb-3"></i>
-                                No hay menús guardados en el historial de este usuario.
+                                No hay menús guardados.
                             </td>
                         </tr>
                     }
@@ -192,7 +190,6 @@
     }
 </div>
 
-@* MODALES *@
 @if (mostrarVisor && menuVisor != null)
 {
     <div class="modal fade show d-block" style="background-color: rgba(0,0,0,0.7); position: fixed; top:0; left:0; width:100%; height:100%; z-index: 9999;">
@@ -254,14 +251,13 @@
 {
     <div class="modal fade show d-block" style="background-color: rgba(0,0,0,0.7); position: fixed; top:0; left:0; width:100%; height:100%; z-index: 10000;">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-0 shadow-lg" style="border-radius: 12px; overflow: hidden;">
+            <div class="modal-content border-0 shadow-lg">
                 <div class="modal-header text-dark" style="background-color: #ffc107;">
                     <h5 class="fw-bold mb-0">⚠️ Confirmar Edición</h5>
                     <button type="button" class="btn-close" @onclick="CancelarEdicion"></button>
                 </div>
                 <div class="modal-body py-4">
                     <p class="mb-2 fs-5">¿Deseas cargar el menú del <strong>@menuPendiente.Fecha.ToString("dd/MM/yyyy")</strong> en el editor principal?</p>
-                    <p class="text-muted small mb-0">Si tienes cambios sin guardar en el día actual, se perderán.</p>
                 </div>
                 <div class="modal-footer" style="background-color: #f8f9fa;">
                     <button class="btn btn-secondary fw-bold px-4" @onclick="CancelarEdicion">Cancelar</button>
@@ -276,16 +272,15 @@
 {
     <div class="modal fade show d-block" style="background-color: rgba(0,0,0,0.7); position: fixed; top:0; left:0; width:100%; height:100%; z-index: 10001;">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-0 shadow-lg" style="border-radius: 12px; overflow: hidden;">
+            <div class="modal-content border-0 shadow-lg">
                 <div class="modal-header text-white" style="background-color: #28a745;">
                     <h5 class="modal-title fw-bold">¡Operación Exitosa!</h5>
                     <button type="button" class="btn-close btn-close-white" @onclick="() => mostrarModalExito = false"></button>
                 </div>
                 <div class="modal-body text-center py-4">
-                    <div class="mb-3"><span style="font-size: 3.5rem;">✅</span></div>
                     <p class="fs-5 fw-bold text-success mb-0">@mensajeExito</p>
                 </div>
-                <div class="modal-footer justify-content-center" style="background-color: #f8f9fa;">
+                <div class="modal-footer justify-content-center">
                     <button class="btn btn-success fw-bold px-5" @onclick="() => mostrarModalExito = false">Aceptar</button>
                 </div>
             </div>
@@ -294,34 +289,18 @@
 }
 
 @code {
-    /// <summary>
-    /// Contiene la lista general de usuarios y productos cargada desde la base de datos.
-    /// También gestiona el historial de menús filtrado para el usuario actualmente seleccionado.
-    /// </summary>
     private List<Usuario> listaUsuarios = new();
     private List<Producto> listaProductos = new();
     private List<Menu> historialMenus = new();
     
-    /// <summary>
-    /// Identifica al usuario que se está gestionando actualmente.
-    /// En el entorno de Administrador este valor cambia mediante el menú desplegable.
-    /// </summary>
     private Guid usuarioSeleccionadoId = Guid.Empty;
     private string nombreUsuarioActual = "Cargando..."; 
     
-    /// <summary>
-    /// Variables de estado que controlan la construcción del menú activo.
-    /// Incluye el producto en foco, la fecha de evaluación y el objeto de menú completo del día.
-    /// </summary>
     private Guid productoSeleccionadoId = Guid.Empty;
     private DateTime fechaMenu = DateTime.Today;
     private decimal cantidadProducto = 1;
     private Menu? menuActual;
     
-    /// <summary>
-    /// Variables de estado que controlan la visibilidad y lógica de los modales 
-    /// de visualización, confirmación de edición y mensajes de éxito.
-    /// </summary>
     private bool mostrarVisor = false;
     private Menu? menuVisor;
     private bool mostrarModalEdicion = false;
@@ -329,10 +308,6 @@
     private bool mostrarModalExito = false;
     private string mensajeExito = "";
 
-    /// <summary>
-    /// Inicializa el componente de forma asincrónica. Carga el catálogo de productos y usuarios, 
-    /// y verifica los permisos de la sesión para determinar si el entorno es de administrador o paciente.
-    /// </summary>
     protected override async Task OnInitializedAsync()
     {
         listaProductos = _productoController.ObtenerProductos() ?? new();
@@ -340,7 +315,12 @@
         
         if (!Session.IsAdmin && !string.IsNullOrWhiteSpace(Session.NombreUsuario))
         {
-            var yo = listaUsuarios.FirstOrDefault(u => u.Correo.ToLower() == Session.NombreUsuario.ToLower());
+            // Búsqueda a prueba de fallos
+            var yo = listaUsuarios.FirstOrDefault(u => 
+                (!string.IsNullOrEmpty(u.Correo) && u.Correo.Equals(Session.NombreUsuario, StringComparison.OrdinalIgnoreCase)) ||
+                (!string.IsNullOrEmpty(u.Nombre) && u.Nombre.Equals(Session.NombreUsuario, StringComparison.OrdinalIgnoreCase))
+            );
+            
             if (yo != null) 
             { 
                 usuarioSeleccionadoId = yo.Id;
@@ -354,11 +334,6 @@
         }
     }
 
-    /// <summary>
-    /// Procesa el cambio de selección en la lista de pacientes del administrador. 
-    /// Actualiza el usuario activo, restablece la fecha al día actual y carga el historial correspondiente.
-    /// </summary>
-    /// <param name="e">Argumento que contiene el identificador único del nuevo usuario seleccionado.</param>
     private async Task OnCambioUsuarioAdmin(ChangeEventArgs e)
     {
         if (Guid.TryParse(e.Value?.ToString(), out Guid idSeleccionado))
@@ -378,24 +353,18 @@
         }
     }
 
-    /// <summary>
-    /// Obtiene el historial completo de menús registrados para el usuario seleccionado 
-    /// consultando la base de datos a través del controlador, y luego invoca la carga del menú del día.
-    /// </summary>
     private async Task CargarHistorialAsync()
     {
         if (usuarioSeleccionadoId == Guid.Empty) return;
 
-        var todosLosMenus = await Task.Run(() => _menuController.ObtenerMenus() ?? new());
-        historialMenus = todosLosMenus.Where(m => m.UsuarioId == usuarioSeleccionadoId).ToList();
+        // 🔥 AQUÍ ESTABA EL ERROR FATAL QUE CONGELABA LA PANTALLA
+        // Eliminamos el Task.Run que causaba el Deadlock y usamos la versión puramente asincrónica:
+        var todosLosMenus = await _menuController.ObtenerMenusAsync() ?? new List<Menu>();
         
+        historialMenus = todosLosMenus.Where(m => m.UsuarioId == usuarioSeleccionadoId).ToList();
         CargarMenuDelDia();
     }
 
-    /// <summary>
-    /// Filtra el historial para localizar el menú de la fecha seleccionada. 
-    /// Si no existe, instancia un nuevo menú en blanco listo para recibir el registro de alimentos.
-    /// </summary>
     private void CargarMenuDelDia()
     {
         if (usuarioSeleccionadoId == Guid.Empty) return;
@@ -404,23 +373,12 @@
                      ?? new Menu { Id = Guid.NewGuid(), UsuarioId = usuarioSeleccionadoId, Fecha = fechaMenu.Date, Registros = new List<RegistroComida>() };
         
         if (menuActual.Registros == null) menuActual.Registros = new List<RegistroComida>();
-        
         RecalcularTotalesGenerales();
     }
 
-    // ----------------------------------------------------
-    // MÉTODOS DEL VISOR Y EDICIÓN
-    // ----------------------------------------------------
-
-    /// <summary>
-    /// Activa el modal de visualización detallada para un menú específico. 
-    /// Calcula los totales de macronutrientes en tiempo real si estos no se encuentran registrados previamente.
-    /// </summary>
-    /// <param name="m">El menú histórico a visualizar.</param>
     private void AbrirVisor(Menu m) 
     { 
         menuVisor = m; 
-        
         if (menuVisor.TotalCalorias <= 0 && menuVisor.Registros != null)
         {
             menuVisor.TotalCalorias = menuVisor.Registros.Sum(r => r.Calorias);
@@ -428,31 +386,13 @@
             menuVisor.TotalCarbohidratos = menuVisor.Registros.Sum(r => r.Carbohidratos);
             menuVisor.TotalGrasas = menuVisor.Registros.Sum(r => r.Grasas);
         }
-
         mostrarVisor = true; 
     }
     
-    /// <summary>
-    /// Oculta el modal de visualización de detalles del menú.
-    /// </summary>
     private void CerrarVisor() => mostrarVisor = false;
-
-    /// <summary>
-    /// Despliega el modal de advertencia antes de sobreescribir el editor principal 
-    /// con un menú de una fecha anterior del historial.
-    /// </summary>
-    /// <param name="m">El menú histórico que se desea editar.</param>
     private void ConfirmarEdicion(Menu m) { menuPendiente = m; mostrarModalEdicion = true; }
-
-    /// <summary>
-    /// Oculta el modal de confirmación de edición, descartando la acción de sobreescritura.
-    /// </summary>
     private void CancelarEdicion() { mostrarModalEdicion = false; menuPendiente = null; }
 
-    /// <summary>
-    /// Carga el menú seleccionado previamente en el editor principal, reemplazando 
-    /// cualquier progreso no guardado del día actual, y actualiza los totales.
-    /// </summary>
     private void EjecutarEdicion()
     {
         if (menuPendiente != null) {
@@ -463,26 +403,17 @@
         CancelarEdicion();
     }
 
-    // ----------------------------------------------------
-    // GESTIÓN DE DATOS (CRUD)
-    // ----------------------------------------------------
-
-    /// <summary>
-    /// Evalúa si el menú actual es nuevo o representa una actualización, y 
-    /// lo persiste en la base de datos a través del controlador.
-    /// </summary>
     private async Task GuardarMenu()
     {
         if (usuarioSeleccionadoId == Guid.Empty || menuActual == null) return;
         
         RecalcularTotalesGenerales();
-        
         bool esUpdate = historialMenus.Any(m => m.Id == menuActual.Id);
         
         if (esUpdate) 
         { 
             _menuController.ActualizarMenu(menuActual); 
-            mensajeExito = "El menú se ha actualizado exitosamente en DragonNutrex Cloud."; 
+            mensajeExito = "El menú se ha actualizado exitosamente."; 
         }
         else 
         { 
@@ -494,17 +425,12 @@
         await CargarHistorialAsync(); 
     }
 
-    /// <summary>
-    /// Busca el producto seleccionado en el catálogo, multiplica sus macronutrientes 
-    /// por la cantidad indicada y lo inserta en la lista de registros del menú actual.
-    /// </summary>
     private void AgregarProductoAlMenu()
     {
         if (usuarioSeleccionadoId == Guid.Empty || menuActual == null) return;
 
         var p = listaProductos.FirstOrDefault(x => x.Id == productoSeleccionadoId);
         if (p != null) {
-            
             if (menuActual.Registros == null) menuActual.Registros = new List<RegistroComida>();
             
             menuActual.Registros.Add(new RegistroComida { 
@@ -518,28 +444,17 @@
             });
             
             RecalcularTotalesGenerales();
-            
             productoSeleccionadoId = Guid.Empty; 
             cantidadProducto = 1;
         }
     }
 
-    /// <summary>
-    /// Elimina de manera definitiva un menú del historial en la base de datos 
-    /// utilizando el controlador, y refresca la vista general de la tabla.
-    /// </summary>
-    /// <param name="id">El identificador único del menú a eliminar.</param>
     private async Task EliminarMenuDesdeHistorial(Guid id) 
     { 
         _menuController.EliminarMenu(id); 
         await CargarHistorialAsync(); 
     }
 
-    /// <summary>
-    /// Actualiza dinámicamente las calorías y macronutrientes de un registro específico 
-    /// cuando el usuario modifica la cantidad consumida desde la tabla.
-    /// </summary>
-    /// <param name="reg">El registro de alimento modificado.</param>
     private void RecalcularLineaYGuardar(RegistroComida reg) 
     { 
         var p = listaProductos.FirstOrDefault(x => x.Id == reg.ProductoId); 
@@ -553,11 +468,6 @@
         } 
     }
     
-    /// <summary>
-    /// Remueve un alimento específico de la lista del menú actual y 
-    /// recalcula los totales generales del día para mantener la consistencia.
-    /// </summary>
-    /// <param name="r">El registro de alimento que se desea descartar.</param>
     private void EliminarRegistro(RegistroComida r) 
     { 
         if (menuActual?.Registros != null)
@@ -567,24 +477,15 @@
         }
     }
 
-    /// <summary>
-    /// Suma los valores de calorías, proteínas, carbohidratos y grasas de todos 
-    /// los registros vigentes para establecer el consumo total del menú del día.
-    /// </summary>
     private void RecalcularTotalesGenerales() 
     { 
         if (menuActual?.Registros == null) return; 
-        
         menuActual.TotalCalorias = menuActual.Registros.Sum(r => r.Calorias); 
         menuActual.TotalProteinas = menuActual.Registros.Sum(r => r.Proteinas); 
         menuActual.TotalCarbohidratos = menuActual.Registros.Sum(r => r.Carbohidratos); 
         menuActual.TotalGrasas = menuActual.Registros.Sum(r => r.Grasas); 
     }
 
-    /// <summary>
-    /// Restablece el entorno de trabajo a la fecha actual y limpia el formulario 
-    /// principal cargando la plantilla de un nuevo día de consumo.
-    /// </summary>
     private void LimpiarPantalla() 
     { 
         fechaMenu = DateTime.Today; 
