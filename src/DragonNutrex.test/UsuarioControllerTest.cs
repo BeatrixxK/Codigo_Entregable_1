@@ -1,11 +1,12 @@
 using Xunit;
-using Xunit.Abstractions; // 👈 NUEVO: Librería para poder imprimir en consola
+using Xunit.Abstractions;
 using Moq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using DragonNutrex.App.Controllers;
 using DragonNutrex.App.Models;
 using DragonNutrex.App.Interfaces;
+using DragonNutrex.App.Services; // 👈 NUEVO: Necesario para instanciar UsuarioService
 
 namespace DragonNutrex.Tests;
 
@@ -20,7 +21,7 @@ public class UsuarioControllerTest
     /// Almacena la instancia del servicio de salida de xUnit, permitiendo 
     /// la inyección de mensajes estructurados en la consola de resultados de las pruebas.
     /// </summary>
-    private readonly ITestOutputHelper _output; // 👈 NUEVO: Variable para guardar el impresor
+    private readonly ITestOutputHelper _output;
 
     /// <summary>
     /// Inicializa una nueva instancia de la clase de pruebas y captura el servicio 
@@ -52,7 +53,10 @@ public class UsuarioControllerTest
         mockRepo.Setup(repo => repo.GetAllAsync())
                 .ReturnsAsync(usuariosSimulados);
 
-        var controller = new UsuarioController(mockRepo.Object);
+        // 👈 CORRECCIÓN: Se instancia el servicio con el mock del repositorio, 
+        // y luego se inyecta el servicio al controlador.
+        var usuarioService = new UsuarioService(mockRepo.Object);
+        var controller = new UsuarioController(usuarioService);
 
         // 2. ACT (Ejecución)
         var resultado = await controller.ObtenerTodosAsync();
@@ -61,7 +65,7 @@ public class UsuarioControllerTest
         Assert.NotNull(resultado);
         Assert.Equal(2, resultado.Count);
         
-        // 4. IMPRIMIR EL MENSAJE FINAL (Esto es lo que tú querías 🚀)
+        // 4. IMPRIMIR EL MENSAJE FINAL
         _output.WriteLine("==================================================");
         _output.WriteLine($"✅ TEST EXITOSO: Se cargaron {resultado.Count} usuarios desde el simulador.");
         _output.WriteLine($"👤 Los usuarios '{resultado[0].Nombre}' y '{resultado[1].Nombre}' han sido validados exitosamente.");

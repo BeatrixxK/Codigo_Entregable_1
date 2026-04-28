@@ -23,8 +23,4 @@
     <ProjectReference Include="..\DragonNutrex.App\DragonNutrex.App.csproj" />
   </ItemGroup>
 
-  <PropertyGroup>
-  <VSTestLogger>console;verbosity=detailed</VSTestLogger>
-</PropertyGroup>
-
 </Project>
