@@ -11,11 +11,30 @@
 *@
 
 <style>
-    /* Estilo para resaltar la navegación de la página activa */
+    /* Estilo base para los botones grandotes */
+    .btn-nav-dragon {
+        /* Borde transparente para que no "brinquen" al hacer hover */
+        border: 3px solid transparent; 
+        transition: all 0.2s ease-in-out;
+        /* AQUÍ ESTABA EL ERROR: Les regresamos su color verde original */
+        background-color: #1b5e20; 
+        color: white;
+    }
+
+    /* Efecto Hover: Al pasar el ratón por encima */
+    .btn-nav-dragon:hover {
+        border: 3px solid #ccff00; /* Borde verde limón */
+        color: white; /* Aseguramos que el texto siga blanco */
+        opacity: 0.95;
+    }
+
+    /* ESTADO ACTIVO: El módulo donde estás parado actualmente */
     .btn-nav-dragon.active {
         background-color: #1b5e20 !important; 
         color: white !important;
-        border-color: #1b5e20 !important;
+        border: 3px solid #ccff00 !important; /* El borde verde limón claro definitivo */
+        box-shadow: 0 0 12px rgba(204, 255, 0, 0.4); /* Un ligero resplandor limón */
+        font-weight: bold;
     }
 </style>
 
@@ -43,7 +62,7 @@
             }
             else
             {
-                <NavLink href="/admin/menus" class="btn flex-fill btn-nav-dragon shadow-sm">Mis Menús</NavLink>
+                <NavLink href="/admin/menus" class="btn flex-fill btn-nav-dragon shadow-sm" Match="NavLinkMatch.All">Mis Menús</NavLink>
                 <NavLink href="/mi-progreso" class="btn flex-fill btn-nav-dragon shadow-sm">Mi Progreso (Estadísticas)</NavLink>
             }
         </div>
@@ -59,9 +78,9 @@
 
         @* Sección de finalización de sesión segura *@
         <div class="text-end mt-5 pt-3 border-top">
-            <a href="/logout" class="btn btn-sm btn-outline-danger fw-bold px-4 shadow-sm">
+            <button class="btn btn-sm btn-outline-danger fw-bold px-4 shadow-sm" @onclick="CerrarSesion">
                 🚪 Cerrar sesión
-            </a>
+            </button>
         </div>
     </main>
 </div>
