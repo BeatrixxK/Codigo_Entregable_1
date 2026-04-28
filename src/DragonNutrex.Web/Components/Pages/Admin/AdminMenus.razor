@@ -112,7 +112,7 @@
                         <tbody>
                             @foreach (var reg in menuActual.Registros)
                             {
-                                <tr @key="reg.ProductoId">
+                                <tr @key="reg.Id">
                                     <td class="ps-4 fw-bold text-dark">@reg.NombreProducto</td>
                                     <td>
                                         <input type="number" step="any" class="form-control form-control-sm text-center fw-bold shadow-sm" @bind="reg.Cantidad" @bind:after="() => RecalcularLineaYGuardar(reg)" />
@@ -216,7 +216,7 @@
                             {
                                 @foreach (var r in menuVisor.Registros)
                                 {
-                                    <tr @key="r.ProductoId">
+                                    <tr @key="r.Id">
                                         <td class="text-start ps-3 fw-bold" style="color: #1b5e20;">@r.NombreProducto</td>
                                         <td>@r.Cantidad</td>
                                         <td class="fw-bold">@r.Calorias.ToString("N1")</td>
@@ -434,6 +434,7 @@
             if (menuActual.Registros == null) menuActual.Registros = new List<RegistroComida>();
             
             menuActual.Registros.Add(new RegistroComida { 
+                Id = Guid.NewGuid(),
                 ProductoId = p.Id, 
                 NombreProducto = p.Nombre, 
                 Cantidad = cantidadProducto, 

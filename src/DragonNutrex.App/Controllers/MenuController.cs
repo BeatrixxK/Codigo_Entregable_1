@@ -106,11 +106,24 @@ public class MenuController
         LimpiarCache();
     }
 
+    // =====================================================
+    // UTILIDADES DE CACHÉ
+    // =====================================================
+    
     /// <summary>
-    /// Limpia la entrada de caché correspondiente a la lista de menús para forzar la recarga de datos frescos.
+    /// Limpia la entrada de caché correspondiente a la lista de menús de forma interna.
     /// </summary>
     private void LimpiarCache()
     {
         _cache.Remove(MENUS_CACHE_KEY);
+    }
+
+    /// <summary>
+    /// Método público para forzar la eliminación del caché desde cualquier vista.
+    /// Útil cuando se inyectan datos externamente (ej. scripts de Python o Redis Insight).
+    /// </summary>
+    public void ForzarRecargaCache()
+    {
+        LimpiarCache();
     }
 }
